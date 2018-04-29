@@ -2257,6 +2257,12 @@ func init() {
             "schema": {
               "$ref": "#/definitions/Avatar"
             }
+          },
+          "400": {
+            "description": "bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }

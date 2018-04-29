@@ -6,11 +6,11 @@ import (
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
-	middleware "github.com/go-openapi/runtime/middleware"
 	graceful "github.com/tylerb/graceful"
 
 	"github.com/sevings/mindwell-server/utils"
 
+	"github.com/sevings/mindwell-images/internal/app/mindwell-images"
 	"github.com/sevings/mindwell-images/models"
 	"github.com/sevings/mindwell-images/restapi/operations"
 	"github.com/sevings/mindwell-images/restapi/operations/me"
@@ -59,9 +59,7 @@ func configureAPI(api *operations.MindwellImagesAPI) http.Handler {
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
 
-	api.MePutUsersMeAvatarHandler = me.PutUsersMeAvatarHandlerFunc(func(params me.PutUsersMeAvatarParams, principal *models.UserID) middleware.Responder {
-		return middleware.NotImplemented("operation me.PutUsersMeAvatar has not yet been implemented")
-	})
+	api.MePutUsersMeAvatarHandler = me.PutUsersMeAvatarHandlerFunc(images.NewAvatarUpdater(db, config))
 
 	api.ServerShutdown = func() {}
 

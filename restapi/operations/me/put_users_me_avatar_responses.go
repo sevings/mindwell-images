@@ -55,3 +55,46 @@ func (o *PutUsersMeAvatarOK) WriteResponse(rw http.ResponseWriter, producer runt
 		}
 	}
 }
+
+// PutUsersMeAvatarBadRequestCode is the HTTP code returned for type PutUsersMeAvatarBadRequest
+const PutUsersMeAvatarBadRequestCode int = 400
+
+/*PutUsersMeAvatarBadRequest bad request
+
+swagger:response putUsersMeAvatarBadRequest
+*/
+type PutUsersMeAvatarBadRequest struct {
+
+	/*
+	  In: Body
+	*/
+	Payload *models.Error `json:"body,omitempty"`
+}
+
+// NewPutUsersMeAvatarBadRequest creates PutUsersMeAvatarBadRequest with default headers values
+func NewPutUsersMeAvatarBadRequest() *PutUsersMeAvatarBadRequest {
+	return &PutUsersMeAvatarBadRequest{}
+}
+
+// WithPayload adds the payload to the put users me avatar bad request response
+func (o *PutUsersMeAvatarBadRequest) WithPayload(payload *models.Error) *PutUsersMeAvatarBadRequest {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the put users me avatar bad request response
+func (o *PutUsersMeAvatarBadRequest) SetPayload(payload *models.Error) {
+	o.Payload = payload
+}
+
+// WriteResponse to the client
+func (o *PutUsersMeAvatarBadRequest) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+
+	rw.WriteHeader(400)
+	if o.Payload != nil {
+		payload := o.Payload
+		if err := producer.Produce(rw, payload); err != nil {
+			panic(err) // let the recovery middleware deal with this
+		}
+	}
+}
