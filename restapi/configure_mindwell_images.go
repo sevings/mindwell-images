@@ -2,7 +2,9 @@ package restapi
 
 import (
 	"crypto/tls"
+	"math/rand"
 	"net/http"
+	"time"
 
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
@@ -25,6 +27,8 @@ func configureFlags(api *operations.MindwellImagesAPI) {
 }
 
 func configureAPI(api *operations.MindwellImagesAPI) http.Handler {
+	rand.Seed(time.Now().UTC().UnixNano())
+
 	config := utils.LoadConfig("configs/images")
 	db := utils.OpenDatabase(config)
 

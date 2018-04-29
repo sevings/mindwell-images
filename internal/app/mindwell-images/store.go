@@ -76,7 +76,7 @@ func (is *imageStore) Fill(size int) string {
 	img := imaging.Fill(is.image, size, size, imaging.Center, imaging.Linear)
 
 	fileName := path + is.saveName
-	is.err = imaging.Save(img, is.folder+fileName, imaging.JPEGQuality(80))
+	is.err = imaging.Save(img, is.folder+fileName, imaging.JPEGQuality(90))
 
-	return fileName
+	return is.baseURL + fileName
 }
