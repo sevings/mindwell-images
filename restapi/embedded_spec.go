@@ -2670,10 +2670,13 @@ func init() {
     "Avatar": {
       "type": "object",
       "properties": {
-        "400": {
+        "x100": {
           "type": "string"
         },
-        "800": {
+        "x400": {
+          "type": "string"
+        },
+        "x800": {
           "type": "string"
         }
       }
@@ -3084,7 +3087,7 @@ func init() {
       "type": "object",
       "properties": {
         "avatar": {
-          "type": "string"
+          "$ref": "#/definitions/Avatar"
         },
         "id": {
           "type": "integer",

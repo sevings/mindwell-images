@@ -17,17 +17,15 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeAvatarPa
 		store := newImageStore(cfg)
 		store.ReadImage(params.File.Data, params.File.Header.Filename)
 
-		av800 := store.Fill(800)
-		av400 := store.Fill(400)
+		avatar := models.Avatar{
+			X800: store.Fill(800),
+			X400: store.Fill(400),
+			X100: store.Fill(100),
+		}
 
 		if store.err != nil {
 			log.Print(store.Error())
 			return me.NewPutUsersMeAvatarBadRequest()
-		}
-
-		avatar := models.Avatar{
-			Nr800: av800,
-			Nr400: av400,
 		}
 
 		return utils.Transact(db, func(tx *utils.AutoTx) middleware.Responder {
