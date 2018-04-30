@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/disintegration/imaging"
 	"github.com/sevings/mindwell-server/utils"
@@ -19,6 +20,12 @@ type imageStore struct {
 	saveName string
 	image    image.Image
 	err      error
+}
+
+type storeError string
+
+func (se storeError) Error() string {
+	return string(se)
 }
 
 func newImageStore(cfg *goconf.Config) *imageStore {
@@ -39,7 +46,7 @@ func newImageStore(cfg *goconf.Config) *imageStore {
 		folder:   folder,
 		baseURL:  baseURL,
 		savePath: path,
-		saveName: name[2:] + "_",
+		saveName: name[2:],
 	}
 }
 
@@ -55,8 +62,17 @@ func (is *imageStore) FileName() string {
 	return is.savePath + is.saveName
 }
 
-func (is *imageStore) SetImage(r io.ReadCloser, name string) {
-	is.saveName += name
+func (is *imageStore) ReadImage(r io.ReadCloser, name string) {
+	if strings.HasSuffix(name, ".jpg") ||
+		strings.HasSuffix(name, ".jpeg") ||
+		strings.HasSuffix(name, ".png") {
+		is.saveName += ".jpg"
+	} else if strings.HasSuffix(name, ".gif") {
+		is.saveName += ".gif"
+	} else {
+		is.err = storeError("Unknown format")
+		return
+	}
 
 	defer r.Close()
 	is.image, is.err = imaging.Decode(r)
@@ -73,7 +89,21 @@ func (is *imageStore) Fill(size int) string {
 		return ""
 	}
 
-	img := imaging.Fill(is.image, size, size, imaging.Center, imaging.Linear)
+	bounds := is.image.Bounds()
+	w := bounds.Dx()
+	h := bounds.Dy()
+	minSize := w
+	if h < w {
+		minSize = h
+	}
+
+	var img image.Image
+
+	if minSize < size {
+		img = imaging.CropCenter(is.image, minSize, minSize)
+	} else {
+		img = imaging.Thumbnail(is.image, size, size, imaging.CatmullRom)
+	}
 
 	fileName := path + is.saveName
 	is.err = imaging.Save(img, is.folder+fileName, imaging.JPEGQuality(90))

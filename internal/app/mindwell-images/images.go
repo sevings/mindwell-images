@@ -15,7 +15,7 @@ import (
 func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeAvatarParams, *models.UserID) middleware.Responder {
 	return func(params me.PutUsersMeAvatarParams, userID *models.UserID) middleware.Responder {
 		store := newImageStore(cfg)
-		store.SetImage(params.File.Data, params.File.Header.Filename)
+		store.ReadImage(params.File.Data, params.File.Header.Filename)
 
 		av800 := store.Fill(800)
 		av400 := store.Fill(400)
