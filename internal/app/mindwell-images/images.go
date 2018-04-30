@@ -3,7 +3,6 @@ package images
 import (
 	"database/sql"
 	"log"
-	"os"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/sevings/mindwell-images/models"
@@ -23,7 +22,7 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeAvatarPa
 			X100: store.Fill(100),
 		}
 
-		if store.err != nil {
+		if store.Error() != nil {
 			log.Print(store.Error())
 			return me.NewPutUsersMeAvatarBadRequest()
 		}
@@ -37,9 +36,11 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeAvatarPa
 				return me.NewPutUsersMeAvatarBadRequest()
 			}
 
-			err := os.Remove(store.Folder() + old)
-			if err != nil {
-				log.Print(err)
+			store.RemoveOld(old, 800)
+			store.RemoveOld(old, 400)
+			store.RemoveOld(old, 100)
+			if store.Error() != nil {
+				log.Print(store.Error())
 			}
 
 			return me.NewPutUsersMeAvatarOK().WithPayload(&avatar)

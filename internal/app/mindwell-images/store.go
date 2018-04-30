@@ -65,7 +65,10 @@ func (is *imageStore) FileName() string {
 func (is *imageStore) ReadImage(r io.ReadCloser, name string) {
 	if strings.HasSuffix(name, ".jpg") ||
 		strings.HasSuffix(name, ".jpeg") ||
-		strings.HasSuffix(name, ".png") {
+		strings.HasSuffix(name, ".png") ||
+		strings.HasSuffix(name, ".bmp") ||
+		strings.HasSuffix(name, ".tiff") ||
+		strings.HasSuffix(name, ".tif") {
 		is.saveName += ".jpg"
 	} else if strings.HasSuffix(name, ".gif") {
 		is.saveName += ".gif"
@@ -109,4 +112,12 @@ func (is *imageStore) Fill(size int) string {
 	is.err = imaging.Save(img, is.folder+fileName, imaging.JPEGQuality(90))
 
 	return is.baseURL + fileName
+}
+
+func (is *imageStore) RemoveOld(path string, size int) {
+	if is.err != nil {
+		return
+	}
+
+	is.err = os.Remove(is.folder + strconv.Itoa(size) + "/" + path)
 }
