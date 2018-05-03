@@ -40,7 +40,7 @@ func newImageStore(cfg *goconf.Config) *imageStore {
 	}
 
 	name := utils.GenerateString(10)
-	path := "/" + name[:1] + "/" + name[1:2] + "/"
+	path := name[:1] + "/" + name[1:2] + "/"
 
 	return &imageStore{
 		folder:   folder,
@@ -86,7 +86,7 @@ func (is *imageStore) Fill(size int) string {
 		return ""
 	}
 
-	path := strconv.Itoa(size) + is.savePath
+	path := strconv.Itoa(size) + "/" + is.savePath
 	is.err = os.MkdirAll(is.folder+path, 0777)
 	if is.err != nil {
 		return ""
