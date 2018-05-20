@@ -9,6 +9,7 @@ import (
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
 	graceful "github.com/tylerb/graceful"
+	"gopkg.in/gographics/imagick.v2/imagick"
 
 	"github.com/sevings/mindwell-server/utils"
 
@@ -65,7 +66,11 @@ func configureAPI(api *operations.MindwellImagesAPI) http.Handler {
 
 	api.MePutUsersMeAvatarHandler = me.PutUsersMeAvatarHandlerFunc(images.NewAvatarUpdater(db, config))
 
-	api.ServerShutdown = func() {}
+	api.ServerShutdown = func() {
+		imagick.Terminate()
+	}
+
+	imagick.Initialize()
 
 	return setupGlobalMiddleware(api.Serve(setupMiddlewares))
 }

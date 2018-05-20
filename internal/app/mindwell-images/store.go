@@ -1,24 +1,27 @@
 package images
 
 import (
-	"image"
 	"io"
 	"log"
 	"os"
 	"strconv"
 	"strings"
 
-	"github.com/disintegration/imaging"
 	"github.com/sevings/mindwell-server/utils"
 	goconf "github.com/zpatrick/go-config"
+	"gopkg.in/gographics/imagick.v2/imagick"
 )
+
+func init() {
+	imagick.Initialize()
+}
 
 type imageStore struct {
 	folder   string
 	baseURL  string
 	savePath string
 	saveName string
-	image    image.Image
+	mw       *imagick.MagickWand
 	err      error
 }
 
@@ -47,6 +50,7 @@ func newImageStore(cfg *goconf.Config) *imageStore {
 		baseURL:  baseURL,
 		savePath: path,
 		saveName: name[2:],
+		mw:       imagick.NewMagickWand(),
 	}
 }
 
@@ -62,7 +66,7 @@ func (is *imageStore) FileName() string {
 	return is.savePath + is.saveName
 }
 
-func (is *imageStore) ReadImage(r io.ReadCloser, name string) {
+func (is *imageStore) ReadImage(r io.ReadCloser, size int64, name string) {
 	if strings.HasSuffix(name, ".jpg") ||
 		strings.HasSuffix(name, ".jpeg") ||
 		strings.HasSuffix(name, ".png") ||
@@ -78,38 +82,80 @@ func (is *imageStore) ReadImage(r io.ReadCloser, name string) {
 	}
 
 	defer r.Close()
-	is.image, is.err = imaging.Decode(r)
+
+	blob := make([]byte, size)
+	_, is.err = r.Read(blob)
+	if is.err != nil {
+		return
+	}
+
+	is.err = is.mw.ReadImageBlob(blob)
+	if is.err != nil {
+		return
+	}
+
+	is.mw = is.mw.CoalesceImages()
 }
 
-func (is *imageStore) Fill(size int) string {
+func (is *imageStore) Fill(size uint) string {
 	if is.err != nil {
 		return ""
 	}
 
-	path := strconv.Itoa(size) + "/" + is.savePath
+	path := strconv.Itoa(int(size)) + "/" + is.savePath
 	is.err = os.MkdirAll(is.folder+path, 0777)
 	if is.err != nil {
 		return ""
 	}
 
-	bounds := is.image.Bounds()
-	w := bounds.Dx()
-	h := bounds.Dy()
-	minSize := w
-	if h < w {
-		minSize = h
+	wand := is.mw.Clone()
+
+	w := wand.GetImageWidth()
+	h := wand.GetImageHeight()
+	if w < size {
+		size = w
+	}
+	if h < size {
+		size = h
 	}
 
-	var img image.Image
+	cropSize := w
+	if h < cropSize {
+		cropSize = h
+	}
 
-	if minSize < size {
-		img = imaging.CropCenter(is.image, minSize, minSize)
-	} else {
-		img = imaging.Thumbnail(is.image, size, size, imaging.CatmullRom)
+	x := int(w-cropSize) / 2
+	y := int(h-cropSize) / 2
+
+	wand.ResetIterator()
+	for wand.NextImage() {
+		is.err = wand.CropImage(cropSize, cropSize, x, y)
+		if is.err != nil {
+			return ""
+		}
+
+		is.err = wand.ThumbnailImage(size, size)
+		// is.err = wand.AdaptiveResizeImage(size, size)
+		if is.err != nil {
+			return ""
+		}
+	}
+
+	is.err = wand.OptimizeImageTransparency()
+	if is.err != nil {
+		return ""
+	}
+
+	is.err = wand.SetCompressionQuality(85)
+	if is.err != nil {
+		return ""
 	}
 
 	fileName := path + is.saveName
-	is.err = imaging.Save(img, is.folder+fileName, imaging.JPEGQuality(90))
+	is.err = wand.WriteImages(is.folder+fileName, true)
+	if is.err != nil {
+		return ""
+	}
 
 	return is.baseURL + fileName
 }
