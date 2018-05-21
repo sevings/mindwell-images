@@ -12,10 +12,6 @@ import (
 	"gopkg.in/gographics/imagick.v2/imagick"
 )
 
-func init() {
-	imagick.Initialize()
-}
-
 type imageStore struct {
 	folder   string
 	baseURL  string
