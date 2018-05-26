@@ -17,9 +17,8 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeAvatarPa
 		store.ReadImage(params.File.Data, params.File.Header.Size, params.File.Header.Filename)
 
 		avatar := models.Avatar{
-			X800: store.Fill(800),
-			X400: store.Fill(400),
-			X100: store.Fill(100),
+			X124: store.Fill(124),
+			X42:  store.Fill(42),
 		}
 
 		if store.Error() != nil {
