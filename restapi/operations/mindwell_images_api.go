@@ -43,6 +43,9 @@ func NewMindwellImagesAPI(spec *loads.Document) *MindwellImagesAPI {
 		MePutUsersMeAvatarHandler: me.PutUsersMeAvatarHandlerFunc(func(params me.PutUsersMeAvatarParams, principal *models.UserID) middleware.Responder {
 			return middleware.NotImplemented("operation MePutUsersMeAvatar has not yet been implemented")
 		}),
+		MePutUsersMeCoverHandler: me.PutUsersMeCoverHandlerFunc(func(params me.PutUsersMeCoverParams, principal *models.UserID) middleware.Responder {
+			return middleware.NotImplemented("operation MePutUsersMeCover has not yet been implemented")
+		}),
 
 		// Applies when the "X-User-Key" header is set
 		APIKeyHeaderAuth: func(token string) (*models.UserID, error) {
@@ -93,6 +96,8 @@ type MindwellImagesAPI struct {
 
 	// MePutUsersMeAvatarHandler sets the operation handler for the put users me avatar operation
 	MePutUsersMeAvatarHandler me.PutUsersMeAvatarHandler
+	// MePutUsersMeCoverHandler sets the operation handler for the put users me cover operation
+	MePutUsersMeCoverHandler me.PutUsersMeCoverHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -170,6 +175,10 @@ func (o *MindwellImagesAPI) Validate() error {
 
 	if o.MePutUsersMeAvatarHandler == nil {
 		unregistered = append(unregistered, "me.PutUsersMeAvatarHandler")
+	}
+
+	if o.MePutUsersMeCoverHandler == nil {
+		unregistered = append(unregistered, "me.PutUsersMeCoverHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -284,6 +293,11 @@ func (o *MindwellImagesAPI) initHandlerCache() {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
 	o.handlers["PUT"]["/users/me/avatar"] = me.NewPutUsersMeAvatar(o.context, o.MePutUsersMeAvatarHandler)
+
+	if o.handlers["PUT"] == nil {
+		o.handlers["PUT"] = make(map[string]http.Handler)
+	}
+	o.handlers["PUT"]["/users/me/cover"] = me.NewPutUsersMeCover(o.context, o.MePutUsersMeCoverHandler)
 
 }
 

@@ -45,3 +45,35 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeAvatarPa
 		})
 	}
 }
+
+func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeCoverParams, *models.UserID) middleware.Responder {
+	return func(params me.PutUsersMeCoverParams, userID *models.UserID) middleware.Responder {
+		store := newImageStore(cfg)
+		store.ReadImage(params.File.Data, params.File.Header.Size, params.File.Header.Filename)
+
+		cover := store.Fill(1920)
+
+		if store.Error() != nil {
+			log.Print(store.Error())
+			return me.NewPutUsersMeCoverBadRequest()
+		}
+
+		return utils.Transact(db, func(tx *utils.AutoTx) middleware.Responder {
+			var old string
+			tx.Query("select cover from users where id = $1", userID).Scan(&old)
+			tx.Exec("update users set cover = $2 where id = $1", userID, store.FileName())
+			if tx.Error() != nil {
+				return me.NewPutUsersMeCoverBadRequest()
+			}
+
+			store.RemoveOld(old, 800)
+			store.RemoveOld(old, 400)
+			store.RemoveOld(old, 100)
+			if store.Error() != nil {
+				log.Print(store.Error())
+			}
+
+			return me.NewPutUsersMeCoverOK().WithPayload(&cover)
+		})
+	}
+}
