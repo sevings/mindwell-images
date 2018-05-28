@@ -12,10 +12,6 @@ import (
 	"gopkg.in/gographics/imagick.v2/imagick"
 )
 
-func init() {
-	imagick.Initialize()
-}
-
 type imageStore struct {
 	folder   string
 	baseURL  string
@@ -94,7 +90,9 @@ func (is *imageStore) ReadImage(r io.ReadCloser, size int64, name string) {
 		return
 	}
 
-	is.mw = is.mw.CoalesceImages()
+	wand := is.mw.CoalesceImages()
+	is.mw.Destroy()
+	is.mw = wand
 }
 
 func (is *imageStore) Fill(size uint) string {
@@ -109,6 +107,7 @@ func (is *imageStore) Fill(size uint) string {
 	}
 
 	wand := is.mw.Clone()
+	defer wand.Destroy()
 
 	w := wand.GetImageWidth()
 	h := wand.GetImageHeight()
