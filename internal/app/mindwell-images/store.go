@@ -50,6 +50,10 @@ func newImageStore(cfg *goconf.Config) *imageStore {
 	}
 }
 
+func (is *imageStore) Destroy() {
+	is.mw.Destroy()
+}
+
 func (is *imageStore) Error() error {
 	return is.err
 }
