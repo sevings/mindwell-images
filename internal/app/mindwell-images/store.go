@@ -104,26 +104,21 @@ func (is *imageStore) FillRect(width, height uint, folder string) string {
 	originRatio := float64(originWidth) / float64(originHeight)
 
 	crop := math.Abs(ratio-originRatio) > 0.01
-	resize := width < originWidth && height < originHeight
 
-	if width > originWidth && height > originHeight {
-		if ratio < originRatio {
-			height = originHeight
-			width = uint(float64(height) * ratio)
-		} else {
-			width = originWidth
-			height = uint(float64(width) / ratio)
-		}
-	} else if width > originWidth {
-		width = originWidth
-		height = uint(float64(width) / ratio)
-	} else if height > originHeight {
-		height = originHeight
-		width = uint(float64(height) * ratio)
+	cropWidth, cropHeight := originWidth, originHeight
+
+	if ratio < originRatio {
+		cropWidth = uint(float64(originHeight) * ratio)
+	} else {
+		cropHeight = uint(float64(originWidth) / ratio)
 	}
 
-	x := int(originWidth-width) / 2
-	y := int(originHeight-height) / 2
+	if width > originWidth || height > originHeight {
+		width, height = cropWidth, cropHeight
+	}
+
+	x := int(originWidth-cropWidth) / 2
+	y := int(originHeight-cropHeight) / 2
 
 	wand := is.mw.Clone()
 	defer wand.Destroy()
@@ -131,18 +126,16 @@ func (is *imageStore) FillRect(width, height uint, folder string) string {
 	wand.ResetIterator()
 	for wand.NextImage() {
 		if crop {
-			is.err = wand.CropImage(width, height, x, y)
+			is.err = wand.CropImage(cropWidth, cropHeight, x, y)
 			if is.err != nil {
 				return ""
 			}
 		}
 
-		if resize {
-			is.err = wand.ThumbnailImage(width, height)
-			// is.err = wand.AdaptiveResizeImage(width, height)
-			if is.err != nil {
-				return ""
-			}
+		is.err = wand.ThumbnailImage(width, height)
+		// is.err = wand.AdaptiveResizeImage(width, height)
+		if is.err != nil {
+			return ""
 		}
 	}
 
@@ -173,6 +166,10 @@ func (is *imageStore) FillRect(width, height uint, folder string) string {
 
 func (is *imageStore) FolderRemove(folder, path string) {
 	if is.err != nil {
+		return
+	}
+
+	if len(path) == 0 {
 		return
 	}
 

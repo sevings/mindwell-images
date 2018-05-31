@@ -65,6 +65,7 @@ func configureAPI(api *operations.MindwellImagesAPI) http.Handler {
 	// api.APIAuthorizer = security.Authorized()
 
 	api.MePutUsersMeAvatarHandler = me.PutUsersMeAvatarHandlerFunc(images.NewAvatarUpdater(db, config))
+	api.MePutUsersMeCoverHandler = me.PutUsersMeCoverHandlerFunc(images.NewCoverUpdater(db, config))
 
 	api.ServerShutdown = func() {
 		imagick.Terminate()
