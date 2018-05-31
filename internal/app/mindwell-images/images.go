@@ -50,7 +50,10 @@ func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeCoverPara
 		store := newImageStore(cfg)
 		store.ReadImage(params.File.Data, params.File.Header.Size, params.File.Header.Filename)
 
-		cover := store.FillRect(1920, 640, "cover")
+		cover := &models.Cover{
+			ID:    int64(*userID),
+			Cover: store.FillRect(1920, 640, "cover"),
+		}
 
 		if store.Error() != nil {
 			log.Print(store.Error())
@@ -70,7 +73,7 @@ func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeCoverPara
 				log.Print(store.Error())
 			}
 
-			return me.NewPutUsersMeCoverOK().WithPayload(&cover)
+			return me.NewPutUsersMeCoverOK().WithPayload(cover)
 		})
 	}
 }

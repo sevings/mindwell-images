@@ -100,8 +100,8 @@ func (is *imageStore) FillRect(width, height uint, folder string) string {
 	originWidth := is.mw.GetImageWidth()
 	originHeight := is.mw.GetImageHeight()
 
-	ratio := float32(width) / height
-	originRatio := float32(originWidth) / originHeight
+	ratio := float64(width) / float64(height)
+	originRatio := float64(originWidth) / float64(originHeight)
 
 	crop := math.Abs(ratio-originRatio) > 0.01
 	resize := width < originWidth && height < originHeight
@@ -109,17 +109,17 @@ func (is *imageStore) FillRect(width, height uint, folder string) string {
 	if width > originWidth && height > originHeight {
 		if ratio < originRatio {
 			height = originHeight
-			width = height * ratio
+			width = uint(float64(height) * ratio)
 		} else {
 			width = originWidth
-			height = width / ratio
+			height = uint(float64(width) / ratio)
 		}
 	} else if width > originWidth {
 		width = originWidth
-		height = width / ratio
+		height = uint(float64(width) / ratio)
 	} else if height > originHeight {
 		height = originHeight
-		width = height * ratio
+		width = uint(float64(height) * ratio)
 	}
 
 	x := int(originWidth-width) / 2
