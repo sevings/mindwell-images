@@ -3,6 +3,7 @@ package images
 import (
 	"io"
 	"log"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -63,18 +64,10 @@ func (is *imageStore) FileName() string {
 }
 
 func (is *imageStore) ReadImage(r io.ReadCloser, size int64, name string) {
-	if strings.HasSuffix(name, ".jpg") ||
-		strings.HasSuffix(name, ".jpeg") ||
-		strings.HasSuffix(name, ".png") ||
-		strings.HasSuffix(name, ".bmp") ||
-		strings.HasSuffix(name, ".tiff") ||
-		strings.HasSuffix(name, ".tif") {
-		is.saveName += ".jpg"
-	} else if strings.HasSuffix(name, ".gif") {
+	if strings.HasSuffix(name, ".gif") {
 		is.saveName += ".gif"
 	} else {
-		is.err = storeError("Unknown format")
-		return
+		is.saveName += ".jpg"
 	}
 
 	defer r.Close()
@@ -96,47 +89,60 @@ func (is *imageStore) ReadImage(r io.ReadCloser, size int64, name string) {
 }
 
 func (is *imageStore) Fill(size uint) string {
+	return is.FillRect(size, size, strconv.Itoa(int(size)))
+}
+
+func (is *imageStore) FillRect(width, height uint, folder string) string {
 	if is.err != nil {
 		return ""
 	}
 
-	path := strconv.Itoa(int(size)) + "/" + is.savePath
-	is.err = os.MkdirAll(is.folder+path, 0777)
-	if is.err != nil {
-		return ""
+	originWidth := is.mw.GetImageWidth()
+	originHeight := is.mw.GetImageHeight()
+
+	ratio := float32(width) / height
+	originRatio := float32(originWidth) / originHeight
+
+	crop := math.Abs(ratio-originRatio) > 0.01
+	resize := width < originWidth && height < originHeight
+
+	if width > originWidth && height > originHeight {
+		if ratio < originRatio {
+			height = originHeight
+			width = height * ratio
+		} else {
+			width = originWidth
+			height = width / ratio
+		}
+	} else if width > originWidth {
+		width = originWidth
+		height = width / ratio
+	} else if height > originHeight {
+		height = originHeight
+		width = height * ratio
 	}
+
+	x := int(originWidth-width) / 2
+	y := int(originHeight-height) / 2
 
 	wand := is.mw.Clone()
 	defer wand.Destroy()
 
-	w := wand.GetImageWidth()
-	h := wand.GetImageHeight()
-	if w < size {
-		size = w
-	}
-	if h < size {
-		size = h
-	}
-
-	cropSize := w
-	if h < cropSize {
-		cropSize = h
-	}
-
-	x := int(w-cropSize) / 2
-	y := int(h-cropSize) / 2
-
 	wand.ResetIterator()
 	for wand.NextImage() {
-		is.err = wand.CropImage(cropSize, cropSize, x, y)
-		if is.err != nil {
-			return ""
+		if crop {
+			is.err = wand.CropImage(width, height, x, y)
+			if is.err != nil {
+				return ""
+			}
 		}
 
-		is.err = wand.ThumbnailImage(size, size)
-		// is.err = wand.AdaptiveResizeImage(size, size)
-		if is.err != nil {
-			return ""
+		if resize {
+			is.err = wand.ThumbnailImage(width, height)
+			// is.err = wand.AdaptiveResizeImage(width, height)
+			if is.err != nil {
+				return ""
+			}
 		}
 	}
 
@@ -150,6 +156,12 @@ func (is *imageStore) Fill(size uint) string {
 		return ""
 	}
 
+	path := folder + "/" + is.savePath
+	is.err = os.MkdirAll(is.folder+path, 0777)
+	if is.err != nil {
+		return ""
+	}
+
 	fileName := path + is.saveName
 	is.err = wand.WriteImages(is.folder+fileName, true)
 	if is.err != nil {
@@ -159,10 +171,14 @@ func (is *imageStore) Fill(size uint) string {
 	return is.baseURL + fileName
 }
 
-func (is *imageStore) RemoveOld(path string, size int) {
+func (is *imageStore) FolderRemove(folder, path string) {
 	if is.err != nil {
 		return
 	}
 
-	is.err = os.Remove(is.folder + strconv.Itoa(size) + "/" + path)
+	is.err = os.Remove(is.folder + folder + "/" + path)
+}
+
+func (is *imageStore) SizeRemove(size int, path string) {
+	is.FolderRemove(strconv.Itoa(size), path)
 }

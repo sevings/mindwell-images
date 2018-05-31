@@ -34,9 +34,8 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeAvatarPa
 				return me.NewPutUsersMeAvatarBadRequest()
 			}
 
-			store.RemoveOld(old, 800)
-			store.RemoveOld(old, 400)
-			store.RemoveOld(old, 100)
+			store.SizeRemove(124, old)
+			store.SizeRemove(42, old)
 			if store.Error() != nil {
 				log.Print(store.Error())
 			}
@@ -51,7 +50,7 @@ func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeCoverPara
 		store := newImageStore(cfg)
 		store.ReadImage(params.File.Data, params.File.Header.Size, params.File.Header.Filename)
 
-		cover := store.Fill(1920)
+		cover := store.FillRect(1920, 640, "cover")
 
 		if store.Error() != nil {
 			log.Print(store.Error())
@@ -66,9 +65,7 @@ func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeCoverPara
 				return me.NewPutUsersMeCoverBadRequest()
 			}
 
-			store.RemoveOld(old, 800)
-			store.RemoveOld(old, 400)
-			store.RemoveOld(old, 100)
+			store.FolderRemove("cover", old)
 			if store.Error() != nil {
 				log.Print(store.Error())
 			}
