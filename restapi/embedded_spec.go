@@ -38,6 +38,7 @@ func init() {
         "summary": "check if email is used",
         "parameters": [
           {
+            "maxLength": 500,
             "type": "string",
             "name": "email",
             "in": "path",
@@ -123,6 +124,7 @@ func init() {
             "required": true
           },
           {
+            "maxLength": 500,
             "minLength": 6,
             "type": "string",
             "name": "password",
@@ -205,6 +207,7 @@ func init() {
         ],
         "parameters": [
           {
+            "maxLength": 100,
             "minLength": 6,
             "type": "string",
             "name": "old_password",
@@ -212,6 +215,7 @@ func init() {
             "required": true
           },
           {
+            "maxLength": 100,
             "minLength": 6,
             "type": "string",
             "name": "new_password",
@@ -243,6 +247,7 @@ func init() {
         ],
         "parameters": [
           {
+            "maxLength": 500,
             "type": "string",
             "name": "email",
             "in": "formData",
@@ -282,12 +287,14 @@ func init() {
             "required": true
           },
           {
+            "maxLength": 500,
             "type": "string",
             "name": "email",
             "in": "formData",
             "required": true
           },
           {
+            "maxLength": 100,
             "minLength": 6,
             "type": "string",
             "name": "password",
@@ -295,6 +302,7 @@ func init() {
             "required": true
           },
           {
+            "maxLength": 100,
             "type": "string",
             "name": "invite",
             "in": "formData",
@@ -326,12 +334,14 @@ func init() {
             "in": "formData"
           },
           {
+            "maxLength": 50,
             "type": "string",
             "default": "",
             "name": "country",
             "in": "formData"
           },
           {
+            "maxLength": 50,
             "type": "string",
             "default": "",
             "name": "city",
@@ -384,13 +394,9 @@ func init() {
           "account"
         ],
         "summary": "verify account email",
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
         "parameters": [
           {
+            "maxLength": 500,
             "type": "string",
             "name": "email",
             "in": "path",
@@ -464,6 +470,7 @@ func init() {
         ],
         "parameters": [
           {
+            "maxLength": 1000,
             "minLength": 1,
             "type": "string",
             "name": "content",
@@ -596,6 +603,7 @@ func init() {
         ],
         "parameters": [
           {
+            "maxLength": 10000,
             "type": "string",
             "default": "",
             "name": "css",
@@ -698,12 +706,6 @@ func init() {
           },
           {
             "$ref": "#/parameters/tag"
-          },
-          {
-            "$ref": "#/parameters/longerThan"
-          },
-          {
-            "$ref": "#/parameters/shorterThan"
           }
         ],
         "responses": {
@@ -730,12 +732,15 @@ func init() {
         ],
         "parameters": [
           {
+            "maxLength": 500,
             "type": "string",
             "default": "",
             "name": "title",
             "in": "formData"
           },
           {
+            "maxLength": 30000,
+            "minLength": 1,
             "type": "string",
             "name": "content",
             "in": "formData",
@@ -788,12 +793,6 @@ func init() {
             "$ref": "#/parameters/tag"
           },
           {
-            "$ref": "#/parameters/longerThan"
-          },
-          {
-            "$ref": "#/parameters/shorterThan"
-          },
-          {
             "type": "integer",
             "name": "min_rating",
             "in": "query"
@@ -831,12 +830,6 @@ func init() {
           },
           {
             "$ref": "#/parameters/tag"
-          },
-          {
-            "$ref": "#/parameters/longerThan"
-          },
-          {
-            "$ref": "#/parameters/shorterThan"
           }
         ],
         "responses": {
@@ -871,12 +864,6 @@ func init() {
           },
           {
             "$ref": "#/parameters/tag"
-          },
-          {
-            "$ref": "#/parameters/longerThan"
-          },
-          {
-            "$ref": "#/parameters/shorterThan"
           }
         ],
         "responses": {
@@ -1041,6 +1028,7 @@ func init() {
           },
           {
             "maxLength": 30000,
+            "minLength": 1,
             "type": "string",
             "name": "content",
             "in": "formData",
@@ -1301,6 +1289,7 @@ func init() {
         ],
         "parameters": [
           {
+            "maxLength": 500,
             "type": "string",
             "default": "",
             "name": "title",
@@ -1308,6 +1297,7 @@ func init() {
           },
           {
             "maxLength": 30000,
+            "minLength": 1,
             "type": "string",
             "name": "content",
             "in": "formData",
@@ -1454,6 +1444,7 @@ func init() {
         ],
         "parameters": [
           {
+            "maxLength": 1000,
             "minLength": 1,
             "type": "string",
             "name": "content",
@@ -1840,12 +1831,7 @@ func init() {
       },
       "parameters": [
         {
-          "minimum": 1,
-          "type": "integer",
-          "format": "int64",
-          "name": "id",
-          "in": "path",
-          "required": true
+          "$ref": "#/parameters/pathId"
         }
       ]
     },
@@ -1900,6 +1886,12 @@ func init() {
             "description": "your relationship with the user",
             "schema": {
               "$ref": "#/definitions/Relationship"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
             }
           },
           "404": {
@@ -2181,7 +2173,7 @@ func init() {
             "required": true
           },
           {
-            "maxLength": 260,
+            "maxLength": 500,
             "type": "string",
             "default": "",
             "name": "title",
@@ -2256,6 +2248,42 @@ func init() {
             "description": "Avatar",
             "schema": {
               "$ref": "#/definitions/Avatar"
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/users/me/cover": {
+      "put": {
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "tags": [
+          "me"
+        ],
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "type": "file",
+            "name": "file",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cover",
+            "schema": {
+              "$ref": "#/definitions/Cover"
             }
           },
           "400": {
@@ -2670,13 +2698,10 @@ func init() {
     "Avatar": {
       "type": "object",
       "properties": {
-        "x100": {
+        "x124": {
           "type": "string"
         },
-        "x400": {
-          "type": "string"
-        },
-        "x800": {
+        "x42": {
           "type": "string"
         }
       }
@@ -2754,6 +2779,23 @@ func init() {
         }
       }
     },
+    "Cover": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "user id",
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "x1920": {
+          "type": "string"
+        },
+        "x318": {
+          "type": "string"
+        }
+      }
+    },
     "Design": {
       "type": "object",
       "properties": {
@@ -2802,8 +2844,17 @@ func init() {
           "type": "number",
           "format": "double"
         },
+        "cutContent": {
+          "type": "string"
+        },
+        "cutTitle": {
+          "type": "string"
+        },
         "editContent": {
           "type": "string"
+        },
+        "hasCut": {
+          "type": "boolean"
         },
         "id": {
           "type": "integer",
@@ -2966,6 +3017,9 @@ func init() {
                   "type": "integer"
                 }
               }
+            },
+            "cover": {
+              "type": "string"
             },
             "createdAt": {
               "type": "number",
@@ -3207,11 +3261,6 @@ func init() {
       "name": "limit",
       "in": "query"
     },
-    "longerThan": {
-      "type": "integer",
-      "name": "longer_than",
-      "in": "query"
-    },
     "pathId": {
       "minimum": 1,
       "type": "integer",
@@ -3227,11 +3276,6 @@ func init() {
       "name": "name",
       "in": "path",
       "required": true
-    },
-    "shorterThan": {
-      "type": "integer",
-      "name": "shorter_than",
-      "in": "query"
     },
     "skip": {
       "type": "integer",
