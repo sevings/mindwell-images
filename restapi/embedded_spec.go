@@ -394,11 +394,6 @@ func init() {
           "account"
         ],
         "summary": "verify account email",
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
         "parameters": [
           {
             "maxLength": 500,
@@ -1893,6 +1888,12 @@ func init() {
               "$ref": "#/definitions/Relationship"
             }
           },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "404": {
             "description": "User not found",
             "schema": {
@@ -2781,13 +2782,17 @@ func init() {
     "Cover": {
       "type": "object",
       "properties": {
-        "cover": {
-          "type": "string"
-        },
         "id": {
+          "description": "user id",
           "type": "integer",
           "format": "int64",
           "minimum": 1
+        },
+        "x1920": {
+          "type": "string"
+        },
+        "x318": {
+          "type": "string"
         }
       }
     },
@@ -2839,8 +2844,17 @@ func init() {
           "type": "number",
           "format": "double"
         },
+        "cutContent": {
+          "type": "string"
+        },
+        "cutTitle": {
+          "type": "string"
+        },
         "editContent": {
           "type": "string"
+        },
+        "hasCut": {
+          "type": "boolean"
         },
         "id": {
           "type": "integer",

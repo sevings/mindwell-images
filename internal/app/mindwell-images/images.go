@@ -52,7 +52,8 @@ func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeCoverPara
 
 		cover := &models.Cover{
 			ID:    int64(*userID),
-			Cover: store.FillRect(1920, 640, "cover"),
+			X1920: store.FillRect(1920, 640, "cover/1920"),
+			X318:  store.FillRect(318, 122, "cover/318"),
 		}
 
 		if store.Error() != nil {
