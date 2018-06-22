@@ -20,6 +20,7 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeAvatarPa
 
 		avatar := models.Avatar{
 			X124: store.Fill(124),
+			X92:  store.Fill(92),
 			X42:  store.Fill(42),
 		}
 
@@ -37,6 +38,7 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeAvatarPa
 			}
 
 			store.SizeRemove(124, old)
+			store.SizeRemove(92, old)
 			store.SizeRemove(42, old)
 			if store.Error() != nil {
 				log.Print(store.Error())
