@@ -31,8 +31,8 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeAvatarPa
 
 		return utils.Transact(db, func(tx *utils.AutoTx) middleware.Responder {
 			var old string
-			tx.Query("select avatar from users where id = $1", userID).Scan(&old)
-			tx.Exec("update users set avatar = $2 where id = $1", userID, store.FileName())
+			tx.Query("select avatar from users where id = $1", userID.ID).Scan(&old)
+			tx.Exec("update users set avatar = $2 where id = $1", userID.ID, store.FileName())
 			if tx.Error() != nil {
 				return me.NewPutUsersMeAvatarBadRequest()
 			}
@@ -67,8 +67,8 @@ func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeCoverPara
 
 		return utils.Transact(db, func(tx *utils.AutoTx) middleware.Responder {
 			var old string
-			tx.Query("select cover from users where id = $1", userID).Scan(&old)
-			tx.Exec("update users set cover = $2 where id = $1", userID, store.FileName())
+			tx.Query("select cover from users where id = $1", userID.ID).Scan(&old)
+			tx.Exec("update users set cover = $2 where id = $1", userID.ID, store.FileName())
 			if tx.Error() != nil {
 				return me.NewPutUsersMeCoverBadRequest()
 			}
