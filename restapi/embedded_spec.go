@@ -403,8 +403,8 @@ func init() {
             "required": true
           },
           {
-            "maxLength": 20,
-            "minLength": 20,
+            "maxLength": 64,
+            "minLength": 64,
             "type": "string",
             "name": "code",
             "in": "query",
@@ -546,7 +546,7 @@ func init() {
           "200": {
             "description": "vote status",
             "schema": {
-              "$ref": "#/definitions/VoteStatus"
+              "$ref": "#/definitions/Rating"
             }
           },
           "403": {
@@ -1572,7 +1572,7 @@ func init() {
           "200": {
             "description": "vote status",
             "schema": {
-              "$ref": "#/definitions/VoteStatus"
+              "$ref": "#/definitions/Rating"
             }
           },
           "403": {
@@ -1610,7 +1610,7 @@ func init() {
           "200": {
             "description": "vote status",
             "schema": {
-              "$ref": "#/definitions/VoteStatus"
+              "$ref": "#/definitions/Rating"
             }
           },
           "403": {
@@ -1640,7 +1640,7 @@ func init() {
           "200": {
             "description": "vote status",
             "schema": {
-              "$ref": "#/definitions/VoteStatus"
+              "$ref": "#/definitions/Rating"
             }
           },
           "403": {
@@ -1985,7 +1985,7 @@ func init() {
           "200": {
             "description": "User list",
             "schema": {
-              "$ref": "#/definitions/UserList"
+              "$ref": "#/definitions/FriendList"
             }
           },
           "403": {
@@ -2030,7 +2030,7 @@ func init() {
           "200": {
             "description": "User list",
             "schema": {
-              "$ref": "#/definitions/UserList"
+              "$ref": "#/definitions/FriendList"
             }
           },
           "403": {
@@ -2075,7 +2075,7 @@ func init() {
           "200": {
             "description": "User list",
             "schema": {
-              "$ref": "#/definitions/UserList"
+              "$ref": "#/definitions/FriendList"
             }
           },
           "403": {
@@ -2317,7 +2317,7 @@ func init() {
           "200": {
             "description": "User list",
             "schema": {
-              "$ref": "#/definitions/UserList"
+              "$ref": "#/definitions/FriendList"
             }
           },
           "403": {
@@ -2351,7 +2351,7 @@ func init() {
           "200": {
             "description": "User list",
             "schema": {
-              "$ref": "#/definitions/UserList"
+              "$ref": "#/definitions/FriendList"
             }
           },
           "403": {
@@ -2385,7 +2385,7 @@ func init() {
           "200": {
             "description": "User list",
             "schema": {
-              "$ref": "#/definitions/UserList"
+              "$ref": "#/definitions/FriendList"
             }
           },
           "403": {
@@ -2419,7 +2419,7 @@ func init() {
           "200": {
             "description": "User list",
             "schema": {
-              "$ref": "#/definitions/UserList"
+              "$ref": "#/definitions/FriendList"
             }
           },
           "403": {
@@ -2470,7 +2470,7 @@ func init() {
           "200": {
             "description": "User list",
             "schema": {
-              "$ref": "#/definitions/UserList"
+              "$ref": "#/definitions/FriendList"
             }
           },
           "403": {
@@ -2535,7 +2535,7 @@ func init() {
           "200": {
             "description": "User list",
             "schema": {
-              "$ref": "#/definitions/UserList"
+              "$ref": "#/definitions/FriendList"
             }
           },
           "403": {
@@ -2580,7 +2580,7 @@ func init() {
           "200": {
             "description": "User list",
             "schema": {
-              "$ref": "#/definitions/UserList"
+              "$ref": "#/definitions/FriendList"
             }
           },
           "403": {
@@ -2625,7 +2625,7 @@ func init() {
           "200": {
             "description": "User list",
             "schema": {
-              "$ref": "#/definitions/UserList"
+              "$ref": "#/definitions/FriendList"
             }
           },
           "403": {
@@ -2867,9 +2867,6 @@ func init() {
         "isFavorited": {
           "type": "boolean"
         },
-        "isVotable": {
-          "type": "boolean"
-        },
         "isWatching": {
           "type": "boolean"
         },
@@ -2883,8 +2880,7 @@ func init() {
           ]
         },
         "rating": {
-          "type": "number",
-          "format": "float"
+          "$ref": "#/definitions/Rating"
         },
         "title": {
           "type": "string"
@@ -2894,18 +2890,6 @@ func init() {
           "items": {
             "$ref": "#/definitions/User"
           }
-        },
-        "vote": {
-          "type": "string",
-          "enum": [
-            "not",
-            "pos",
-            "neg",
-            "ban"
-          ]
-        },
-        "votes": {
-          "type": "integer"
         },
         "wordCount": {
           "type": "integer"
@@ -2970,10 +2954,93 @@ func init() {
         }
       }
     },
-    "Profile": {
+    "Friend": {
       "allOf": [
         {
           "$ref": "#/definitions/User"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "counts": {
+              "type": "object",
+              "properties": {
+                "comments": {
+                  "type": "integer"
+                },
+                "entries": {
+                  "type": "integer"
+                },
+                "favorites": {
+                  "type": "integer"
+                },
+                "followers": {
+                  "type": "integer"
+                },
+                "followings": {
+                  "type": "integer"
+                },
+                "ignored": {
+                  "type": "integer"
+                },
+                "invited": {
+                  "type": "integer"
+                },
+                "tags": {
+                  "type": "integer"
+                }
+              }
+            },
+            "cover": {
+              "$ref": "#/definitions/Cover"
+            },
+            "karma": {
+              "type": "number",
+              "format": "float"
+            },
+            "lastSeenAt": {
+              "type": "number",
+              "format": "double"
+            },
+            "title": {
+              "type": "string",
+              "maxLength": 260
+            }
+          }
+        }
+      ]
+    },
+    "FriendList": {
+      "type": "object",
+      "required": [
+        "users"
+      ],
+      "properties": {
+        "relation": {
+          "type": "string",
+          "enum": [
+            "followers",
+            "followings",
+            "requested",
+            "ignored",
+            "invited"
+          ]
+        },
+        "subject": {
+          "$ref": "#/definitions/User"
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Friend"
+          }
+        }
+      }
+    },
+    "Profile": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Friend"
         },
         {
           "type": "object",
@@ -3072,6 +3139,38 @@ func init() {
         }
       ]
     },
+    "Rating": {
+      "type": "object",
+      "properties": {
+        "downCount": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "isVotable": {
+          "type": "boolean"
+        },
+        "rating": {
+          "type": "number",
+          "format": "float"
+        },
+        "upCount": {
+          "type": "integer"
+        },
+        "vote": {
+          "type": "string",
+          "enum": [
+            "not",
+            "pos",
+            "neg",
+            "ban"
+          ]
+        }
+      }
+    },
     "Relationship": {
       "type": "object",
       "properties": {
@@ -3102,38 +3201,6 @@ func init() {
         "avatar": {
           "$ref": "#/definitions/Avatar"
         },
-        "counts": {
-          "type": "object",
-          "properties": {
-            "comments": {
-              "type": "integer"
-            },
-            "entries": {
-              "type": "integer"
-            },
-            "favorites": {
-              "type": "integer"
-            },
-            "followers": {
-              "type": "integer"
-            },
-            "followings": {
-              "type": "integer"
-            },
-            "ignored": {
-              "type": "integer"
-            },
-            "invited": {
-              "type": "integer"
-            },
-            "tags": {
-              "type": "integer"
-            }
-          }
-        },
-        "cover": {
-          "$ref": "#/definitions/Cover"
-        },
         "id": {
           "type": "integer",
           "format": "int64",
@@ -3141,14 +3208,6 @@ func init() {
         },
         "isOnline": {
           "type": "boolean"
-        },
-        "karma": {
-          "type": "number",
-          "format": "float"
-        },
-        "lastSeenAt": {
-          "type": "number",
-          "format": "double"
         },
         "name": {
           "type": "string",
@@ -3159,10 +3218,6 @@ func init() {
           "type": "string",
           "maxLength": 20,
           "minLength": 1
-        },
-        "title": {
-          "type": "string",
-          "maxLength": 260
         }
       },
       "example": {
@@ -3173,59 +3228,16 @@ func init() {
       }
     },
     "UserID": {
-      "type": "integer",
-      "format": "int64"
-    },
-    "UserList": {
-      "type": "object",
-      "required": [
-        "users"
-      ],
-      "properties": {
-        "relation": {
-          "type": "string",
-          "enum": [
-            "followers",
-            "followings",
-            "requested",
-            "ignored",
-            "invited"
-          ]
-        },
-        "subject": {
-          "$ref": "#/definitions/User"
-        },
-        "users": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/User"
-          }
-        }
-      }
-    },
-    "VoteStatus": {
       "type": "object",
       "properties": {
         "id": {
           "type": "integer",
-          "format": "int64",
-          "minimum": 1
+          "format": "int64"
         },
-        "rating": {
-          "type": "number",
-          "format": "float"
-        },
-        "vote": {
+        "name": {
           "type": "string",
-          "enum": [
-            "not",
-            "pos",
-            "neg",
-            "ban"
-          ]
-        },
-        "votes": {
-          "type": "integer"
+          "maxLength": 20,
+          "minLength": 1
         }
       }
     },
