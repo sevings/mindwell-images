@@ -19,9 +19,9 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutMeAvatarParams,
 		store.ReadImage(params.File.Data, params.File.Header.Size, params.File.Header.Filename)
 
 		avatar := models.Avatar{
-			X124: store.Fill(124),
-			X92:  store.Fill(92),
-			X42:  store.Fill(42),
+			X124: store.Fill(124, "avatars/124"),
+			X92:  store.Fill(92, "avatars/92"),
+			X42:  store.Fill(42, "avatars/42"),
 		}
 
 		if store.Error() != nil {
@@ -37,12 +37,13 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutMeAvatarParams,
 				return me.NewPutMeAvatarBadRequest()
 			}
 
-			store.SizeRemove(124, old)
-			store.SizeRemove(92, old)
-			store.SizeRemove(42, old)
-			if store.Error() != nil {
-				log.Print(store.Error())
-			}
+			//! \todo remove after 6 months?
+			// store.SizeRemove(124, old)
+			// store.SizeRemove(92, old)
+			// store.SizeRemove(42, old)
+			// if store.Error() != nil {
+			// 	log.Print(store.Error())
+			// }
 
 			return me.NewPutMeAvatarOK().WithPayload(&avatar)
 		})
@@ -56,8 +57,8 @@ func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutMeCoverParams, *
 
 		cover := &models.Cover{
 			ID:    userID.ID,
-			X1920: store.FillRect(1920, 640, "cover/1920"),
-			X318:  store.FillRect(318, 122, "cover/318"),
+			X1920: store.FillRect(1920, 640, "covers/1920"),
+			X318:  store.FillRect(318, 122, "covers/318"),
 		}
 
 		if store.Error() != nil {
@@ -73,10 +74,10 @@ func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutMeCoverParams, *
 				return me.NewPutMeCoverBadRequest()
 			}
 
-			store.FolderRemove("cover", old)
-			if store.Error() != nil {
-				log.Print(store.Error())
-			}
+			// store.FolderRemove("covers", old)
+			// if store.Error() != nil {
+			// 	log.Print(store.Error())
+			// }
 
 			return me.NewPutMeCoverOK().WithPayload(cover)
 		})

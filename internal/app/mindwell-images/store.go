@@ -5,7 +5,6 @@ import (
 	"log"
 	"math"
 	"os"
-	"strconv"
 	"strings"
 
 	"github.com/sevings/mindwell-server/utils"
@@ -92,8 +91,8 @@ func (is *imageStore) ReadImage(r io.ReadCloser, size int64, name string) {
 	is.mw = wand
 }
 
-func (is *imageStore) Fill(size uint) string {
-	return is.FillRect(size, size, strconv.Itoa(int(size)))
+func (is *imageStore) Fill(size uint, folder string) string {
+	return is.FillRect(size, size, folder)
 }
 
 func (is *imageStore) FillRect(width, height uint, folder string) string {
@@ -178,8 +177,4 @@ func (is *imageStore) FolderRemove(folder, path string) {
 	}
 
 	is.err = os.Remove(is.folder + folder + "/" + path)
-}
-
-func (is *imageStore) SizeRemove(size int, path string) {
-	is.FolderRemove(strconv.Itoa(size), path)
 }
