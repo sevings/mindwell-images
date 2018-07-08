@@ -95,12 +95,6 @@ func init() {
                 }
               }
             }
-          },
-          "403": {
-            "description": "access denied",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
           }
         }
       }
@@ -228,7 +222,7 @@ func init() {
             "description": "password has been set"
           },
           "403": {
-            "description": "access denied or old password",
+            "description": "old password is invalid",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -549,14 +543,64 @@ func init() {
               "$ref": "#/definitions/Rating"
             }
           },
-          "403": {
-            "description": "access denied",
+          "404": {
+            "description": "Comment not found",
             "schema": {
               "$ref": "#/definitions/Error"
             }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "votes"
+        ],
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "type": "boolean",
+            "default": true,
+            "name": "positive",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "vote status",
+            "schema": {
+              "$ref": "#/definitions/Rating"
+            }
           },
           "404": {
-            "description": "Entry not found",
+            "description": "Comment not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "votes"
+        ],
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "vote status",
+            "schema": {
+              "$ref": "#/definitions/Rating"
+            }
+          },
+          "404": {
+            "description": "Comment not found",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -759,12 +803,6 @@ func init() {
             "schema": {
               "$ref": "#/definitions/Entry"
             }
-          },
-          "403": {
-            "description": "access denied",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
           }
         }
       }
@@ -875,373 +913,6 @@ func init() {
           }
         }
       }
-    },
-    "/entries/users/byName/{name}": {
-      "get": {
-        "tags": [
-          "entries"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/limit"
-          },
-          {
-            "$ref": "#/parameters/after"
-          },
-          {
-            "$ref": "#/parameters/before"
-          },
-          {
-            "$ref": "#/parameters/tag"
-          },
-          {
-            "$ref": "#/parameters/sort"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Entry list",
-            "schema": {
-              "$ref": "#/definitions/Feed"
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "parameters": [
-        {
-          "$ref": "#/parameters/pathName"
-        }
-      ]
-    },
-    "/entries/users/byName/{name}/favorites": {
-      "get": {
-        "tags": [
-          "entries"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/limit"
-          },
-          {
-            "$ref": "#/parameters/after"
-          },
-          {
-            "$ref": "#/parameters/before"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Entry list",
-            "schema": {
-              "$ref": "#/definitions/Feed"
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "parameters": [
-        {
-          "$ref": "#/parameters/pathName"
-        }
-      ]
-    },
-    "/entries/users/me": {
-      "get": {
-        "tags": [
-          "entries"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/limit"
-          },
-          {
-            "$ref": "#/parameters/after"
-          },
-          {
-            "$ref": "#/parameters/before"
-          },
-          {
-            "$ref": "#/parameters/tag"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Entry list",
-            "schema": {
-              "$ref": "#/definitions/Feed"
-            }
-          },
-          "403": {
-            "description": "access denied",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "post": {
-        "consumes": [
-          "multipart/form-data",
-          "application/x-www-form-urlencoded"
-        ],
-        "tags": [
-          "entries"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "parameters": [
-          {
-            "maxLength": 500,
-            "type": "string",
-            "default": "",
-            "name": "title",
-            "in": "formData"
-          },
-          {
-            "maxLength": 30000,
-            "minLength": 1,
-            "type": "string",
-            "name": "content",
-            "in": "formData",
-            "required": true
-          },
-          {
-            "enum": [
-              "all",
-              "followers",
-              "some",
-              "me"
-            ],
-            "type": "string",
-            "name": "privacy",
-            "in": "formData",
-            "required": true
-          },
-          {
-            "type": "array",
-            "items": {
-              "minimum": 1,
-              "type": "integer",
-              "format": "int64"
-            },
-            "name": "visibleFor",
-            "in": "formData"
-          },
-          {
-            "type": "boolean",
-            "default": false,
-            "name": "isVotable",
-            "in": "formData"
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Entry data",
-            "schema": {
-              "$ref": "#/definitions/Entry"
-            }
-          },
-          "403": {
-            "description": "access denied",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
-    },
-    "/entries/users/me/favorites": {
-      "get": {
-        "tags": [
-          "entries"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/limit"
-          },
-          {
-            "$ref": "#/parameters/after"
-          },
-          {
-            "$ref": "#/parameters/before"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Entry list",
-            "schema": {
-              "$ref": "#/definitions/Feed"
-            }
-          },
-          "403": {
-            "description": "access denied",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
-    },
-    "/entries/users/me/watching": {
-      "get": {
-        "tags": [
-          "entries"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/limit"
-          },
-          {
-            "$ref": "#/parameters/after"
-          },
-          {
-            "$ref": "#/parameters/before"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Entry list",
-            "schema": {
-              "$ref": "#/definitions/Feed"
-            }
-          },
-          "403": {
-            "description": "access denied",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
-    },
-    "/entries/users/{id}": {
-      "get": {
-        "tags": [
-          "entries"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/limit"
-          },
-          {
-            "$ref": "#/parameters/after"
-          },
-          {
-            "$ref": "#/parameters/before"
-          },
-          {
-            "$ref": "#/parameters/tag"
-          },
-          {
-            "$ref": "#/parameters/sort"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Entry list",
-            "schema": {
-              "$ref": "#/definitions/Feed"
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "parameters": [
-        {
-          "$ref": "#/parameters/pathId"
-        }
-      ]
-    },
-    "/entries/users/{id}/favorites": {
-      "get": {
-        "tags": [
-          "entries"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/limit"
-          },
-          {
-            "$ref": "#/parameters/after"
-          },
-          {
-            "$ref": "#/parameters/before"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Entry list",
-            "schema": {
-              "$ref": "#/definitions/Feed"
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "parameters": [
-        {
-          "$ref": "#/parameters/pathId"
-        }
-      ]
     },
     "/entries/{id}": {
       "get": {
@@ -1742,363 +1413,7 @@ func init() {
         }
       ]
     },
-    "/relations/from/{id}": {
-      "get": {
-        "tags": [
-          "relations"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "the user relationship with you",
-            "schema": {
-              "$ref": "#/definitions/Relationship"
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "relations"
-        ],
-        "summary": "permit the user to follow you",
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "the user relationship with you",
-            "schema": {
-              "$ref": "#/definitions/Relationship"
-            }
-          },
-          "403": {
-            "description": "access denied",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "relations"
-        ],
-        "summary": "cancel following request or unsubscribe the user",
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "the user relationship with you",
-            "schema": {
-              "$ref": "#/definitions/Relationship"
-            }
-          },
-          "403": {
-            "description": "access denied",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "parameters": [
-        {
-          "$ref": "#/parameters/pathId"
-        }
-      ]
-    },
-    "/relations/to/{id}": {
-      "get": {
-        "tags": [
-          "relations"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "your relationship with the user",
-            "schema": {
-              "$ref": "#/definitions/Relationship"
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "relations"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "parameters": [
-          {
-            "enum": [
-              "followed",
-              "ignored"
-            ],
-            "type": "string",
-            "name": "r",
-            "in": "query",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "your relationship with the user",
-            "schema": {
-              "$ref": "#/definitions/Relationship"
-            }
-          },
-          "403": {
-            "description": "access denied",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "relations"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "your relationship with the user",
-            "schema": {
-              "$ref": "#/definitions/Relationship"
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "parameters": [
-        {
-          "$ref": "#/parameters/pathId"
-        }
-      ]
-    },
-    "/users/byName/{name}": {
-      "get": {
-        "tags": [
-          "users"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User data",
-            "schema": {
-              "$ref": "#/definitions/Profile"
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "parameters": [
-        {
-          "$ref": "#/parameters/pathName"
-        }
-      ]
-    },
-    "/users/byName/{name}/followers": {
-      "get": {
-        "tags": [
-          "users"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/limit"
-          },
-          {
-            "$ref": "#/parameters/skip"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User list",
-            "schema": {
-              "$ref": "#/definitions/FriendList"
-            }
-          },
-          "403": {
-            "description": "access denied",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "parameters": [
-        {
-          "$ref": "#/parameters/pathName"
-        }
-      ]
-    },
-    "/users/byName/{name}/followings": {
-      "get": {
-        "tags": [
-          "users"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/limit"
-          },
-          {
-            "$ref": "#/parameters/skip"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User list",
-            "schema": {
-              "$ref": "#/definitions/FriendList"
-            }
-          },
-          "403": {
-            "description": "access denied",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "parameters": [
-        {
-          "$ref": "#/parameters/pathName"
-        }
-      ]
-    },
-    "/users/byName/{name}/invited": {
-      "get": {
-        "tags": [
-          "users"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/limit"
-          },
-          {
-            "$ref": "#/parameters/skip"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "User list",
-            "schema": {
-              "$ref": "#/definitions/FriendList"
-            }
-          },
-          "403": {
-            "description": "access denied",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "parameters": [
-        {
-          "$ref": "#/parameters/pathName"
-        }
-      ]
-    },
-    "/users/me": {
+    "/me": {
       "get": {
         "tags": [
           "me"
@@ -2113,12 +1428,6 @@ func init() {
             "description": "your data",
             "schema": {
               "$ref": "#/definitions/AuthProfile"
-            }
-          },
-          "403": {
-            "description": "access denied",
-            "schema": {
-              "$ref": "#/definitions/Error"
             }
           }
         }
@@ -2213,17 +1522,11 @@ func init() {
             "schema": {
               "$ref": "#/definitions/Profile"
             }
-          },
-          "403": {
-            "description": "access denied",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
           }
         }
       }
     },
-    "/users/me/avatar": {
+    "/me/avatar": {
       "put": {
         "consumes": [
           "multipart/form-data"
@@ -2259,7 +1562,7 @@ func init() {
         }
       }
     },
-    "/users/me/cover": {
+    "/me/cover": {
       "put": {
         "consumes": [
           "multipart/form-data"
@@ -2295,7 +1598,38 @@ func init() {
         }
       }
     },
-    "/users/me/followers": {
+    "/me/favorites": {
+      "get": {
+        "tags": [
+          "me"
+        ],
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/after"
+          },
+          {
+            "$ref": "#/parameters/before"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          }
+        }
+      }
+    },
+    "/me/followers": {
       "get": {
         "tags": [
           "me"
@@ -2319,17 +1653,11 @@ func init() {
             "schema": {
               "$ref": "#/definitions/FriendList"
             }
-          },
-          "403": {
-            "description": "access denied",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
           }
         }
       }
     },
-    "/users/me/followings": {
+    "/me/followings": {
       "get": {
         "tags": [
           "me"
@@ -2353,17 +1681,11 @@ func init() {
             "schema": {
               "$ref": "#/definitions/FriendList"
             }
-          },
-          "403": {
-            "description": "access denied",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
           }
         }
       }
     },
-    "/users/me/ignored": {
+    "/me/ignored": {
       "get": {
         "tags": [
           "me"
@@ -2387,17 +1709,11 @@ func init() {
             "schema": {
               "$ref": "#/definitions/FriendList"
             }
-          },
-          "403": {
-            "description": "access denied",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
           }
         }
       }
     },
-    "/users/me/invited": {
+    "/me/invited": {
       "get": {
         "tags": [
           "me"
@@ -2421,17 +1737,11 @@ func init() {
             "schema": {
               "$ref": "#/definitions/FriendList"
             }
-          },
-          "403": {
-            "description": "access denied",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
           }
         }
       }
     },
-    "/users/me/online": {
+    "/me/online": {
       "put": {
         "tags": [
           "me"
@@ -2448,7 +1758,7 @@ func init() {
         }
       }
     },
-    "/users/me/requested": {
+    "/me/requested": {
       "get": {
         "tags": [
           "me"
@@ -2472,17 +1782,333 @@ func init() {
             "schema": {
               "$ref": "#/definitions/FriendList"
             }
+          }
+        }
+      }
+    },
+    "/me/tlog": {
+      "get": {
+        "tags": [
+          "me"
+        ],
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/after"
+          },
+          {
+            "$ref": "#/parameters/before"
+          },
+          {
+            "$ref": "#/parameters/tag"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          }
+        }
+      },
+      "post": {
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "me"
+        ],
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "maxLength": 500,
+            "type": "string",
+            "default": "",
+            "name": "title",
+            "in": "formData"
+          },
+          {
+            "maxLength": 30000,
+            "minLength": 1,
+            "type": "string",
+            "name": "content",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "enum": [
+              "all",
+              "followers",
+              "some",
+              "me"
+            ],
+            "type": "string",
+            "name": "privacy",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int64"
+            },
+            "name": "visibleFor",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "isVotable",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Entry data",
+            "schema": {
+              "$ref": "#/definitions/Entry"
+            }
+          }
+        }
+      }
+    },
+    "/me/watching": {
+      "get": {
+        "tags": [
+          "me"
+        ],
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/after"
+          },
+          {
+            "$ref": "#/parameters/before"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          }
+        }
+      }
+    },
+    "/relations/from/{name}": {
+      "get": {
+        "tags": [
+          "relations"
+        ],
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the user relationship with you",
+            "schema": {
+              "$ref": "#/definitions/Relationship"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "relations"
+        ],
+        "summary": "permit the user to follow you",
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the user relationship with you",
+            "schema": {
+              "$ref": "#/definitions/Relationship"
+            }
           },
           "403": {
             "description": "access denied",
             "schema": {
               "$ref": "#/definitions/Error"
             }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
-      }
+      },
+      "delete": {
+        "tags": [
+          "relations"
+        ],
+        "summary": "cancel following request or unsubscribe the user",
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the user relationship with you",
+            "schema": {
+              "$ref": "#/definitions/Relationship"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/parameters/pathName"
+        }
+      ]
     },
-    "/users/{id}": {
+    "/relations/to/{name}": {
+      "get": {
+        "tags": [
+          "relations"
+        ],
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "your relationship with the user",
+            "schema": {
+              "$ref": "#/definitions/Relationship"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "relations"
+        ],
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "enum": [
+              "followed",
+              "ignored"
+            ],
+            "type": "string",
+            "name": "r",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "your relationship with the user",
+            "schema": {
+              "$ref": "#/definitions/Relationship"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "relations"
+        ],
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "your relationship with the user",
+            "schema": {
+              "$ref": "#/definitions/Relationship"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/parameters/pathName"
+        }
+      ]
+    },
+    "/users/{name}": {
       "get": {
         "tags": [
           "users"
@@ -2509,11 +2135,53 @@ func init() {
       },
       "parameters": [
         {
-          "$ref": "#/parameters/pathId"
+          "$ref": "#/parameters/pathName"
         }
       ]
     },
-    "/users/{id}/followers": {
+    "/users/{name}/favorites": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/after"
+          },
+          {
+            "$ref": "#/parameters/before"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/parameters/pathName"
+        }
+      ]
+    },
+    "/users/{name}/followers": {
       "get": {
         "tags": [
           "users"
@@ -2554,11 +2222,11 @@ func init() {
       },
       "parameters": [
         {
-          "$ref": "#/parameters/pathId"
+          "$ref": "#/parameters/pathName"
         }
       ]
     },
-    "/users/{id}/followings": {
+    "/users/{name}/followings": {
       "get": {
         "tags": [
           "users"
@@ -2599,11 +2267,11 @@ func init() {
       },
       "parameters": [
         {
-          "$ref": "#/parameters/pathId"
+          "$ref": "#/parameters/pathName"
         }
       ]
     },
-    "/users/{id}/invited": {
+    "/users/{name}/invited": {
       "get": {
         "tags": [
           "users"
@@ -2644,7 +2312,55 @@ func init() {
       },
       "parameters": [
         {
-          "$ref": "#/parameters/pathId"
+          "$ref": "#/parameters/pathName"
+        }
+      ]
+    },
+    "/users/{name}/tlog": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/after"
+          },
+          {
+            "$ref": "#/parameters/before"
+          },
+          {
+            "$ref": "#/parameters/tag"
+          },
+          {
+            "$ref": "#/parameters/sort"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/parameters/pathName"
         }
       ]
     }
@@ -2740,21 +2456,12 @@ func init() {
           "minimum": 1
         },
         "rating": {
-          "type": "integer"
-        },
-        "vote": {
-          "type": "string",
-          "enum": [
-            "not",
-            "pos",
-            "neg",
-            "ban"
-          ]
+          "$ref": "#/definitions/Rating"
         }
       },
       "example": {
-        "content": "\u003cp\u003esome text with \u003cb\u003ehtml\u003c/b\u003e tags\u003c/p\u003e",
-        "createdAt": "1985-04-12T23:20:50.52Z",
+        "content": "some multiline text \\n without html",
+        "createdAt": 1531029717.333,
         "entryId": 152,
         "id": 999
       }
@@ -2898,7 +2605,8 @@ func init() {
       "example": {
         "commentCount": 0,
         "content": "\u003cp\u003esome text with \u003cb\u003ehtml\u003c/b\u003e tags\u003c/p\u003e",
-        "createdAt": "1985-04-12T23:20:50.52Z",
+        "createdAt": 1531029717.333,
+        "editContent": "some text with *html* tags",
         "id": 152,
         "isVotable": true,
         "privacy": "all",
@@ -3124,12 +2832,12 @@ func init() {
               "invited": 0,
               "tags": 0
             },
-            "createdAt": "1985-04-12T23:20:50.52Z",
+            "createdAt": 1531029717.333,
             "gender": "male",
             "isDaylog": false,
             "karma": 100,
-            "lastSeenAt": "1985-04-12T23:20:50.52Z",
-            "privacy": "registered",
+            "lastSeenAt": 1531029717.333,
+            "privacy": "all",
             "relations": {
               "fromMe": "followed",
               "toMe": "none"
@@ -3175,9 +2883,7 @@ func init() {
       "type": "object",
       "properties": {
         "from": {
-          "type": "integer",
-          "format": "int64",
-          "minimum": 1
+          "type": "string"
         },
         "relation": {
           "type": "string",
@@ -3189,9 +2895,7 @@ func init() {
           ]
         },
         "to": {
-          "type": "integer",
-          "format": "int64",
-          "minimum": 1
+          "type": "string"
         }
       }
     },

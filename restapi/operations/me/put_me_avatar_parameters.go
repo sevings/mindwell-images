@@ -14,18 +14,18 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 )
 
-// NewPutUsersMeCoverParams creates a new PutUsersMeCoverParams object
+// NewPutMeAvatarParams creates a new PutMeAvatarParams object
 // with the default values initialized.
-func NewPutUsersMeCoverParams() PutUsersMeCoverParams {
+func NewPutMeAvatarParams() PutMeAvatarParams {
 	var ()
-	return PutUsersMeCoverParams{}
+	return PutMeAvatarParams{}
 }
 
-// PutUsersMeCoverParams contains all the bound params for the put users me cover operation
+// PutMeAvatarParams contains all the bound params for the put me avatar operation
 // typically these are obtained from a http.Request
 //
-// swagger:parameters PutUsersMeCover
-type PutUsersMeCoverParams struct {
+// swagger:parameters PutMeAvatar
+type PutMeAvatarParams struct {
 
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
@@ -38,7 +38,7 @@ type PutUsersMeCoverParams struct {
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
 // for simple values it will use straight method calls
-func (o *PutUsersMeCoverParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
+func (o *PutMeAvatarParams) BindRequest(r *http.Request, route *middleware.MatchedRoute) error {
 	var res []error
 	o.HTTPRequest = r
 
@@ -67,7 +67,7 @@ func (o *PutUsersMeCoverParams) BindRequest(r *http.Request, route *middleware.M
 	return nil
 }
 
-func (o *PutUsersMeCoverParams) bindFile(file multipart.File, header *multipart.FileHeader) error {
+func (o *PutMeAvatarParams) bindFile(file multipart.File, header *multipart.FileHeader) error {
 
 	return nil
 }

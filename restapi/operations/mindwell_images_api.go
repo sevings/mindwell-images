@@ -40,11 +40,11 @@ func NewMindwellImagesAPI(spec *loads.Document) *MindwellImagesAPI {
 		UrlformConsumer:       runtime.DiscardConsumer,
 		MultipartformConsumer: runtime.DiscardConsumer,
 		JSONProducer:          runtime.JSONProducer(),
-		MePutUsersMeAvatarHandler: me.PutUsersMeAvatarHandlerFunc(func(params me.PutUsersMeAvatarParams, principal *models.UserID) middleware.Responder {
-			return middleware.NotImplemented("operation MePutUsersMeAvatar has not yet been implemented")
+		MePutMeAvatarHandler: me.PutMeAvatarHandlerFunc(func(params me.PutMeAvatarParams, principal *models.UserID) middleware.Responder {
+			return middleware.NotImplemented("operation MePutMeAvatar has not yet been implemented")
 		}),
-		MePutUsersMeCoverHandler: me.PutUsersMeCoverHandlerFunc(func(params me.PutUsersMeCoverParams, principal *models.UserID) middleware.Responder {
-			return middleware.NotImplemented("operation MePutUsersMeCover has not yet been implemented")
+		MePutMeCoverHandler: me.PutMeCoverHandlerFunc(func(params me.PutMeCoverParams, principal *models.UserID) middleware.Responder {
+			return middleware.NotImplemented("operation MePutMeCover has not yet been implemented")
 		}),
 
 		// Applies when the "X-User-Key" header is set
@@ -94,10 +94,10 @@ type MindwellImagesAPI struct {
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
 
-	// MePutUsersMeAvatarHandler sets the operation handler for the put users me avatar operation
-	MePutUsersMeAvatarHandler me.PutUsersMeAvatarHandler
-	// MePutUsersMeCoverHandler sets the operation handler for the put users me cover operation
-	MePutUsersMeCoverHandler me.PutUsersMeCoverHandler
+	// MePutMeAvatarHandler sets the operation handler for the put me avatar operation
+	MePutMeAvatarHandler me.PutMeAvatarHandler
+	// MePutMeCoverHandler sets the operation handler for the put me cover operation
+	MePutMeCoverHandler me.PutMeCoverHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -173,12 +173,12 @@ func (o *MindwellImagesAPI) Validate() error {
 		unregistered = append(unregistered, "XUserKeyAuth")
 	}
 
-	if o.MePutUsersMeAvatarHandler == nil {
-		unregistered = append(unregistered, "me.PutUsersMeAvatarHandler")
+	if o.MePutMeAvatarHandler == nil {
+		unregistered = append(unregistered, "me.PutMeAvatarHandler")
 	}
 
-	if o.MePutUsersMeCoverHandler == nil {
-		unregistered = append(unregistered, "me.PutUsersMeCoverHandler")
+	if o.MePutMeCoverHandler == nil {
+		unregistered = append(unregistered, "me.PutMeCoverHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -292,12 +292,12 @@ func (o *MindwellImagesAPI) initHandlerCache() {
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
-	o.handlers["PUT"]["/users/me/avatar"] = me.NewPutUsersMeAvatar(o.context, o.MePutUsersMeAvatarHandler)
+	o.handlers["PUT"]["/me/avatar"] = me.NewPutMeAvatar(o.context, o.MePutMeAvatarHandler)
 
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
-	o.handlers["PUT"]["/users/me/cover"] = me.NewPutUsersMeCover(o.context, o.MePutUsersMeCoverHandler)
+	o.handlers["PUT"]["/me/cover"] = me.NewPutMeCover(o.context, o.MePutMeCoverHandler)
 
 }
 

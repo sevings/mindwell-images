@@ -13,40 +13,40 @@ import (
 	"github.com/sevings/mindwell-images/models"
 )
 
-// PutUsersMeCoverHandlerFunc turns a function with the right signature into a put users me cover handler
-type PutUsersMeCoverHandlerFunc func(PutUsersMeCoverParams, *models.UserID) middleware.Responder
+// PutMeCoverHandlerFunc turns a function with the right signature into a put me cover handler
+type PutMeCoverHandlerFunc func(PutMeCoverParams, *models.UserID) middleware.Responder
 
 // Handle executing the request and returning a response
-func (fn PutUsersMeCoverHandlerFunc) Handle(params PutUsersMeCoverParams, principal *models.UserID) middleware.Responder {
+func (fn PutMeCoverHandlerFunc) Handle(params PutMeCoverParams, principal *models.UserID) middleware.Responder {
 	return fn(params, principal)
 }
 
-// PutUsersMeCoverHandler interface for that can handle valid put users me cover params
-type PutUsersMeCoverHandler interface {
-	Handle(PutUsersMeCoverParams, *models.UserID) middleware.Responder
+// PutMeCoverHandler interface for that can handle valid put me cover params
+type PutMeCoverHandler interface {
+	Handle(PutMeCoverParams, *models.UserID) middleware.Responder
 }
 
-// NewPutUsersMeCover creates a new http.Handler for the put users me cover operation
-func NewPutUsersMeCover(ctx *middleware.Context, handler PutUsersMeCoverHandler) *PutUsersMeCover {
-	return &PutUsersMeCover{Context: ctx, Handler: handler}
+// NewPutMeCover creates a new http.Handler for the put me cover operation
+func NewPutMeCover(ctx *middleware.Context, handler PutMeCoverHandler) *PutMeCover {
+	return &PutMeCover{Context: ctx, Handler: handler}
 }
 
-/*PutUsersMeCover swagger:route PUT /users/me/cover me putUsersMeCover
+/*PutMeCover swagger:route PUT /me/cover me putMeCover
 
-PutUsersMeCover put users me cover API
+PutMeCover put me cover API
 
 */
-type PutUsersMeCover struct {
+type PutMeCover struct {
 	Context *middleware.Context
-	Handler PutUsersMeCoverHandler
+	Handler PutMeCoverHandler
 }
 
-func (o *PutUsersMeCover) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+func (o *PutMeCover) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	route, rCtx, _ := o.Context.RouteInfo(r)
 	if rCtx != nil {
 		r = rCtx
 	}
-	var Params = NewPutUsersMeCoverParams()
+	var Params = NewPutMeCoverParams()
 
 	uprinc, aCtx, err := o.Context.Authorize(r, route)
 	if err != nil {

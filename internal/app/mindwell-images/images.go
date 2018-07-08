@@ -11,8 +11,8 @@ import (
 	goconf "github.com/zpatrick/go-config"
 )
 
-func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeAvatarParams, *models.UserID) middleware.Responder {
-	return func(params me.PutUsersMeAvatarParams, userID *models.UserID) middleware.Responder {
+func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutMeAvatarParams, *models.UserID) middleware.Responder {
+	return func(params me.PutMeAvatarParams, userID *models.UserID) middleware.Responder {
 		store := newImageStore(cfg)
 		defer store.Destroy()
 
@@ -26,7 +26,7 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeAvatarPa
 
 		if store.Error() != nil {
 			log.Print(store.Error())
-			return me.NewPutUsersMeAvatarBadRequest()
+			return me.NewPutMeAvatarBadRequest()
 		}
 
 		return utils.Transact(db, func(tx *utils.AutoTx) middleware.Responder {
@@ -34,7 +34,7 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeAvatarPa
 			tx.Query("select avatar from users where id = $1", userID.ID).Scan(&old)
 			tx.Exec("update users set avatar = $2 where id = $1", userID.ID, store.FileName())
 			if tx.Error() != nil {
-				return me.NewPutUsersMeAvatarBadRequest()
+				return me.NewPutMeAvatarBadRequest()
 			}
 
 			store.SizeRemove(124, old)
@@ -44,13 +44,13 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeAvatarPa
 				log.Print(store.Error())
 			}
 
-			return me.NewPutUsersMeAvatarOK().WithPayload(&avatar)
+			return me.NewPutMeAvatarOK().WithPayload(&avatar)
 		})
 	}
 }
 
-func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeCoverParams, *models.UserID) middleware.Responder {
-	return func(params me.PutUsersMeCoverParams, userID *models.UserID) middleware.Responder {
+func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutMeCoverParams, *models.UserID) middleware.Responder {
+	return func(params me.PutMeCoverParams, userID *models.UserID) middleware.Responder {
 		store := newImageStore(cfg)
 		store.ReadImage(params.File.Data, params.File.Header.Size, params.File.Header.Filename)
 
@@ -62,7 +62,7 @@ func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeCoverPara
 
 		if store.Error() != nil {
 			log.Print(store.Error())
-			return me.NewPutUsersMeCoverBadRequest()
+			return me.NewPutMeCoverBadRequest()
 		}
 
 		return utils.Transact(db, func(tx *utils.AutoTx) middleware.Responder {
@@ -70,7 +70,7 @@ func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeCoverPara
 			tx.Query("select cover from users where id = $1", userID.ID).Scan(&old)
 			tx.Exec("update users set cover = $2 where id = $1", userID.ID, store.FileName())
 			if tx.Error() != nil {
-				return me.NewPutUsersMeCoverBadRequest()
+				return me.NewPutMeCoverBadRequest()
 			}
 
 			store.FolderRemove("cover", old)
@@ -78,7 +78,7 @@ func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutUsersMeCoverPara
 				log.Print(store.Error())
 			}
 
-			return me.NewPutUsersMeCoverOK().WithPayload(cover)
+			return me.NewPutMeCoverOK().WithPayload(cover)
 		})
 	}
 }

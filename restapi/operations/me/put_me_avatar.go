@@ -13,40 +13,40 @@ import (
 	"github.com/sevings/mindwell-images/models"
 )
 
-// PutUsersMeAvatarHandlerFunc turns a function with the right signature into a put users me avatar handler
-type PutUsersMeAvatarHandlerFunc func(PutUsersMeAvatarParams, *models.UserID) middleware.Responder
+// PutMeAvatarHandlerFunc turns a function with the right signature into a put me avatar handler
+type PutMeAvatarHandlerFunc func(PutMeAvatarParams, *models.UserID) middleware.Responder
 
 // Handle executing the request and returning a response
-func (fn PutUsersMeAvatarHandlerFunc) Handle(params PutUsersMeAvatarParams, principal *models.UserID) middleware.Responder {
+func (fn PutMeAvatarHandlerFunc) Handle(params PutMeAvatarParams, principal *models.UserID) middleware.Responder {
 	return fn(params, principal)
 }
 
-// PutUsersMeAvatarHandler interface for that can handle valid put users me avatar params
-type PutUsersMeAvatarHandler interface {
-	Handle(PutUsersMeAvatarParams, *models.UserID) middleware.Responder
+// PutMeAvatarHandler interface for that can handle valid put me avatar params
+type PutMeAvatarHandler interface {
+	Handle(PutMeAvatarParams, *models.UserID) middleware.Responder
 }
 
-// NewPutUsersMeAvatar creates a new http.Handler for the put users me avatar operation
-func NewPutUsersMeAvatar(ctx *middleware.Context, handler PutUsersMeAvatarHandler) *PutUsersMeAvatar {
-	return &PutUsersMeAvatar{Context: ctx, Handler: handler}
+// NewPutMeAvatar creates a new http.Handler for the put me avatar operation
+func NewPutMeAvatar(ctx *middleware.Context, handler PutMeAvatarHandler) *PutMeAvatar {
+	return &PutMeAvatar{Context: ctx, Handler: handler}
 }
 
-/*PutUsersMeAvatar swagger:route PUT /users/me/avatar me putUsersMeAvatar
+/*PutMeAvatar swagger:route PUT /me/avatar me putMeAvatar
 
-PutUsersMeAvatar put users me avatar API
+PutMeAvatar put me avatar API
 
 */
-type PutUsersMeAvatar struct {
+type PutMeAvatar struct {
 	Context *middleware.Context
-	Handler PutUsersMeAvatarHandler
+	Handler PutMeAvatarHandler
 }
 
-func (o *PutUsersMeAvatar) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+func (o *PutMeAvatar) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	route, rCtx, _ := o.Context.RouteInfo(r)
 	if rCtx != nil {
 		r = rCtx
 	}
-	var Params = NewPutUsersMeAvatarParams()
+	var Params = NewPutMeAvatarParams()
 
 	uprinc, aCtx, err := o.Context.Authorize(r, route)
 	if err != nil {

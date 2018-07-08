@@ -11,15 +11,15 @@ import (
 	golangswaggerpaths "path"
 )
 
-// PutUsersMeAvatarURL generates an URL for the put users me avatar operation
-type PutUsersMeAvatarURL struct {
+// PutMeCoverURL generates an URL for the put me cover operation
+type PutMeCoverURL struct {
 	_basePath string
 }
 
 // WithBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *PutUsersMeAvatarURL) WithBasePath(bp string) *PutUsersMeAvatarURL {
+func (o *PutMeCoverURL) WithBasePath(bp string) *PutMeCoverURL {
 	o.SetBasePath(bp)
 	return o
 }
@@ -27,15 +27,15 @@ func (o *PutUsersMeAvatarURL) WithBasePath(bp string) *PutUsersMeAvatarURL {
 // SetBasePath sets the base path for this url builder, only required when it's different from the
 // base path specified in the swagger spec.
 // When the value of the base path is an empty string
-func (o *PutUsersMeAvatarURL) SetBasePath(bp string) {
+func (o *PutMeCoverURL) SetBasePath(bp string) {
 	o._basePath = bp
 }
 
 // Build a url path and query string
-func (o *PutUsersMeAvatarURL) Build() (*url.URL, error) {
+func (o *PutMeCoverURL) Build() (*url.URL, error) {
 	var result url.URL
 
-	var _path = "/users/me/avatar"
+	var _path = "/me/cover"
 
 	_basePath := o._basePath
 	if _basePath == "" {
@@ -47,7 +47,7 @@ func (o *PutUsersMeAvatarURL) Build() (*url.URL, error) {
 }
 
 // Must is a helper function to panic when the url builder returns an error
-func (o *PutUsersMeAvatarURL) Must(u *url.URL, err error) *url.URL {
+func (o *PutMeCoverURL) Must(u *url.URL, err error) *url.URL {
 	if err != nil {
 		panic(err)
 	}
@@ -58,17 +58,17 @@ func (o *PutUsersMeAvatarURL) Must(u *url.URL, err error) *url.URL {
 }
 
 // String returns the string representation of the path with query string
-func (o *PutUsersMeAvatarURL) String() string {
+func (o *PutMeCoverURL) String() string {
 	return o.Must(o.Build()).String()
 }
 
 // BuildFull builds a full url with scheme, host, path and query string
-func (o *PutUsersMeAvatarURL) BuildFull(scheme, host string) (*url.URL, error) {
+func (o *PutMeCoverURL) BuildFull(scheme, host string) (*url.URL, error) {
 	if scheme == "" {
-		return nil, errors.New("scheme is required for a full url on PutUsersMeAvatarURL")
+		return nil, errors.New("scheme is required for a full url on PutMeCoverURL")
 	}
 	if host == "" {
-		return nil, errors.New("host is required for a full url on PutUsersMeAvatarURL")
+		return nil, errors.New("host is required for a full url on PutMeCoverURL")
 	}
 
 	base, err := o.Build()
@@ -82,6 +82,6 @@ func (o *PutUsersMeAvatarURL) BuildFull(scheme, host string) (*url.URL, error) {
 }
 
 // StringFull returns the string representation of a complete url
-func (o *PutUsersMeAvatarURL) StringFull(scheme, host string) string {
+func (o *PutMeCoverURL) StringFull(scheme, host string) string {
 	return o.Must(o.BuildFull(scheme, host)).String()
 }
