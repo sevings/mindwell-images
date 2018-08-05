@@ -141,6 +141,61 @@ func (is *imageStore) FillRect(width, height uint, folder string) string {
 		}
 	}
 
+	return is.saveImage(wand, folder)
+}
+
+func (is *imageStore) Fit(size uint, folder string) string {
+	return is.FitRect(size, size, folder)
+}
+
+func (is *imageStore) FitRect(width, height uint, folder string) string {
+	if is.err != nil {
+		return ""
+	}
+
+	wand := is.mw.Clone()
+	defer wand.Destroy()
+
+	originHeight := is.mw.GetImageHeight()
+	originWidth := is.mw.GetImageWidth()
+
+	if originHeight < height && originWidth < width {
+		return is.saveImage(wand, folder)
+	}
+
+	ratio := float64(width) / float64(height)
+	originRatio := float64(originWidth) / float64(originHeight)
+
+	if ratio > originRatio {
+		width = uint(float64(height) * originRatio)
+	} else {
+		height = uint(float64(width) / originRatio)
+	}
+
+	wand.ResetIterator()
+	for wand.NextImage() {
+		is.err = wand.ResizeImage(width, height, imagick.FILTER_CUBIC, 0.5)
+		if is.err != nil {
+			return ""
+		}
+	}
+
+	return is.saveImage(wand, folder)
+}
+
+func (is *imageStore) FolderRemove(folder, path string) {
+	if is.err != nil {
+		return
+	}
+
+	if len(path) == 0 {
+		return
+	}
+
+	is.err = os.Remove(is.folder + folder + "/" + path)
+}
+
+func (is *imageStore) saveImage(wand *imagick.MagickWand, folder string) string {
 	is.err = wand.OptimizeImageTransparency()
 	if is.err != nil {
 		return ""
@@ -164,16 +219,4 @@ func (is *imageStore) FillRect(width, height uint, folder string) string {
 	}
 
 	return is.baseURL + fileName
-}
-
-func (is *imageStore) FolderRemove(folder, path string) {
-	if is.err != nil {
-		return
-	}
-
-	if len(path) == 0 {
-		return
-	}
-
-	is.err = os.Remove(is.folder + folder + "/" + path)
 }

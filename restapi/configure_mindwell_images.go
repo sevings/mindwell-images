@@ -13,9 +13,10 @@ import (
 	graceful "github.com/tylerb/graceful"
 	"gopkg.in/gographics/imagick.v2/imagick"
 
-	images "github.com/sevings/mindwell-images/internal/app/mindwell-images"
+	imagesImpl "github.com/sevings/mindwell-images/internal/app/mindwell-images"
 	"github.com/sevings/mindwell-images/models"
 	"github.com/sevings/mindwell-images/restapi/operations"
+	"github.com/sevings/mindwell-images/restapi/operations/images"
 	"github.com/sevings/mindwell-images/restapi/operations/me"
 	"github.com/sevings/mindwell-server/utils"
 )
@@ -65,8 +66,9 @@ func configureAPI(api *operations.MindwellImagesAPI) http.Handler {
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
 
-	api.MePutMeAvatarHandler = me.PutMeAvatarHandlerFunc(images.NewAvatarUpdater(db, config))
-	api.MePutMeCoverHandler = me.PutMeCoverHandlerFunc(images.NewCoverUpdater(db, config))
+	api.MePutMeAvatarHandler = me.PutMeAvatarHandlerFunc(imagesImpl.NewAvatarUpdater(db, config))
+	api.MePutMeCoverHandler = me.PutMeCoverHandlerFunc(imagesImpl.NewCoverUpdater(db, config))
+	api.ImagesPostImagesHandler = images.PostImagesHandlerFunc(imagesImpl.NewImageUploader(db, config))
 
 	api.ServerShutdown = func() {
 		imagick.Terminate()

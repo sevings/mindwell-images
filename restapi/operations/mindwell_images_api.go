@@ -19,6 +19,7 @@ import (
 	strfmt "github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
+	"github.com/sevings/mindwell-images/restapi/operations/images"
 	"github.com/sevings/mindwell-images/restapi/operations/me"
 
 	models "github.com/sevings/mindwell-images/models"
@@ -43,6 +44,9 @@ func NewMindwellImagesAPI(spec *loads.Document) *MindwellImagesAPI {
 		UrlformConsumer:       runtime.DiscardConsumer,
 		MultipartformConsumer: runtime.DiscardConsumer,
 		JSONProducer:          runtime.JSONProducer(),
+		ImagesPostImagesHandler: images.PostImagesHandlerFunc(func(params images.PostImagesParams, principal *models.UserID) middleware.Responder {
+			return middleware.NotImplemented("operation ImagesPostImages has not yet been implemented")
+		}),
 		MePutMeAvatarHandler: me.PutMeAvatarHandlerFunc(func(params me.PutMeAvatarParams, principal *models.UserID) middleware.Responder {
 			return middleware.NotImplemented("operation MePutMeAvatar has not yet been implemented")
 		}),
@@ -99,6 +103,8 @@ type MindwellImagesAPI struct {
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
 
+	// ImagesPostImagesHandler sets the operation handler for the post images operation
+	ImagesPostImagesHandler images.PostImagesHandler
 	// MePutMeAvatarHandler sets the operation handler for the put me avatar operation
 	MePutMeAvatarHandler me.PutMeAvatarHandler
 	// MePutMeCoverHandler sets the operation handler for the put me cover operation
@@ -176,6 +182,10 @@ func (o *MindwellImagesAPI) Validate() error {
 
 	if o.APIKeyHeaderAuth == nil {
 		unregistered = append(unregistered, "XUserKeyAuth")
+	}
+
+	if o.ImagesPostImagesHandler == nil {
+		unregistered = append(unregistered, "images.PostImagesHandler")
 	}
 
 	if o.MePutMeAvatarHandler == nil {
@@ -301,6 +311,11 @@ func (o *MindwellImagesAPI) initHandlerCache() {
 	if o.handlers == nil {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
+
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/images"] = images.NewPostImages(o.context, o.ImagesPostImagesHandler)
 
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
