@@ -37,13 +37,12 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutMeAvatarParams,
 				return me.NewPutMeAvatarBadRequest()
 			}
 
-			//! \todo remove after 6 months?
-			// store.SizeRemove(124, old)
-			// store.SizeRemove(92, old)
-			// store.SizeRemove(42, old)
-			// if store.Error() != nil {
-			// 	log.Print(store.Error())
-			// }
+			store.FolderRemove("avatars/124", old)
+			store.FolderRemove("avatars/92", old)
+			store.FolderRemove("avatars/42", old)
+			if store.Error() != nil {
+				log.Print(store.Error())
+			}
 
 			return me.NewPutMeAvatarOK().WithPayload(&avatar)
 		})
@@ -74,10 +73,11 @@ func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutMeCoverParams, *
 				return me.NewPutMeCoverBadRequest()
 			}
 
-			// store.FolderRemove("covers", old)
-			// if store.Error() != nil {
-			// 	log.Print(store.Error())
-			// }
+			store.FolderRemove("covers/1920", old)
+			store.FolderRemove("covers/318", old)
+			if store.Error() != nil {
+				log.Print(store.Error())
+			}
 
 			return me.NewPutMeCoverOK().WithPayload(cover)
 		})
