@@ -5,7 +5,6 @@ import (
 	"log"
 	"math"
 	"os"
-	"strings"
 
 	"github.com/sevings/mindwell-server/utils"
 	goconf "github.com/zpatrick/go-config"
@@ -66,16 +65,10 @@ func (is *imageStore) FileName() string {
 	return is.savePath + is.saveName
 }
 
-func (is *imageStore) ReadImage(r io.ReadCloser, size int64, name string) {
-	if strings.HasSuffix(name, ".gif") {
-		is.saveName += ".gif"
-	} else {
-		is.saveName += ".jpg"
-	}
-
+func (is *imageStore) ReadImage(r io.ReadCloser) {
 	defer r.Close()
 
-	blob := make([]byte, size)
+	blob := make([]byte, 10*1024*1024)
 	_, is.err = r.Read(blob)
 	if is.err != nil {
 		return
@@ -89,6 +82,12 @@ func (is *imageStore) ReadImage(r io.ReadCloser, size int64, name string) {
 	wand := is.mw.CoalesceImages()
 	is.mw.Destroy()
 	is.mw = wand
+
+	if is.mw.GetNumberImages() == 1 {
+		is.saveName += ".jpg"
+	} else {
+		is.saveName += ".gif"
+	}
 }
 
 func (is *imageStore) Fill(size uint, folder string) string {

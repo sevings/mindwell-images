@@ -16,7 +16,7 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutMeAvatarParams,
 		store := newImageStore(cfg)
 		defer store.Destroy()
 
-		store.ReadImage(params.File.Data, params.File.Header.Size, params.File.Header.Filename)
+		store.ReadImage(params.File)
 
 		avatar := models.Avatar{
 			X124: store.Fill(124, "avatars/124"),
@@ -53,7 +53,7 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutMeAvatarParams,
 func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutMeCoverParams, *models.UserID) middleware.Responder {
 	return func(params me.PutMeCoverParams, userID *models.UserID) middleware.Responder {
 		store := newImageStore(cfg)
-		store.ReadImage(params.File.Data, params.File.Header.Size, params.File.Header.Filename)
+		store.ReadImage(params.File)
 
 		cover := &models.Cover{
 			ID:    userID.ID,

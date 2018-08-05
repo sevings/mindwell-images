@@ -10,7 +10,7 @@ import (
 
 	middleware "github.com/go-openapi/runtime/middleware"
 
-	"github.com/sevings/mindwell-images/models"
+	models "github.com/sevings/mindwell-images/models"
 )
 
 // PutMeCoverHandlerFunc turns a function with the right signature into a put me cover handler

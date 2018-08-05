@@ -9,8 +9,12 @@ import (
 	"encoding/json"
 )
 
-// SwaggerJSON embedded version of the swagger document used at generation time
-var SwaggerJSON json.RawMessage
+var (
+	// SwaggerJSON embedded version of the swagger document used at generation time
+	SwaggerJSON json.RawMessage
+	// FlatSwaggerJSON embedded flattened version of the swagger document used at generation time
+	FlatSwaggerJSON json.RawMessage
+)
 
 func init() {
 	SwaggerJSON = json.RawMessage([]byte(`{
@@ -73,13 +77,13 @@ func init() {
     },
     "/account/invites": {
       "get": {
-        "tags": [
-          "account"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "account"
         ],
         "responses": {
           "200": {
@@ -186,19 +190,18 @@ func init() {
     },
     "/account/password": {
       "post": {
-        "consumes": [
-          "multipart/form-data",
-          "application/x-www-form-urlencoded"
-        ],
-        "tags": [
-          "account"
-        ],
-        "summary": "set new password",
         "security": [
           {
             "ApiKeyHeader": []
           }
         ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "tags": [
+          "account"
+        ],
+        "summary": "set new password",
         "parameters": [
           {
             "maxLength": 100,
@@ -275,6 +278,7 @@ func init() {
           {
             "maxLength": 20,
             "minLength": 1,
+            "pattern": "[a-zA-Z][a-zA-Z0-9]*",
             "type": "string",
             "name": "name",
             "in": "formData",
@@ -299,14 +303,6 @@ func init() {
             "maxLength": 100,
             "type": "string",
             "name": "invite",
-            "in": "formData",
-            "required": true
-          },
-          {
-            "maxLength": 20,
-            "minLength": 1,
-            "type": "string",
-            "name": "referrer",
             "in": "formData",
             "required": true
           },
@@ -358,17 +354,77 @@ func init() {
         }
       }
     },
-    "/account/verification": {
-      "post": {
-        "tags": [
-          "account"
-        ],
-        "summary": "request verification email",
+    "/account/settings/email": {
+      "get": {
         "security": [
           {
             "ApiKeyHeader": []
           }
         ],
+        "tags": [
+          "account"
+        ],
+        "responses": {
+          "200": {
+            "description": "email notification settings",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "comments": {
+                  "type": "boolean"
+                },
+                "followers": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "tags": [
+          "account"
+        ],
+        "parameters": [
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "comments",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "followers",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "email notification settings has been updated"
+          }
+        }
+      }
+    },
+    "/account/verification": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "account"
+        ],
+        "summary": "request verification email",
         "responses": {
           "200": {
             "description": "email has been sent"
@@ -420,13 +476,13 @@ func init() {
     },
     "/comments/{id}": {
       "get": {
-        "tags": [
-          "comments"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "comments"
         ],
         "responses": {
           "200": {
@@ -450,17 +506,17 @@ func init() {
         }
       },
       "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
         "consumes": [
           "multipart/form-data",
           "application/x-www-form-urlencoded"
         ],
         "tags": [
           "comments"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
         ],
         "parameters": [
           {
@@ -494,13 +550,13 @@ func init() {
         }
       },
       "delete": {
-        "tags": [
-          "comments"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "comments"
         ],
         "responses": {
           "200": {
@@ -528,13 +584,13 @@ func init() {
     },
     "/comments/{id}/vote": {
       "get": {
-        "tags": [
-          "votes"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "votes"
         ],
         "responses": {
           "200": {
@@ -552,13 +608,13 @@ func init() {
         }
       },
       "put": {
-        "tags": [
-          "votes"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "votes"
         ],
         "parameters": [
           {
@@ -584,13 +640,13 @@ func init() {
         }
       },
       "delete": {
-        "tags": [
-          "votes"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "votes"
         ],
         "responses": {
           "200": {
@@ -615,13 +671,13 @@ func init() {
     },
     "/design": {
       "get": {
-        "tags": [
-          "design"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "design"
         ],
         "responses": {
           "200": {
@@ -633,17 +689,17 @@ func init() {
         }
       },
       "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
         "consumes": [
           "multipart/form-data",
           "application/x-www-form-urlencoded"
         ],
         "tags": [
           "design"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
         ],
         "parameters": [
           {
@@ -702,13 +758,13 @@ func init() {
     },
     "/design/fonts": {
       "get": {
-        "tags": [
-          "design"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "design"
         ],
         "responses": {
           "200": {
@@ -730,13 +786,13 @@ func init() {
     },
     "/entries/anonymous": {
       "get": {
-        "tags": [
-          "entries"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "entries"
         ],
         "parameters": [
           {
@@ -762,17 +818,17 @@ func init() {
         }
       },
       "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
         "consumes": [
           "multipart/form-data",
           "application/x-www-form-urlencoded"
         ],
         "tags": [
           "entries"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
         ],
         "parameters": [
           {
@@ -809,30 +865,29 @@ func init() {
     },
     "/entries/best": {
       "get": {
-        "tags": [
-          "entries"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "entries"
         ],
         "parameters": [
           {
             "$ref": "#/parameters/limit"
           },
           {
-            "$ref": "#/parameters/after"
-          },
-          {
-            "$ref": "#/parameters/before"
-          },
-          {
             "$ref": "#/parameters/tag"
           },
           {
-            "type": "integer",
-            "name": "min_rating",
+            "enum": [
+              "month",
+              "week"
+            ],
+            "type": "string",
+            "default": "month",
+            "name": "category",
             "in": "query"
           }
         ],
@@ -848,13 +903,13 @@ func init() {
     },
     "/entries/friends": {
       "get": {
-        "tags": [
-          "entries"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "entries"
         ],
         "parameters": [
           {
@@ -882,13 +937,13 @@ func init() {
     },
     "/entries/live": {
       "get": {
-        "tags": [
-          "entries"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "entries"
         ],
         "parameters": [
           {
@@ -916,13 +971,13 @@ func init() {
     },
     "/entries/{id}": {
       "get": {
-        "tags": [
-          "entries"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "entries"
         ],
         "responses": {
           "200": {
@@ -946,17 +1001,17 @@ func init() {
         }
       },
       "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
         "consumes": [
           "multipart/form-data",
           "application/x-www-form-urlencoded"
         ],
         "tags": [
           "entries"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
         ],
         "parameters": [
           {
@@ -1032,13 +1087,13 @@ func init() {
         }
       },
       "delete": {
-        "tags": [
-          "entries"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "entries"
         ],
         "responses": {
           "200": {
@@ -1066,13 +1121,13 @@ func init() {
     },
     "/entries/{id}/comments": {
       "get": {
-        "tags": [
-          "comments"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "comments"
         ],
         "parameters": [
           {
@@ -1101,17 +1156,17 @@ func init() {
         }
       },
       "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
         "consumes": [
           "multipart/form-data",
           "application/x-www-form-urlencoded"
         ],
         "tags": [
           "comments"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
         ],
         "parameters": [
           {
@@ -1152,13 +1207,13 @@ func init() {
     },
     "/entries/{id}/favorite": {
       "get": {
-        "tags": [
-          "favorites"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "favorites"
         ],
         "responses": {
           "200": {
@@ -1176,13 +1231,13 @@ func init() {
         }
       },
       "put": {
-        "tags": [
-          "favorites"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "favorites"
         ],
         "responses": {
           "200": {
@@ -1200,13 +1255,13 @@ func init() {
         }
       },
       "delete": {
-        "tags": [
-          "favorites"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "favorites"
         ],
         "responses": {
           "200": {
@@ -1231,13 +1286,13 @@ func init() {
     },
     "/entries/{id}/vote": {
       "get": {
-        "tags": [
-          "votes"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "votes"
         ],
         "responses": {
           "200": {
@@ -1261,13 +1316,13 @@ func init() {
         }
       },
       "put": {
-        "tags": [
-          "votes"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "votes"
         ],
         "parameters": [
           {
@@ -1299,13 +1354,13 @@ func init() {
         }
       },
       "delete": {
-        "tags": [
-          "votes"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "votes"
         ],
         "responses": {
           "200": {
@@ -1336,13 +1391,13 @@ func init() {
     },
     "/entries/{id}/watching": {
       "get": {
-        "tags": [
-          "watchings"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "watchings"
         ],
         "responses": {
           "200": {
@@ -1360,13 +1415,13 @@ func init() {
         }
       },
       "put": {
-        "tags": [
-          "watchings"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "watchings"
         ],
         "responses": {
           "200": {
@@ -1384,13 +1439,13 @@ func init() {
         }
       },
       "delete": {
-        "tags": [
-          "watchings"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "watchings"
         ],
         "responses": {
           "200": {
@@ -1415,13 +1470,13 @@ func init() {
     },
     "/me": {
       "get": {
-        "tags": [
-          "me"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "me"
         ],
         "responses": {
           "200": {
@@ -1433,17 +1488,17 @@ func init() {
         }
       },
       "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
         "consumes": [
           "multipart/form-data",
           "application/x-www-form-urlencoded"
         ],
         "tags": [
           "me"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
         ],
         "parameters": [
           {
@@ -1528,16 +1583,16 @@ func init() {
     },
     "/me/avatar": {
       "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
         "consumes": [
           "multipart/form-data"
         ],
         "tags": [
           "me"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
         ],
         "parameters": [
           {
@@ -1564,16 +1619,16 @@ func init() {
     },
     "/me/cover": {
       "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
         "consumes": [
           "multipart/form-data"
         ],
         "tags": [
           "me"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
         ],
         "parameters": [
           {
@@ -1600,13 +1655,13 @@ func init() {
     },
     "/me/favorites": {
       "get": {
-        "tags": [
-          "me"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "me"
         ],
         "parameters": [
           {
@@ -1631,13 +1686,13 @@ func init() {
     },
     "/me/followers": {
       "get": {
-        "tags": [
-          "me"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "me"
         ],
         "parameters": [
           {
@@ -1659,13 +1714,13 @@ func init() {
     },
     "/me/followings": {
       "get": {
-        "tags": [
-          "me"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "me"
         ],
         "parameters": [
           {
@@ -1687,13 +1742,13 @@ func init() {
     },
     "/me/ignored": {
       "get": {
-        "tags": [
-          "me"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "me"
         ],
         "parameters": [
           {
@@ -1715,13 +1770,13 @@ func init() {
     },
     "/me/invited": {
       "get": {
-        "tags": [
-          "me"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "me"
         ],
         "parameters": [
           {
@@ -1743,13 +1798,13 @@ func init() {
     },
     "/me/online": {
       "put": {
-        "tags": [
-          "me"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "me"
         ],
         "responses": {
           "200": {
@@ -1760,13 +1815,13 @@ func init() {
     },
     "/me/requested": {
       "get": {
-        "tags": [
-          "me"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "me"
         ],
         "parameters": [
           {
@@ -1788,13 +1843,13 @@ func init() {
     },
     "/me/tlog": {
       "get": {
-        "tags": [
-          "me"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "me"
         ],
         "parameters": [
           {
@@ -1820,17 +1875,17 @@ func init() {
         }
       },
       "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
         "consumes": [
           "multipart/form-data",
           "application/x-www-form-urlencoded"
         ],
         "tags": [
           "me"
-        ],
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
         ],
         "parameters": [
           {
@@ -1889,13 +1944,13 @@ func init() {
     },
     "/me/watching": {
       "get": {
-        "tags": [
-          "me"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "me"
         ],
         "parameters": [
           {
@@ -1920,13 +1975,13 @@ func init() {
     },
     "/relations/from/{name}": {
       "get": {
-        "tags": [
-          "relations"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "relations"
         ],
         "responses": {
           "200": {
@@ -1944,15 +1999,15 @@ func init() {
         }
       },
       "put": {
-        "tags": [
-          "relations"
-        ],
-        "summary": "permit the user to follow you",
         "security": [
           {
             "ApiKeyHeader": []
           }
         ],
+        "tags": [
+          "relations"
+        ],
+        "summary": "permit the user to follow you",
         "responses": {
           "200": {
             "description": "the user relationship with you",
@@ -1975,15 +2030,15 @@ func init() {
         }
       },
       "delete": {
-        "tags": [
-          "relations"
-        ],
-        "summary": "cancel following request or unsubscribe the user",
         "security": [
           {
             "ApiKeyHeader": []
           }
         ],
+        "tags": [
+          "relations"
+        ],
+        "summary": "cancel following request or unsubscribe the user",
         "responses": {
           "200": {
             "description": "the user relationship with you",
@@ -2013,13 +2068,13 @@ func init() {
     },
     "/relations/to/{name}": {
       "get": {
-        "tags": [
-          "relations"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "relations"
         ],
         "responses": {
           "200": {
@@ -2037,13 +2092,13 @@ func init() {
         }
       },
       "put": {
-        "tags": [
-          "relations"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "relations"
         ],
         "parameters": [
           {
@@ -2079,13 +2134,13 @@ func init() {
         }
       },
       "delete": {
-        "tags": [
-          "relations"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "relations"
         ],
         "responses": {
           "200": {
@@ -2108,15 +2163,58 @@ func init() {
         }
       ]
     },
-    "/users/{name}": {
+    "/users": {
       "get": {
-        "tags": [
-          "users"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "enum": [
+              "new",
+              "karma"
+            ],
+            "type": "string",
+            "default": "new",
+            "name": "top",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "top": {
+                  "type": "string"
+                },
+                "users": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Friend"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{name}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "users"
         ],
         "responses": {
           "200": {
@@ -2141,13 +2239,13 @@ func init() {
     },
     "/users/{name}/favorites": {
       "get": {
-        "tags": [
-          "users"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "users"
         ],
         "parameters": [
           {
@@ -2183,13 +2281,13 @@ func init() {
     },
     "/users/{name}/followers": {
       "get": {
-        "tags": [
-          "users"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "users"
         ],
         "parameters": [
           {
@@ -2228,13 +2326,13 @@ func init() {
     },
     "/users/{name}/followings": {
       "get": {
-        "tags": [
-          "users"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "users"
         ],
         "parameters": [
           {
@@ -2273,13 +2371,13 @@ func init() {
     },
     "/users/{name}/invited": {
       "get": {
-        "tags": [
-          "users"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "users"
         ],
         "parameters": [
           {
@@ -2318,13 +2416,13 @@ func init() {
     },
     "/users/{name}/tlog": {
       "get": {
-        "tags": [
-          "users"
-        ],
         "security": [
           {
             "ApiKeyHeader": []
           }
+        ],
+        "tags": [
+          "users"
         ],
         "parameters": [
           {
@@ -2454,6 +2552,9 @@ func init() {
           "type": "integer",
           "format": "int64",
           "minimum": 1
+        },
+        "isMine": {
+          "type": "boolean"
         },
         "rating": {
           "$ref": "#/definitions/Rating"
@@ -2702,6 +2803,14 @@ func init() {
             "cover": {
               "$ref": "#/definitions/Cover"
             },
+            "gender": {
+              "type": "string",
+              "enum": [
+                "male",
+                "female",
+                "not set"
+              ]
+            },
             "karma": {
               "type": "number",
               "format": "float"
@@ -2720,9 +2829,6 @@ func init() {
     },
     "FriendList": {
       "type": "object",
-      "required": [
-        "users"
-      ],
       "properties": {
         "relation": {
           "type": "string",
@@ -2773,14 +2879,6 @@ func init() {
             },
             "design": {
               "$ref": "#/definitions/Design"
-            },
-            "gender": {
-              "type": "string",
-              "enum": [
-                "male",
-                "female",
-                "not set"
-              ]
             },
             "invitedBy": {
               "$ref": "#/definitions/User"
@@ -2976,7 +3074,3433 @@ func init() {
       "maximum": 100,
       "minimum": 1,
       "type": "integer",
-      "default": 50,
+      "default": 30,
+      "name": "limit",
+      "in": "query"
+    },
+    "pathId": {
+      "minimum": 1,
+      "type": "integer",
+      "format": "int64",
+      "name": "id",
+      "in": "path",
+      "required": true
+    },
+    "pathName": {
+      "maxLength": 20,
+      "minLength": 1,
+      "type": "string",
+      "name": "name",
+      "in": "path",
+      "required": true
+    },
+    "skip": {
+      "type": "integer",
+      "default": 0,
+      "name": "skip",
+      "in": "query"
+    },
+    "sort": {
+      "enum": [
+        "new",
+        "old",
+        "best"
+      ],
+      "type": "string",
+      "default": "new",
+      "name": "sort",
+      "in": "query"
+    },
+    "tag": {
+      "maxLength": 50,
+      "type": "string",
+      "name": "tag",
+      "in": "query"
+    }
+  },
+  "securityDefinitions": {
+    "ApiKeyHeader": {
+      "type": "apiKey",
+      "name": "X-User-Key",
+      "in": "header"
+    }
+  }
+}`))
+	FlatSwaggerJSON = json.RawMessage([]byte(`{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "Mindwell",
+    "version": "0.1.0"
+  },
+  "basePath": "/api/v1",
+  "paths": {
+    "/account/email/{email}": {
+      "get": {
+        "tags": [
+          "account"
+        ],
+        "summary": "check if email is used",
+        "parameters": [
+          {
+            "maxLength": 500,
+            "type": "string",
+            "name": "email",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "check result",
+            "schema": {
+              "$ref": "#/definitions/getAccountEmailEmailOKBody"
+            }
+          }
+        }
+      }
+    },
+    "/account/invites": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "account"
+        ],
+        "responses": {
+          "200": {
+            "description": "invite list",
+            "schema": {
+              "$ref": "#/definitions/getAccountInvitesOKBody"
+            }
+          }
+        }
+      }
+    },
+    "/account/login": {
+      "post": {
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "account"
+        ],
+        "parameters": [
+          {
+            "maxLength": 20,
+            "minLength": 1,
+            "type": "string",
+            "name": "name",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 500,
+            "minLength": 6,
+            "type": "string",
+            "name": "password",
+            "in": "formData",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AuthProfile"
+            }
+          },
+          "400": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/account/name/{name}": {
+      "get": {
+        "tags": [
+          "account"
+        ],
+        "summary": "check if name is used",
+        "parameters": [
+          {
+            "maxLength": 20,
+            "minLength": 1,
+            "type": "string",
+            "name": "name",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "check result",
+            "schema": {
+              "$ref": "#/definitions/getAccountNameNameOKBody"
+            }
+          }
+        }
+      }
+    },
+    "/account/password": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "tags": [
+          "account"
+        ],
+        "summary": "set new password",
+        "parameters": [
+          {
+            "maxLength": 100,
+            "minLength": 6,
+            "type": "string",
+            "name": "old_password",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 100,
+            "minLength": 6,
+            "type": "string",
+            "name": "new_password",
+            "in": "formData",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "password has been set"
+          },
+          "403": {
+            "description": "old password is invalid",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/account/recover": {
+      "post": {
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "account"
+        ],
+        "parameters": [
+          {
+            "maxLength": 500,
+            "type": "string",
+            "name": "email",
+            "in": "formData",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Email not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/account/register": {
+      "post": {
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "account"
+        ],
+        "summary": "register new account",
+        "parameters": [
+          {
+            "maxLength": 20,
+            "minLength": 1,
+            "pattern": "[a-zA-Z][a-zA-Z0-9]*",
+            "type": "string",
+            "name": "name",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 500,
+            "type": "string",
+            "name": "email",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 100,
+            "minLength": 6,
+            "type": "string",
+            "name": "password",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 100,
+            "type": "string",
+            "name": "invite",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "type": "string",
+            "format": "full-date",
+            "name": "birthday",
+            "in": "formData"
+          },
+          {
+            "enum": [
+              "not set",
+              "male",
+              "female"
+            ],
+            "type": "string",
+            "default": "not set",
+            "name": "gender",
+            "in": "formData"
+          },
+          {
+            "maxLength": 50,
+            "type": "string",
+            "default": "",
+            "name": "country",
+            "in": "formData"
+          },
+          {
+            "maxLength": 50,
+            "type": "string",
+            "default": "",
+            "name": "city",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AuthProfile"
+            }
+          },
+          "400": {
+            "description": "email or name already exists",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/account/settings/email": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "account"
+        ],
+        "responses": {
+          "200": {
+            "description": "email notification settings",
+            "schema": {
+              "$ref": "#/definitions/getAccountSettingsEmailOKBody"
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "tags": [
+          "account"
+        ],
+        "parameters": [
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "comments",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "followers",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "email notification settings has been updated"
+          }
+        }
+      }
+    },
+    "/account/verification": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "account"
+        ],
+        "summary": "request verification email",
+        "responses": {
+          "200": {
+            "description": "email has been sent"
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/account/verification/{email}": {
+      "get": {
+        "tags": [
+          "account"
+        ],
+        "summary": "verify account email",
+        "parameters": [
+          {
+            "maxLength": 500,
+            "type": "string",
+            "name": "email",
+            "in": "path",
+            "required": true
+          },
+          {
+            "maxLength": 64,
+            "minLength": 64,
+            "type": "string",
+            "name": "code",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "verified"
+          },
+          "400": {
+            "description": "code or email is not valid",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/comments/{id}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "comments"
+        ],
+        "responses": {
+          "200": {
+            "description": "Comment data",
+            "schema": {
+              "$ref": "#/definitions/Comment"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Comment not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "comments"
+        ],
+        "parameters": [
+          {
+            "maxLength": 1000,
+            "minLength": 1,
+            "type": "string",
+            "name": "content",
+            "in": "formData",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comment data",
+            "schema": {
+              "$ref": "#/definitions/Comment"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Comment not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "comments"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Comment not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "minimum": 1,
+          "type": "integer",
+          "format": "int64",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/comments/{id}/vote": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "votes"
+        ],
+        "responses": {
+          "200": {
+            "description": "vote status",
+            "schema": {
+              "$ref": "#/definitions/Rating"
+            }
+          },
+          "404": {
+            "description": "Comment not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "votes"
+        ],
+        "parameters": [
+          {
+            "type": "boolean",
+            "default": true,
+            "name": "positive",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "vote status",
+            "schema": {
+              "$ref": "#/definitions/Rating"
+            }
+          },
+          "404": {
+            "description": "Comment not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "votes"
+        ],
+        "responses": {
+          "200": {
+            "description": "vote status",
+            "schema": {
+              "$ref": "#/definitions/Rating"
+            }
+          },
+          "404": {
+            "description": "Comment not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "minimum": 1,
+          "type": "integer",
+          "format": "int64",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/design": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "design"
+        ],
+        "responses": {
+          "200": {
+            "description": "Design of your tlog",
+            "schema": {
+              "$ref": "#/definitions/Design"
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "design"
+        ],
+        "parameters": [
+          {
+            "maxLength": 10000,
+            "type": "string",
+            "default": "",
+            "name": "css",
+            "in": "formData"
+          },
+          {
+            "pattern": "#[0-9a-fA-F]{6}",
+            "type": "string",
+            "default": "#ffffff",
+            "name": "backgroundColor",
+            "in": "formData"
+          },
+          {
+            "pattern": "#[0-9a-fA-F]{6}",
+            "type": "string",
+            "default": "#000000",
+            "name": "textColor",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "name": "fontFamily",
+            "in": "formData"
+          },
+          {
+            "type": "integer",
+            "name": "fontSize",
+            "in": "formData"
+          },
+          {
+            "enum": [
+              "left",
+              "right",
+              "center",
+              "justify"
+            ],
+            "type": "string",
+            "name": "textAlignment",
+            "in": "formData",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Design of your tlog",
+            "schema": {
+              "$ref": "#/definitions/Design"
+            }
+          }
+        }
+      }
+    },
+    "/design/fonts": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "design"
+        ],
+        "responses": {
+          "200": {
+            "description": "List of available font families",
+            "schema": {
+              "$ref": "#/definitions/getDesignFontsOKBody"
+            }
+          }
+        }
+      }
+    },
+    "/entries/anonymous": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "entries"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
+            "in": "query"
+          },
+          {
+            "maxLength": 50,
+            "type": "string",
+            "name": "tag",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "entries"
+        ],
+        "parameters": [
+          {
+            "maxLength": 500,
+            "type": "string",
+            "default": "",
+            "name": "title",
+            "in": "formData"
+          },
+          {
+            "maxLength": 30000,
+            "minLength": 1,
+            "type": "string",
+            "name": "content",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "anonymous_comments",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Entry data",
+            "schema": {
+              "$ref": "#/definitions/Entry"
+            }
+          }
+        }
+      }
+    },
+    "/entries/best": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "entries"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "maxLength": 50,
+            "type": "string",
+            "name": "tag",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "month",
+              "week"
+            ],
+            "type": "string",
+            "default": "month",
+            "name": "category",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          }
+        }
+      }
+    },
+    "/entries/friends": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "entries"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
+            "in": "query"
+          },
+          {
+            "maxLength": 50,
+            "type": "string",
+            "name": "tag",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          }
+        }
+      }
+    },
+    "/entries/live": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "entries"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
+            "in": "query"
+          },
+          {
+            "maxLength": 50,
+            "type": "string",
+            "name": "tag",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          }
+        }
+      }
+    },
+    "/entries/{id}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "entries"
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry data",
+            "schema": {
+              "$ref": "#/definitions/Entry"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Entry not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "entries"
+        ],
+        "parameters": [
+          {
+            "maxLength": 500,
+            "type": "string",
+            "default": "",
+            "name": "title",
+            "in": "formData"
+          },
+          {
+            "maxLength": 30000,
+            "minLength": 1,
+            "type": "string",
+            "name": "content",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "enum": [
+              "all",
+              "followers",
+              "some",
+              "me",
+              "anonymous"
+            ],
+            "type": "string",
+            "name": "privacy",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int64"
+            },
+            "name": "visibleFor",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "isVotable",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "anonymous_comments",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry data",
+            "schema": {
+              "$ref": "#/definitions/Entry"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Entry not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "entries"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Entry not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "minimum": 1,
+          "type": "integer",
+          "format": "int64",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/entries/{id}/comments": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "comments"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "comments list",
+            "schema": {
+              "$ref": "#/definitions/CommentList"
+            }
+          },
+          "404": {
+            "description": "Entry not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "comments"
+        ],
+        "parameters": [
+          {
+            "maxLength": 1000,
+            "minLength": 1,
+            "type": "string",
+            "name": "content",
+            "in": "formData",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Comment data",
+            "schema": {
+              "$ref": "#/definitions/Comment"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Entry not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "minimum": 1,
+          "type": "integer",
+          "format": "int64",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/entries/{id}/favorite": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "favorites"
+        ],
+        "responses": {
+          "200": {
+            "description": "favorite status",
+            "schema": {
+              "$ref": "#/definitions/FavoriteStatus"
+            }
+          },
+          "404": {
+            "description": "Entry not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "favorites"
+        ],
+        "responses": {
+          "200": {
+            "description": "favorite status",
+            "schema": {
+              "$ref": "#/definitions/FavoriteStatus"
+            }
+          },
+          "404": {
+            "description": "Entry not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "favorites"
+        ],
+        "responses": {
+          "200": {
+            "description": "favorite status",
+            "schema": {
+              "$ref": "#/definitions/FavoriteStatus"
+            }
+          },
+          "404": {
+            "description": "Entry not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "minimum": 1,
+          "type": "integer",
+          "format": "int64",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/entries/{id}/vote": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "votes"
+        ],
+        "responses": {
+          "200": {
+            "description": "vote status",
+            "schema": {
+              "$ref": "#/definitions/Rating"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Entry not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "votes"
+        ],
+        "parameters": [
+          {
+            "type": "boolean",
+            "default": true,
+            "name": "positive",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "vote status",
+            "schema": {
+              "$ref": "#/definitions/Rating"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Entry not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "votes"
+        ],
+        "responses": {
+          "200": {
+            "description": "vote status",
+            "schema": {
+              "$ref": "#/definitions/Rating"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Entry not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "minimum": 1,
+          "type": "integer",
+          "format": "int64",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/entries/{id}/watching": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "watchings"
+        ],
+        "responses": {
+          "200": {
+            "description": "watching status",
+            "schema": {
+              "$ref": "#/definitions/WatchingStatus"
+            }
+          },
+          "404": {
+            "description": "Entry not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "watchings"
+        ],
+        "responses": {
+          "200": {
+            "description": "watching status",
+            "schema": {
+              "$ref": "#/definitions/WatchingStatus"
+            }
+          },
+          "404": {
+            "description": "Entry not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "watchings"
+        ],
+        "responses": {
+          "200": {
+            "description": "watching status",
+            "schema": {
+              "$ref": "#/definitions/WatchingStatus"
+            }
+          },
+          "404": {
+            "description": "Entry not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "minimum": 1,
+          "type": "integer",
+          "format": "int64",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/me": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "me"
+        ],
+        "responses": {
+          "200": {
+            "description": "your data",
+            "schema": {
+              "$ref": "#/definitions/AuthProfile"
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "maxLength": 20,
+            "minLength": 1,
+            "type": "string",
+            "name": "showName",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "enum": [
+              "male",
+              "female",
+              "not set"
+            ],
+            "type": "string",
+            "default": "not set",
+            "name": "gender",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "isDaylog",
+            "in": "formData"
+          },
+          {
+            "enum": [
+              "all",
+              "followers"
+            ],
+            "type": "string",
+            "name": "privacy",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 500,
+            "type": "string",
+            "default": "",
+            "name": "title",
+            "in": "formData"
+          },
+          {
+            "type": "string",
+            "format": "full-date",
+            "default": "",
+            "name": "birthday",
+            "in": "formData"
+          },
+          {
+            "maxLength": 50,
+            "type": "string",
+            "default": "",
+            "name": "country",
+            "in": "formData"
+          },
+          {
+            "maxLength": 50,
+            "type": "string",
+            "default": "",
+            "name": "city",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "showInTops",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "your data",
+            "schema": {
+              "$ref": "#/definitions/Profile"
+            }
+          }
+        }
+      }
+    },
+    "/me/avatar": {
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "type": "file",
+            "name": "file",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Avatar",
+            "schema": {
+              "$ref": "#/definitions/Avatar"
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/me/cover": {
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "type": "file",
+            "name": "file",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cover",
+            "schema": {
+              "$ref": "#/definitions/Cover"
+            }
+          },
+          "400": {
+            "description": "bad request",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/me/favorites": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          }
+        }
+      }
+    },
+    "/me/followers": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "default": 0,
+            "name": "skip",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User list",
+            "schema": {
+              "$ref": "#/definitions/FriendList"
+            }
+          }
+        }
+      }
+    },
+    "/me/followings": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "default": 0,
+            "name": "skip",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User list",
+            "schema": {
+              "$ref": "#/definitions/FriendList"
+            }
+          }
+        }
+      }
+    },
+    "/me/ignored": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "default": 0,
+            "name": "skip",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User list",
+            "schema": {
+              "$ref": "#/definitions/FriendList"
+            }
+          }
+        }
+      }
+    },
+    "/me/invited": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "default": 0,
+            "name": "skip",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User list",
+            "schema": {
+              "$ref": "#/definitions/FriendList"
+            }
+          }
+        }
+      }
+    },
+    "/me/online": {
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "me"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/me/requested": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "default": 0,
+            "name": "skip",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User list",
+            "schema": {
+              "$ref": "#/definitions/FriendList"
+            }
+          }
+        }
+      }
+    },
+    "/me/tlog": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
+            "in": "query"
+          },
+          {
+            "maxLength": 50,
+            "type": "string",
+            "name": "tag",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "maxLength": 500,
+            "type": "string",
+            "default": "",
+            "name": "title",
+            "in": "formData"
+          },
+          {
+            "maxLength": 30000,
+            "minLength": 1,
+            "type": "string",
+            "name": "content",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "enum": [
+              "all",
+              "followers",
+              "some",
+              "me"
+            ],
+            "type": "string",
+            "name": "privacy",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "type": "array",
+            "items": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int64"
+            },
+            "name": "visibleFor",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "isVotable",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Entry data",
+            "schema": {
+              "$ref": "#/definitions/Entry"
+            }
+          }
+        }
+      }
+    },
+    "/me/watching": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          }
+        }
+      }
+    },
+    "/relations/from/{name}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "relations"
+        ],
+        "responses": {
+          "200": {
+            "description": "the user relationship with you",
+            "schema": {
+              "$ref": "#/definitions/Relationship"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "relations"
+        ],
+        "summary": "permit the user to follow you",
+        "responses": {
+          "200": {
+            "description": "the user relationship with you",
+            "schema": {
+              "$ref": "#/definitions/Relationship"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "relations"
+        ],
+        "summary": "cancel following request or unsubscribe the user",
+        "responses": {
+          "200": {
+            "description": "the user relationship with you",
+            "schema": {
+              "$ref": "#/definitions/Relationship"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "maxLength": 20,
+          "minLength": 1,
+          "type": "string",
+          "name": "name",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/relations/to/{name}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "relations"
+        ],
+        "responses": {
+          "200": {
+            "description": "your relationship with the user",
+            "schema": {
+              "$ref": "#/definitions/Relationship"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "relations"
+        ],
+        "parameters": [
+          {
+            "enum": [
+              "followed",
+              "ignored"
+            ],
+            "type": "string",
+            "name": "r",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "your relationship with the user",
+            "schema": {
+              "$ref": "#/definitions/Relationship"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "relations"
+        ],
+        "responses": {
+          "200": {
+            "description": "your relationship with the user",
+            "schema": {
+              "$ref": "#/definitions/Relationship"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "maxLength": 20,
+          "minLength": 1,
+          "type": "string",
+          "name": "name",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/users": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "enum": [
+              "new",
+              "karma"
+            ],
+            "type": "string",
+            "default": "new",
+            "name": "top",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/getUsersOKBody"
+            }
+          }
+        }
+      }
+    },
+    "/users/{name}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "responses": {
+          "200": {
+            "description": "User data",
+            "schema": {
+              "$ref": "#/definitions/Profile"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "maxLength": 20,
+          "minLength": 1,
+          "type": "string",
+          "name": "name",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/users/{name}/favorites": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "maxLength": 20,
+          "minLength": 1,
+          "type": "string",
+          "name": "name",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/users/{name}/followers": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "default": 0,
+            "name": "skip",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User list",
+            "schema": {
+              "$ref": "#/definitions/FriendList"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "maxLength": 20,
+          "minLength": 1,
+          "type": "string",
+          "name": "name",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/users/{name}/followings": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "default": 0,
+            "name": "skip",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User list",
+            "schema": {
+              "$ref": "#/definitions/FriendList"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "maxLength": 20,
+          "minLength": 1,
+          "type": "string",
+          "name": "name",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/users/{name}/invited": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "default": 0,
+            "name": "skip",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User list",
+            "schema": {
+              "$ref": "#/definitions/FriendList"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "maxLength": 20,
+          "minLength": 1,
+          "type": "string",
+          "name": "name",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/users/{name}/tlog": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
+            "in": "query"
+          },
+          {
+            "maxLength": 50,
+            "type": "string",
+            "name": "tag",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "new",
+              "old",
+              "best"
+            ],
+            "type": "string",
+            "default": "new",
+            "name": "sort",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "maxLength": 20,
+          "minLength": 1,
+          "type": "string",
+          "name": "name",
+          "in": "path",
+          "required": true
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "AuthProfile": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Profile"
+        },
+        {
+          "$ref": "#/definitions/authProfileAllOf1"
+        }
+      ]
+    },
+    "Avatar": {
+      "type": "object",
+      "properties": {
+        "x124": {
+          "type": "string"
+        },
+        "x42": {
+          "type": "string"
+        },
+        "x92": {
+          "type": "string"
+        }
+      }
+    },
+    "Color": {
+      "description": "color in rgb",
+      "type": "string",
+      "pattern": "#[0-9a-fA-F]{6}",
+      "example": "#373737"
+    },
+    "Comment": {
+      "type": "object",
+      "properties": {
+        "author": {
+          "$ref": "#/definitions/User"
+        },
+        "content": {
+          "type": "string",
+          "minLength": 1
+        },
+        "createdAt": {
+          "type": "number",
+          "format": "double"
+        },
+        "entryId": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "isMine": {
+          "type": "boolean"
+        },
+        "rating": {
+          "$ref": "#/definitions/Rating"
+        }
+      },
+      "example": {
+        "content": "some multiline text \\n without html",
+        "createdAt": 1531029717.333,
+        "entryId": 152,
+        "id": 999
+      }
+    },
+    "CommentList": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          }
+        },
+        "hasAfter": {
+          "type": "boolean"
+        },
+        "hasBefore": {
+          "type": "boolean"
+        },
+        "nextAfter": {
+          "type": "string"
+        },
+        "nextBefore": {
+          "type": "string"
+        }
+      }
+    },
+    "Cover": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "user id",
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "x1920": {
+          "type": "string"
+        },
+        "x318": {
+          "type": "string"
+        }
+      }
+    },
+    "Design": {
+      "type": "object",
+      "properties": {
+        "backgroundColor": {
+          "$ref": "#/definitions/Color"
+        },
+        "css": {
+          "type": "string"
+        },
+        "fontFamily": {
+          "type": "string"
+        },
+        "fontSize": {
+          "type": "integer"
+        },
+        "textAlignment": {
+          "type": "string",
+          "enum": [
+            "left",
+            "right",
+            "center",
+            "justify"
+          ]
+        },
+        "textColor": {
+          "$ref": "#/definitions/Color"
+        }
+      }
+    },
+    "Entry": {
+      "type": "object",
+      "properties": {
+        "author": {
+          "$ref": "#/definitions/User"
+        },
+        "commentCount": {
+          "type": "integer"
+        },
+        "comments": {
+          "$ref": "#/definitions/CommentList"
+        },
+        "content": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "number",
+          "format": "double"
+        },
+        "cutContent": {
+          "type": "string"
+        },
+        "cutTitle": {
+          "type": "string"
+        },
+        "editContent": {
+          "type": "string"
+        },
+        "hasCut": {
+          "type": "boolean"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "isFavorited": {
+          "type": "boolean"
+        },
+        "isWatching": {
+          "type": "boolean"
+        },
+        "privacy": {
+          "type": "string",
+          "enum": [
+            "all",
+            "some",
+            "me",
+            "anonymous"
+          ]
+        },
+        "rating": {
+          "$ref": "#/definitions/Rating"
+        },
+        "title": {
+          "type": "string"
+        },
+        "visibleFor": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          }
+        },
+        "wordCount": {
+          "type": "integer"
+        }
+      },
+      "example": {
+        "commentCount": 0,
+        "content": "\u003cp\u003esome text with \u003cb\u003ehtml\u003c/b\u003e tags\u003c/p\u003e",
+        "createdAt": 1531029717.333,
+        "editContent": "some text with *html* tags",
+        "id": 152,
+        "isVotable": true,
+        "privacy": "all",
+        "rating": -3,
+        "title": "example title",
+        "wordCount": 5
+      }
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      },
+      "example": {
+        "message": "Access denied"
+      }
+    },
+    "FavoriteStatus": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "isFavorited": {
+          "type": "boolean"
+        }
+      }
+    },
+    "Feed": {
+      "type": "object",
+      "properties": {
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Entry"
+          }
+        },
+        "hasAfter": {
+          "type": "boolean"
+        },
+        "hasBefore": {
+          "type": "boolean"
+        },
+        "nextAfter": {
+          "type": "string"
+        },
+        "nextBefore": {
+          "type": "string"
+        }
+      }
+    },
+    "Friend": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/User"
+        },
+        {
+          "$ref": "#/definitions/friendAllOf1"
+        }
+      ]
+    },
+    "FriendList": {
+      "type": "object",
+      "properties": {
+        "relation": {
+          "type": "string",
+          "enum": [
+            "followers",
+            "followings",
+            "requested",
+            "ignored",
+            "invited"
+          ]
+        },
+        "subject": {
+          "$ref": "#/definitions/User"
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Friend"
+          }
+        }
+      }
+    },
+    "Profile": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/Friend"
+        },
+        {
+          "$ref": "#/definitions/profileAllOf1"
+        }
+      ]
+    },
+    "Rating": {
+      "type": "object",
+      "properties": {
+        "downCount": {
+          "type": "integer"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "isVotable": {
+          "type": "boolean"
+        },
+        "rating": {
+          "type": "number",
+          "format": "float"
+        },
+        "upCount": {
+          "type": "integer"
+        },
+        "vote": {
+          "type": "string",
+          "enum": [
+            "not",
+            "pos",
+            "neg",
+            "ban"
+          ]
+        }
+      }
+    },
+    "Relationship": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "type": "string"
+        },
+        "relation": {
+          "type": "string",
+          "enum": [
+            "followed",
+            "requested",
+            "ignored",
+            "none"
+          ]
+        },
+        "to": {
+          "type": "string"
+        }
+      }
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "avatar": {
+          "$ref": "#/definitions/Avatar"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "isOnline": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 20,
+          "minLength": 1
+        },
+        "showName": {
+          "type": "string",
+          "maxLength": 20,
+          "minLength": 1
+        }
+      },
+      "example": {
+        "id": 1,
+        "isOnline": false,
+        "name": "binque",
+        "showName": "Бинк"
+      }
+    },
+    "UserID": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 20,
+          "minLength": 1
+        }
+      }
+    },
+    "WatchingStatus": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "isWatching": {
+          "type": "boolean"
+        }
+      }
+    },
+    "authProfileAllOf1": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "$ref": "#/definitions/authProfileAllOf1Account"
+        },
+        "birthday": {
+          "type": "string",
+          "format": "full-date"
+        },
+        "showInTops": {
+          "type": "boolean"
+        }
+      },
+      "x-go-gen-location": "models",
+      "example": {
+        "account": {
+          "apiKey": "blah-blah-blah",
+          "email": "mail@example.com",
+          "validThru": "1985-04-12T23:20:50.52Z",
+          "verified": true
+        }
+      }
+    },
+    "authProfileAllOf1Account": {
+      "type": "object",
+      "properties": {
+        "apiKey": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "validThru": {
+          "type": "number",
+          "format": "double"
+        },
+        "verified": {
+          "type": "boolean"
+        }
+      },
+      "x-go-gen-location": "models"
+    },
+    "friendAllOf1": {
+      "type": "object",
+      "properties": {
+        "counts": {
+          "$ref": "#/definitions/friendAllOf1Counts"
+        },
+        "cover": {
+          "$ref": "#/definitions/Cover"
+        },
+        "gender": {
+          "type": "string",
+          "enum": [
+            "male",
+            "female",
+            "not set"
+          ]
+        },
+        "karma": {
+          "type": "number",
+          "format": "float"
+        },
+        "lastSeenAt": {
+          "type": "number",
+          "format": "double"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 260
+        }
+      },
+      "x-go-gen-location": "models"
+    },
+    "friendAllOf1Counts": {
+      "type": "object",
+      "properties": {
+        "comments": {
+          "type": "integer"
+        },
+        "entries": {
+          "type": "integer"
+        },
+        "favorites": {
+          "type": "integer"
+        },
+        "followers": {
+          "type": "integer"
+        },
+        "followings": {
+          "type": "integer"
+        },
+        "ignored": {
+          "type": "integer"
+        },
+        "invited": {
+          "type": "integer"
+        },
+        "tags": {
+          "type": "integer"
+        }
+      },
+      "x-go-gen-location": "models"
+    },
+    "getAccountEmailEmailOKBody": {
+      "type": "object",
+      "required": [
+        "email",
+        "isFree"
+      ],
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "isFree": {
+          "type": "boolean"
+        }
+      },
+      "x-go-gen-location": "operations",
+      "example": {
+        "email": "mail@example.com",
+        "isFree": true
+      }
+    },
+    "getAccountInvitesOKBody": {
+      "type": "object",
+      "properties": {
+        "invites": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "x-go-gen-location": "operations"
+    },
+    "getAccountNameNameOKBody": {
+      "type": "object",
+      "required": [
+        "name",
+        "isFree"
+      ],
+      "properties": {
+        "isFree": {
+          "type": "boolean"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "x-go-gen-location": "operations",
+      "example": {
+        "isFree": false,
+        "name": "example"
+      }
+    },
+    "getAccountSettingsEmailOKBody": {
+      "type": "object",
+      "properties": {
+        "comments": {
+          "type": "boolean"
+        },
+        "followers": {
+          "type": "boolean"
+        }
+      },
+      "x-go-gen-location": "operations"
+    },
+    "getDesignFontsOKBody": {
+      "type": "object",
+      "properties": {
+        "fonts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "x-go-gen-location": "operations"
+    },
+    "getUsersOKBody": {
+      "type": "object",
+      "properties": {
+        "top": {
+          "type": "string"
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Friend"
+          }
+        }
+      },
+      "x-go-gen-location": "operations"
+    },
+    "profileAllOf1": {
+      "type": "object",
+      "properties": {
+        "ageLowerBound": {
+          "type": "integer"
+        },
+        "ageUpperBound": {
+          "type": "integer"
+        },
+        "city": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "country": {
+          "type": "string",
+          "maxLength": 50
+        },
+        "createdAt": {
+          "type": "number",
+          "format": "double"
+        },
+        "design": {
+          "$ref": "#/definitions/Design"
+        },
+        "invitedBy": {
+          "$ref": "#/definitions/User"
+        },
+        "isDaylog": {
+          "type": "boolean"
+        },
+        "privacy": {
+          "type": "string",
+          "enum": [
+            "all",
+            "followers"
+          ]
+        },
+        "relations": {
+          "$ref": "#/definitions/profileAllOf1Relations"
+        }
+      },
+      "x-go-gen-location": "models",
+      "example": {
+        "city": "Казань",
+        "country": "Россия",
+        "counts": {
+          "comments": 22,
+          "entries": 13,
+          "favorites": 1,
+          "followers": 15,
+          "followings": 4,
+          "ignored": 0,
+          "invited": 0,
+          "tags": 0
+        },
+        "createdAt": 1531029717.333,
+        "gender": "male",
+        "isDaylog": false,
+        "karma": 100,
+        "lastSeenAt": 1531029717.333,
+        "privacy": "all",
+        "relations": {
+          "fromMe": "followed",
+          "toMe": "none"
+        },
+        "title": "some tlog title"
+      }
+    },
+    "profileAllOf1Relations": {
+      "type": "object",
+      "properties": {
+        "fromMe": {
+          "type": "string",
+          "enum": [
+            "followed",
+            "requested",
+            "ignored",
+            "none"
+          ]
+        },
+        "toMe": {
+          "type": "string",
+          "enum": [
+            "followed",
+            "requested",
+            "ignored",
+            "none"
+          ]
+        }
+      },
+      "x-go-gen-location": "models"
+    }
+  },
+  "parameters": {
+    "after": {
+      "type": "string",
+      "default": "",
+      "name": "after",
+      "in": "query"
+    },
+    "before": {
+      "type": "string",
+      "default": "",
+      "name": "before",
+      "in": "query"
+    },
+    "limit": {
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+      "default": 30,
       "name": "limit",
       "in": "query"
     },
