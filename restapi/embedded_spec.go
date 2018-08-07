@@ -2974,16 +2974,16 @@ func init() {
           "format": "int64"
         },
         "large": {
-          "description": "fit 1024x768",
-          "type": "string"
+          "$ref": "#/definitions/ImageSize"
         },
         "medium": {
-          "description": "fit 640x640",
+          "$ref": "#/definitions/ImageSize"
+        },
+        "mimeType": {
           "type": "string"
         },
         "small": {
-          "description": "fit 320x320",
-          "type": "string"
+          "$ref": "#/definitions/ImageSize"
         },
         "userId": {
           "type": "integer",
@@ -3011,6 +3011,20 @@ func init() {
         },
         "nextBefore": {
           "type": "string"
+        }
+      }
+    },
+    "ImageSize": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "type": "integer"
+        },
+        "url": {
+          "type": "string"
+        },
+        "width": {
+          "type": "integer"
         }
       }
     },
@@ -6386,16 +6400,16 @@ func init() {
           "format": "int64"
         },
         "large": {
-          "description": "fit 1024x768",
-          "type": "string"
+          "$ref": "#/definitions/ImageSize"
         },
         "medium": {
-          "description": "fit 640x640",
+          "$ref": "#/definitions/ImageSize"
+        },
+        "mimeType": {
           "type": "string"
         },
         "small": {
-          "description": "fit 320x320",
-          "type": "string"
+          "$ref": "#/definitions/ImageSize"
         },
         "userId": {
           "type": "integer",
@@ -6423,6 +6437,20 @@ func init() {
         },
         "nextBefore": {
           "type": "string"
+        }
+      }
+    },
+    "ImageSize": {
+      "type": "object",
+      "properties": {
+        "height": {
+          "type": "integer"
+        },
+        "url": {
+          "type": "string"
+        },
+        "width": {
+          "type": "integer"
         }
       }
     },

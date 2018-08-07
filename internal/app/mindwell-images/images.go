@@ -92,9 +92,15 @@ func NewImageUploader(db *sql.DB, cfg *goconf.Config) func(images.PostImagesPara
 
 		img := &models.Image{
 			UserID: userID.ID,
-			Small:  store.Fit(320, "albums/small"),
-			Medium: store.Fit(640, "albums/medium"),
-			Large:  store.FitRect(1024, 768, "albums/large"),
+			Small: &models.ImageSize{
+				URL: store.Fit(320, "albums/small"),
+			},
+			Medium: &models.ImageSize{
+				URL: store.Fit(640, "albums/medium"),
+			},
+			Large: &models.ImageSize{
+				URL: store.FitRect(1024, 768, "albums/large"),
+			},
 		}
 
 		if store.Error() != nil {
