@@ -8,7 +8,6 @@ import (
 
 	loads "github.com/go-openapi/loads"
 	flags "github.com/jessevdk/go-flags"
-
 	"github.com/sevings/mindwell-images/restapi"
 	"github.com/sevings/mindwell-images/restapi/operations"
 )
