@@ -599,6 +599,12 @@ func init() {
               "$ref": "#/definitions/Rating"
             }
           },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "404": {
             "description": "Comment not found",
             "schema": {
@@ -631,6 +637,12 @@ func init() {
               "$ref": "#/definitions/Rating"
             }
           },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "404": {
             "description": "Comment not found",
             "schema": {
@@ -653,6 +665,12 @@ func init() {
             "description": "vote status",
             "schema": {
               "$ref": "#/definitions/Rating"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
             }
           },
           "404": {
@@ -957,6 +975,16 @@ func init() {
           },
           {
             "$ref": "#/parameters/tag"
+          },
+          {
+            "enum": [
+              "entries",
+              "comments"
+            ],
+            "type": "string",
+            "default": "entries",
+            "name": "section",
+            "in": "query"
           }
         ],
         "responses": {
@@ -1061,6 +1089,12 @@ func init() {
           {
             "type": "boolean",
             "default": false,
+            "name": "inLive",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
             "name": "anonymous_comments",
             "in": "formData"
           }
@@ -1073,7 +1107,7 @@ func init() {
             }
           },
           "403": {
-            "description": "access denied",
+            "description": "access denied or post in live restriction",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -1880,7 +1914,7 @@ func init() {
           "me"
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "OK"
           }
         }
@@ -2003,6 +2037,12 @@ func init() {
             "default": false,
             "name": "isVotable",
             "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "inLive",
+            "in": "formData"
           }
         ],
         "responses": {
@@ -2010,6 +2050,12 @@ func init() {
             "description": "Entry data",
             "schema": {
               "$ref": "#/definitions/Entry"
+            }
+          },
+          "403": {
+            "description": "post in live restriction",
+            "schema": {
+              "$ref": "#/definitions/Error"
             }
           }
         }
@@ -2787,6 +2833,9 @@ func init() {
           "format": "int64",
           "minimum": 1
         },
+        "inLive": {
+          "type": "boolean"
+        },
         "isFavorited": {
           "type": "boolean"
         },
@@ -3212,6 +3261,10 @@ func init() {
         "id": {
           "type": "integer",
           "format": "int64"
+        },
+        "karma": {
+          "type": "number",
+          "format": "float"
         },
         "name": {
           "type": "string",
@@ -3890,6 +3943,12 @@ func init() {
               "$ref": "#/definitions/Rating"
             }
           },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "404": {
             "description": "Comment not found",
             "schema": {
@@ -3922,6 +3981,12 @@ func init() {
               "$ref": "#/definitions/Rating"
             }
           },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "404": {
             "description": "Comment not found",
             "schema": {
@@ -3944,6 +4009,12 @@ func init() {
             "description": "vote status",
             "schema": {
               "$ref": "#/definitions/Rating"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
             }
           },
           "404": {
@@ -4303,6 +4374,16 @@ func init() {
             "type": "string",
             "name": "tag",
             "in": "query"
+          },
+          {
+            "enum": [
+              "entries",
+              "comments"
+            ],
+            "type": "string",
+            "default": "entries",
+            "name": "section",
+            "in": "query"
           }
         ],
         "responses": {
@@ -4407,6 +4488,12 @@ func init() {
           {
             "type": "boolean",
             "default": false,
+            "name": "inLive",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
             "name": "anonymous_comments",
             "in": "formData"
           }
@@ -4419,7 +4506,7 @@ func init() {
             }
           },
           "403": {
-            "description": "access denied",
+            "description": "access denied or post in live restriction",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -5316,7 +5403,7 @@ func init() {
           "me"
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "OK"
           }
         }
@@ -5461,6 +5548,12 @@ func init() {
             "default": false,
             "name": "isVotable",
             "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "inLive",
+            "in": "formData"
           }
         ],
         "responses": {
@@ -5468,6 +5561,12 @@ func init() {
             "description": "Entry data",
             "schema": {
               "$ref": "#/definitions/Entry"
+            }
+          },
+          "403": {
+            "description": "post in live restriction",
+            "schema": {
+              "$ref": "#/definitions/Error"
             }
           }
         }
@@ -6369,6 +6468,9 @@ func init() {
           "format": "int64",
           "minimum": 1
         },
+        "inLive": {
+          "type": "boolean"
+        },
         "isFavorited": {
           "type": "boolean"
         },
@@ -6794,6 +6896,10 @@ func init() {
         "id": {
           "type": "integer",
           "format": "int64"
+        },
+        "karma": {
+          "type": "number",
+          "format": "float"
         },
         "name": {
           "type": "string",
