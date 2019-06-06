@@ -24,9 +24,6 @@ func init() {
   "produces": [
     "application/json"
   ],
-  "schemes": [
-    "http"
-  ],
   "swagger": "2.0",
   "info": {
     "title": "Mindwell",
@@ -34,6 +31,48 @@ func init() {
   },
   "basePath": "/api/v1",
   "paths": {
+    "/account/email": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "account"
+        ],
+        "summary": "set new email",
+        "parameters": [
+          {
+            "$ref": "#/parameters/formEmail"
+          },
+          {
+            "$ref": "#/parameters/password"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "email has been set"
+          },
+          "400": {
+            "description": "email is the same",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "password is invalid",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/account/email/{email}": {
       "get": {
         "tags": [
@@ -43,6 +82,7 @@ func init() {
         "parameters": [
           {
             "maxLength": 500,
+            "pattern": ".+@.+",
             "type": "string",
             "name": "email",
             "in": "path",
@@ -54,10 +94,6 @@ func init() {
             "description": "check result",
             "schema": {
               "type": "object",
-              "required": [
-                "email",
-                "isFree"
-              ],
               "properties": {
                 "email": {
                   "type": "string"
@@ -114,7 +150,7 @@ func init() {
         ],
         "parameters": [
           {
-            "maxLength": 20,
+            "maxLength": 500,
             "minLength": 1,
             "type": "string",
             "name": "name",
@@ -122,12 +158,7 @@ func init() {
             "required": true
           },
           {
-            "maxLength": 500,
-            "minLength": 6,
-            "type": "string",
-            "name": "password",
-            "in": "formData",
-            "required": true
+            "$ref": "#/parameters/password"
           }
         ],
         "responses": {
@@ -154,12 +185,7 @@ func init() {
         "summary": "check if name is used",
         "parameters": [
           {
-            "maxLength": 20,
-            "minLength": 1,
-            "type": "string",
-            "name": "name",
-            "in": "path",
-            "required": true
+            "$ref": "#/parameters/pathName"
           }
         ],
         "responses": {
@@ -167,10 +193,6 @@ func init() {
             "description": "check result",
             "schema": {
               "type": "object",
-              "required": [
-                "name",
-                "isFree"
-              ],
               "properties": {
                 "isFree": {
                   "type": "boolean"
@@ -196,12 +218,13 @@ func init() {
           }
         ],
         "consumes": [
-          "multipart/form-data"
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
         ],
         "tags": [
           "account"
         ],
-        "summary": "set new password",
+        "summary": "change new password",
         "parameters": [
           {
             "maxLength": 100,
@@ -242,18 +265,61 @@ func init() {
         "tags": [
           "account"
         ],
+        "summary": "request reset password email",
         "parameters": [
           {
-            "maxLength": 500,
+            "$ref": "#/parameters/formEmail"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Email not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/account/recover/password": {
+      "post": {
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "account"
+        ],
+        "summary": "reset password",
+        "parameters": [
+          {
+            "$ref": "#/parameters/formEmail"
+          },
+          {
+            "$ref": "#/parameters/password"
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "date",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 64,
+            "minLength": 64,
             "type": "string",
-            "name": "email",
+            "name": "code",
             "in": "formData",
             "required": true
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Password changed"
           },
           "400": {
             "description": "Email not found",
@@ -276,33 +342,17 @@ func init() {
         "summary": "register new account",
         "parameters": [
           {
+            "$ref": "#/parameters/formEmail"
+          },
+          {
+            "$ref": "#/parameters/password"
+          },
+          {
             "maxLength": 20,
             "minLength": 1,
-            "pattern": "[a-zA-Z][a-zA-Z0-9]*",
+            "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
             "type": "string",
             "name": "name",
-            "in": "formData",
-            "required": true
-          },
-          {
-            "maxLength": 500,
-            "type": "string",
-            "name": "email",
-            "in": "formData",
-            "required": true
-          },
-          {
-            "maxLength": 100,
-            "minLength": 6,
-            "type": "string",
-            "name": "password",
-            "in": "formData",
-            "required": true
-          },
-          {
-            "maxLength": 100,
-            "type": "string",
-            "name": "invite",
             "in": "formData",
             "required": true
           },
@@ -375,6 +425,9 @@ func init() {
                 },
                 "followers": {
                   "type": "boolean"
+                },
+                "invites": {
+                  "type": "boolean"
                 }
               }
             }
@@ -388,7 +441,8 @@ func init() {
           }
         ],
         "consumes": [
-          "multipart/form-data"
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
         ],
         "tags": [
           "account"
@@ -405,11 +459,82 @@ func init() {
             "default": false,
             "name": "followers",
             "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "invites",
+            "in": "formData"
           }
         ],
         "responses": {
           "200": {
             "description": "email notification settings has been updated"
+          }
+        }
+      }
+    },
+    "/account/subscribe/telegram": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "account"
+        ],
+        "responses": {
+          "200": {
+            "description": "telegram login token",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "account"
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/account/subscribe/token": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "account"
+        ],
+        "responses": {
+          "200": {
+            "description": "centrifugo connection token",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -447,6 +572,7 @@ func init() {
         "parameters": [
           {
             "maxLength": 500,
+            "pattern": ".+@.+",
             "type": "string",
             "name": "email",
             "in": "path",
@@ -467,6 +593,359 @@ func init() {
           },
           "400": {
             "description": "code or email is not valid",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/adm/grandfather": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "adm"
+        ],
+        "responses": {
+          "200": {
+            "description": "your grandson address",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "address": {
+                  "type": "string"
+                },
+                "comment": {
+                  "type": "string"
+                },
+                "country": {
+                  "type": "string"
+                },
+                "fullname": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "postcode": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "you're not registered in adm",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "410": {
+            "description": "adm finished",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/adm/grandfather/status": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "adm"
+        ],
+        "responses": {
+          "200": {
+            "description": "status of your gifts",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "received": {
+                  "type": "boolean"
+                },
+                "sent": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "you're not registered in adm",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "410": {
+            "description": "adm finished",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "adm"
+        ],
+        "parameters": [
+          {
+            "type": "boolean",
+            "name": "sent",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "you're not registered in adm",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "410": {
+            "description": "adm finished",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/adm/grandson": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "adm"
+        ],
+        "responses": {
+          "200": {
+            "description": "your address",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "address": {
+                  "type": "string"
+                },
+                "anonymous": {
+                  "type": "boolean"
+                },
+                "comment": {
+                  "type": "string"
+                },
+                "country": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "postcode": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "registration finished",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "adm"
+        ],
+        "parameters": [
+          {
+            "maxLength": 50,
+            "type": "string",
+            "name": "postcode",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 50,
+            "type": "string",
+            "name": "country",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 500,
+            "type": "string",
+            "name": "address",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 100,
+            "type": "string",
+            "name": "name",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 1000,
+            "type": "string",
+            "default": "",
+            "name": "comment",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "anonymous",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "410": {
+            "description": "registration finished",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/adm/grandson/status": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "adm"
+        ],
+        "responses": {
+          "200": {
+            "description": "status of your gifts",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "received": {
+                  "type": "boolean"
+                },
+                "sent": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "you're not registered in adm",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "410": {
+            "description": "adm finished",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "adm"
+        ],
+        "parameters": [
+          {
+            "type": "boolean",
+            "name": "received",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "you're not registered in adm",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "410": {
+            "description": "adm finished",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/adm/stat": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "adm"
+        ],
+        "responses": {
+          "200": {
+            "description": "ADM stats",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "grandsons": {
+                  "type": "integer"
+                },
+                "received": {
+                  "type": "integer"
+                },
+                "sent": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "adm finished",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -522,6 +1001,7 @@ func init() {
           {
             "maxLength": 1000,
             "minLength": 1,
+            "pattern": "\\s*\\S+.*",
             "type": "string",
             "name": "content",
             "in": "formData",
@@ -859,6 +1339,7 @@ func init() {
           {
             "maxLength": 30000,
             "minLength": 1,
+            "pattern": "\\s*\\S+.*",
             "type": "string",
             "name": "content",
             "in": "formData",
@@ -997,6 +1478,37 @@ func init() {
         }
       }
     },
+    "/entries/watching": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "entries"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/after"
+          },
+          {
+            "$ref": "#/parameters/before"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          }
+        }
+      }
+    },
     "/entries/{id}": {
       "get": {
         "security": [
@@ -1052,6 +1564,7 @@ func init() {
           {
             "maxLength": 30000,
             "minLength": 1,
+            "pattern": "\\s*\\S+.*",
             "type": "string",
             "name": "content",
             "in": "formData",
@@ -1206,6 +1719,7 @@ func init() {
           {
             "maxLength": 1000,
             "minLength": 1,
+            "pattern": "\\s*\\S+.*",
             "type": "string",
             "name": "content",
             "in": "formData",
@@ -1574,6 +2088,7 @@ func init() {
           {
             "maxLength": 20,
             "minLength": 1,
+            "pattern": "\\s*\\S+.*",
             "type": "string",
             "name": "showName",
             "in": "formData",
@@ -1599,6 +2114,7 @@ func init() {
           {
             "enum": [
               "all",
+              "invited",
               "followers"
             ],
             "type": "string",
@@ -1783,6 +2299,34 @@ func init() {
       }
     },
     "/me/followings": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/skip"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User list",
+            "schema": {
+              "$ref": "#/definitions/FriendList"
+            }
+          }
+        }
+      }
+    },
+    "/me/hidden": {
       "get": {
         "security": [
           {
@@ -2005,6 +2549,7 @@ func init() {
           {
             "maxLength": 30000,
             "minLength": 1,
+            "pattern": "\\s*\\S+.*",
             "type": "string",
             "name": "content",
             "in": "formData",
@@ -2061,7 +2606,7 @@ func init() {
         }
       }
     },
-    "/me/watching": {
+    "/notifications": {
       "get": {
         "security": [
           {
@@ -2069,7 +2614,7 @@ func init() {
           }
         ],
         "tags": [
-          "me"
+          "notifications"
         ],
         "parameters": [
           {
@@ -2080,13 +2625,83 @@ func init() {
           },
           {
             "$ref": "#/parameters/before"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "unread",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Entry list",
+            "description": "notification list",
             "schema": {
-              "$ref": "#/definitions/Feed"
+              "$ref": "#/definitions/NotificationList"
+            }
+          }
+        }
+      }
+    },
+    "/notifications/read": {
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "notifications"
+        ],
+        "parameters": [
+          {
+            "type": "number",
+            "default": 0,
+            "name": "time",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "unread count",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "unread": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notifications/{id}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "notifications"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/pathId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "notification",
+            "schema": {
+              "$ref": "#/definitions/Notification"
+            }
+          },
+          "404": {
+            "description": "not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
             }
           }
         }
@@ -2185,6 +2800,51 @@ func init() {
         }
       ]
     },
+    "/relations/invited/{name}": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "relations"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/pathName"
+          },
+          {
+            "pattern": "\\s*\\S+\\s+\\S+\\s+\\S+\\s*",
+            "type": "string",
+            "name": "invite",
+            "in": "formData",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "invited"
+          },
+          "403": {
+            "description": "invalid invite or the user is invited already",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/relations/to/{name}": {
       "get": {
         "security": [
@@ -2223,7 +2883,8 @@ func init() {
           {
             "enum": [
               "followed",
-              "ignored"
+              "ignored",
+              "hidden"
             ],
             "type": "string",
             "name": "r",
@@ -2296,11 +2957,19 @@ func init() {
           {
             "enum": [
               "new",
-              "karma"
+              "rank",
+              "waiting"
             ],
             "type": "string",
             "default": "new",
             "name": "top",
+            "in": "query"
+          },
+          {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "name": "query",
             "in": "query"
           }
         ],
@@ -2310,6 +2979,9 @@ func init() {
             "schema": {
               "type": "object",
               "properties": {
+                "query": {
+                  "type": "string"
+                },
                 "top": {
                   "type": "string"
                 },
@@ -2651,6 +3323,27 @@ func init() {
                 }
               }
             },
+            "ban": {
+              "type": "object",
+              "properties": {
+                "comment": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "invite": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "live": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "vote": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            },
             "birthday": {
               "type": "string",
               "format": "full-date"
@@ -2663,8 +3356,14 @@ func init() {
             "account": {
               "apiKey": "blah-blah-blah",
               "email": "mail@example.com",
-              "validThru": "1985-04-12T23:20:50.52Z",
+              "validThru": 1531029717.333,
               "verified": true
+            },
+            "ban": {
+              "comment": 1531029717.333,
+              "invite": 1531029717.333,
+              "live": 1531029717.333,
+              "vote": 1531029717.333
             }
           }
         }
@@ -2697,12 +3396,14 @@ func init() {
           "$ref": "#/definitions/User"
         },
         "content": {
-          "type": "string",
-          "minLength": 1
+          "type": "string"
         },
         "createdAt": {
           "type": "number",
           "format": "double"
+        },
+        "editContent": {
+          "type": "string"
         },
         "entryId": {
           "type": "integer",
@@ -2714,18 +3415,35 @@ func init() {
           "format": "int64",
           "minimum": 1
         },
-        "isMine": {
-          "type": "boolean"
-        },
         "rating": {
           "$ref": "#/definitions/Rating"
+        },
+        "rights": {
+          "type": "object",
+          "properties": {
+            "delete": {
+              "type": "boolean"
+            },
+            "edit": {
+              "type": "boolean"
+            },
+            "vote": {
+              "type": "boolean"
+            }
+          }
         }
       },
       "example": {
-        "content": "some multiline text \\n without html",
+        "content": "some multiline text \u003cbr\u003e with html",
         "createdAt": 1531029717.333,
+        "editContent": "some multiline text \\n with html",
         "entryId": 152,
-        "id": 999
+        "id": 999,
+        "rights": {
+          "delete": true,
+          "edit": true,
+          "vote": false
+        }
       }
     },
     "CommentList": {
@@ -2854,6 +3572,23 @@ func init() {
         "rating": {
           "$ref": "#/definitions/Rating"
         },
+        "rights": {
+          "type": "object",
+          "properties": {
+            "comment": {
+              "type": "boolean"
+            },
+            "delete": {
+              "type": "boolean"
+            },
+            "edit": {
+              "type": "boolean"
+            },
+            "vote": {
+              "type": "boolean"
+            }
+          }
+        },
         "title": {
           "type": "string"
         },
@@ -2872,10 +3607,20 @@ func init() {
         "content": "\u003cp\u003esome text with \u003cb\u003ehtml\u003c/b\u003e tags\u003c/p\u003e",
         "createdAt": 1531029717.333,
         "editContent": "some text with *html* tags",
+        "hasCut": false,
         "id": 152,
+        "inLive": true,
+        "isFavorited": false,
         "isVotable": true,
+        "isWatching": true,
         "privacy": "all",
         "rating": -3,
+        "rights": {
+          "comment": true,
+          "delete": false,
+          "edit": false,
+          "vote": true
+        },
         "title": "example title",
         "wordCount": 5
       }
@@ -2941,6 +3686,9 @@ func init() {
                 "comments": {
                   "type": "integer"
                 },
+                "days": {
+                  "type": "integer"
+                },
                 "entries": {
                   "type": "integer"
                 },
@@ -2975,13 +3723,21 @@ func init() {
                 "not set"
               ]
             },
-            "karma": {
-              "type": "number",
-              "format": "float"
-            },
             "lastSeenAt": {
               "type": "number",
               "format": "double"
+            },
+            "privacy": {
+              "type": "string",
+              "enum": [
+                "all",
+                "followers",
+                "invited"
+              ]
+            },
+            "rank": {
+              "type": "number",
+              "format": "int64"
             },
             "title": {
               "type": "string",
@@ -3001,6 +3757,7 @@ func init() {
             "followings",
             "requested",
             "ignored",
+            "hidden",
             "invited"
           ]
         },
@@ -3077,6 +3834,70 @@ func init() {
         }
       }
     },
+    "Notification": {
+      "type": "object",
+      "properties": {
+        "comment": {
+          "$ref": "#/definitions/Comment"
+        },
+        "createdAt": {
+          "type": "number",
+          "format": "double"
+        },
+        "entry": {
+          "$ref": "#/definitions/Entry"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "read": {
+          "type": "boolean"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "comment",
+            "follower",
+            "request",
+            "accept",
+            "invite",
+            "welcome",
+            "invited"
+          ]
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      }
+    },
+    "NotificationList": {
+      "type": "object",
+      "properties": {
+        "hasAfter": {
+          "type": "boolean"
+        },
+        "hasBefore": {
+          "type": "boolean"
+        },
+        "nextAfter": {
+          "type": "string"
+        },
+        "nextBefore": {
+          "type": "string"
+        },
+        "notifications": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Notification"
+          }
+        },
+        "unreadCount": {
+          "type": "integer"
+        }
+      }
+    },
     "Profile": {
       "allOf": [
         {
@@ -3112,13 +3933,6 @@ func init() {
             "isDaylog": {
               "type": "boolean"
             },
-            "privacy": {
-              "type": "string",
-              "enum": [
-                "all",
-                "followers"
-              ]
-            },
             "relations": {
               "type": "object",
               "properties": {
@@ -3128,6 +3942,7 @@ func init() {
                     "followed",
                     "requested",
                     "ignored",
+                    "hidden",
                     "none"
                   ]
                 },
@@ -3137,6 +3952,7 @@ func init() {
                     "followed",
                     "requested",
                     "ignored",
+                    "hidden",
                     "none"
                   ]
                 }
@@ -3159,9 +3975,9 @@ func init() {
             "createdAt": 1531029717.333,
             "gender": "male",
             "isDaylog": false,
-            "karma": 100,
             "lastSeenAt": 1531029717.333,
             "privacy": "all",
+            "rank": 17,
             "relations": {
               "fromMe": "followed",
               "toMe": "none"
@@ -3193,13 +4009,7 @@ func init() {
           "type": "integer"
         },
         "vote": {
-          "type": "string",
-          "enum": [
-            "not",
-            "pos",
-            "neg",
-            "ban"
-          ]
+          "type": "integer"
         }
       }
     },
@@ -3215,6 +4025,7 @@ func init() {
             "followed",
             "requested",
             "ignored",
+            "hidden",
             "none"
           ]
         },
@@ -3251,25 +4062,48 @@ func init() {
       "example": {
         "id": 1,
         "isOnline": false,
-        "name": "binque",
-        "showName": "Бинк"
+        "name": "Mindwell",
+        "showName": "Майндвелл"
       }
     },
     "UserID": {
       "type": "object",
       "properties": {
+        "ban": {
+          "type": "object",
+          "properties": {
+            "comment": {
+              "type": "boolean"
+            },
+            "invite": {
+              "type": "boolean"
+            },
+            "live": {
+              "type": "boolean"
+            },
+            "vote": {
+              "type": "boolean"
+            }
+          }
+        },
+        "followersCount": {
+          "type": "integer",
+          "format": "int64"
+        },
         "id": {
           "type": "integer",
           "format": "int64"
         },
-        "karma": {
-          "type": "number",
-          "format": "float"
+        "isInvited": {
+          "type": "boolean"
         },
         "name": {
           "type": "string",
           "maxLength": 20,
           "minLength": 1
+        },
+        "negKarma": {
+          "type": "boolean"
         }
       }
     },
@@ -3300,6 +4134,14 @@ func init() {
       "name": "before",
       "in": "query"
     },
+    "formEmail": {
+      "maxLength": 500,
+      "pattern": ".+@.+",
+      "type": "string",
+      "name": "email",
+      "in": "formData",
+      "required": true
+    },
     "limit": {
       "maximum": 100,
       "minimum": 1,
@@ -3307,6 +4149,14 @@ func init() {
       "default": 30,
       "name": "limit",
       "in": "query"
+    },
+    "password": {
+      "maxLength": 100,
+      "minLength": 6,
+      "type": "string",
+      "name": "password",
+      "in": "formData",
+      "required": true
     },
     "pathId": {
       "minimum": 1,
@@ -3319,6 +4169,7 @@ func init() {
     "pathName": {
       "maxLength": 20,
       "minLength": 1,
+      "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
       "type": "string",
       "name": "name",
       "in": "path",
@@ -3363,9 +4214,6 @@ func init() {
   "produces": [
     "application/json"
   ],
-  "schemes": [
-    "http"
-  ],
   "swagger": "2.0",
   "info": {
     "title": "Mindwell",
@@ -3373,6 +4221,58 @@ func init() {
   },
   "basePath": "/api/v1",
   "paths": {
+    "/account/email": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "account"
+        ],
+        "summary": "set new email",
+        "parameters": [
+          {
+            "maxLength": 500,
+            "pattern": ".+@.+",
+            "type": "string",
+            "name": "email",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 100,
+            "minLength": 6,
+            "type": "string",
+            "name": "password",
+            "in": "formData",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "email has been set"
+          },
+          "400": {
+            "description": "email is the same",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "password is invalid",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/account/email/{email}": {
       "get": {
         "tags": [
@@ -3382,6 +4282,7 @@ func init() {
         "parameters": [
           {
             "maxLength": 500,
+            "pattern": ".+@.+",
             "type": "string",
             "name": "email",
             "in": "path",
@@ -3393,10 +4294,6 @@ func init() {
             "description": "check result",
             "schema": {
               "type": "object",
-              "required": [
-                "email",
-                "isFree"
-              ],
               "properties": {
                 "email": {
                   "type": "string"
@@ -3453,7 +4350,7 @@ func init() {
         ],
         "parameters": [
           {
-            "maxLength": 20,
+            "maxLength": 500,
             "minLength": 1,
             "type": "string",
             "name": "name",
@@ -3461,7 +4358,7 @@ func init() {
             "required": true
           },
           {
-            "maxLength": 500,
+            "maxLength": 100,
             "minLength": 6,
             "type": "string",
             "name": "password",
@@ -3495,6 +4392,7 @@ func init() {
           {
             "maxLength": 20,
             "minLength": 1,
+            "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
             "type": "string",
             "name": "name",
             "in": "path",
@@ -3506,10 +4404,6 @@ func init() {
             "description": "check result",
             "schema": {
               "type": "object",
-              "required": [
-                "name",
-                "isFree"
-              ],
               "properties": {
                 "isFree": {
                   "type": "boolean"
@@ -3535,12 +4429,13 @@ func init() {
           }
         ],
         "consumes": [
-          "multipart/form-data"
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
         ],
         "tags": [
           "account"
         ],
-        "summary": "set new password",
+        "summary": "change new password",
         "parameters": [
           {
             "maxLength": 100,
@@ -3581,9 +4476,11 @@ func init() {
         "tags": [
           "account"
         ],
+        "summary": "request reset password email",
         "parameters": [
           {
             "maxLength": 500,
+            "pattern": ".+@.+",
             "type": "string",
             "name": "email",
             "in": "formData",
@@ -3593,6 +4490,62 @@ func init() {
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Email not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/account/recover/password": {
+      "post": {
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "account"
+        ],
+        "summary": "reset password",
+        "parameters": [
+          {
+            "maxLength": 500,
+            "pattern": ".+@.+",
+            "type": "string",
+            "name": "email",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 100,
+            "minLength": 6,
+            "type": "string",
+            "name": "password",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "date",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 64,
+            "minLength": 64,
+            "type": "string",
+            "name": "code",
+            "in": "formData",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Password changed"
           },
           "400": {
             "description": "Email not found",
@@ -3615,16 +4568,8 @@ func init() {
         "summary": "register new account",
         "parameters": [
           {
-            "maxLength": 20,
-            "minLength": 1,
-            "pattern": "[a-zA-Z][a-zA-Z0-9]*",
-            "type": "string",
-            "name": "name",
-            "in": "formData",
-            "required": true
-          },
-          {
             "maxLength": 500,
+            "pattern": ".+@.+",
             "type": "string",
             "name": "email",
             "in": "formData",
@@ -3639,9 +4584,11 @@ func init() {
             "required": true
           },
           {
-            "maxLength": 100,
+            "maxLength": 20,
+            "minLength": 1,
+            "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
             "type": "string",
-            "name": "invite",
+            "name": "name",
             "in": "formData",
             "required": true
           },
@@ -3714,6 +4661,9 @@ func init() {
                 },
                 "followers": {
                   "type": "boolean"
+                },
+                "invites": {
+                  "type": "boolean"
                 }
               }
             }
@@ -3727,7 +4677,8 @@ func init() {
           }
         ],
         "consumes": [
-          "multipart/form-data"
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
         ],
         "tags": [
           "account"
@@ -3744,11 +4695,82 @@ func init() {
             "default": false,
             "name": "followers",
             "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "invites",
+            "in": "formData"
           }
         ],
         "responses": {
           "200": {
             "description": "email notification settings has been updated"
+          }
+        }
+      }
+    },
+    "/account/subscribe/telegram": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "account"
+        ],
+        "responses": {
+          "200": {
+            "description": "telegram login token",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "account"
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/account/subscribe/token": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "account"
+        ],
+        "responses": {
+          "200": {
+            "description": "centrifugo connection token",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }
@@ -3786,6 +4808,7 @@ func init() {
         "parameters": [
           {
             "maxLength": 500,
+            "pattern": ".+@.+",
             "type": "string",
             "name": "email",
             "in": "path",
@@ -3806,6 +4829,359 @@ func init() {
           },
           "400": {
             "description": "code or email is not valid",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/adm/grandfather": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "adm"
+        ],
+        "responses": {
+          "200": {
+            "description": "your grandson address",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "address": {
+                  "type": "string"
+                },
+                "comment": {
+                  "type": "string"
+                },
+                "country": {
+                  "type": "string"
+                },
+                "fullname": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "postcode": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "you're not registered in adm",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "410": {
+            "description": "adm finished",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/adm/grandfather/status": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "adm"
+        ],
+        "responses": {
+          "200": {
+            "description": "status of your gifts",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "received": {
+                  "type": "boolean"
+                },
+                "sent": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "you're not registered in adm",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "410": {
+            "description": "adm finished",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "adm"
+        ],
+        "parameters": [
+          {
+            "type": "boolean",
+            "name": "sent",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "you're not registered in adm",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "410": {
+            "description": "adm finished",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/adm/grandson": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "adm"
+        ],
+        "responses": {
+          "200": {
+            "description": "your address",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "address": {
+                  "type": "string"
+                },
+                "anonymous": {
+                  "type": "boolean"
+                },
+                "comment": {
+                  "type": "string"
+                },
+                "country": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "postcode": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "registration finished",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "adm"
+        ],
+        "parameters": [
+          {
+            "maxLength": 50,
+            "type": "string",
+            "name": "postcode",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 50,
+            "type": "string",
+            "name": "country",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 500,
+            "type": "string",
+            "name": "address",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 100,
+            "type": "string",
+            "name": "name",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 1000,
+            "type": "string",
+            "default": "",
+            "name": "comment",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "anonymous",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "410": {
+            "description": "registration finished",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/adm/grandson/status": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "adm"
+        ],
+        "responses": {
+          "200": {
+            "description": "status of your gifts",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "received": {
+                  "type": "boolean"
+                },
+                "sent": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "you're not registered in adm",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "410": {
+            "description": "adm finished",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "adm"
+        ],
+        "parameters": [
+          {
+            "type": "boolean",
+            "name": "received",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "you're not registered in adm",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "410": {
+            "description": "adm finished",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/adm/stat": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "adm"
+        ],
+        "responses": {
+          "200": {
+            "description": "ADM stats",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "grandsons": {
+                  "type": "integer"
+                },
+                "received": {
+                  "type": "integer"
+                },
+                "sent": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "adm finished",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -3861,6 +5237,7 @@ func init() {
           {
             "maxLength": 1000,
             "minLength": 1,
+            "pattern": "\\s*\\S+.*",
             "type": "string",
             "name": "content",
             "in": "formData",
@@ -4222,6 +5599,7 @@ func init() {
           {
             "maxLength": 30000,
             "minLength": 1,
+            "pattern": "\\s*\\S+.*",
             "type": "string",
             "name": "content",
             "in": "formData",
@@ -4396,6 +5774,48 @@ func init() {
         }
       }
     },
+    "/entries/watching": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "entries"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          }
+        }
+      }
+    },
     "/entries/{id}": {
       "get": {
         "security": [
@@ -4451,6 +5871,7 @@ func init() {
           {
             "maxLength": 30000,
             "minLength": 1,
+            "pattern": "\\s*\\S+.*",
             "type": "string",
             "name": "content",
             "in": "formData",
@@ -4621,6 +6042,7 @@ func init() {
           {
             "maxLength": 1000,
             "minLength": 1,
+            "pattern": "\\s*\\S+.*",
             "type": "string",
             "name": "content",
             "in": "formData",
@@ -5009,6 +6431,7 @@ func init() {
           {
             "maxLength": 20,
             "minLength": 1,
+            "pattern": "\\s*\\S+.*",
             "type": "string",
             "name": "showName",
             "in": "formData",
@@ -5034,6 +6457,7 @@ func init() {
           {
             "enum": [
               "all",
+              "invited",
               "followers"
             ],
             "type": "string",
@@ -5237,6 +6661,42 @@ func init() {
       }
     },
     "/me/followings": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "default": 0,
+            "name": "skip",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User list",
+            "schema": {
+              "$ref": "#/definitions/FriendList"
+            }
+          }
+        }
+      }
+    },
+    "/me/hidden": {
       "get": {
         "security": [
           {
@@ -5516,6 +6976,7 @@ func init() {
           {
             "maxLength": 30000,
             "minLength": 1,
+            "pattern": "\\s*\\S+.*",
             "type": "string",
             "name": "content",
             "in": "formData",
@@ -5572,7 +7033,7 @@ func init() {
         }
       }
     },
-    "/me/watching": {
+    "/notifications": {
       "get": {
         "security": [
           {
@@ -5580,7 +7041,7 @@ func init() {
           }
         ],
         "tags": [
-          "me"
+          "notifications"
         ],
         "parameters": [
           {
@@ -5602,13 +7063,88 @@ func init() {
             "default": "",
             "name": "before",
             "in": "query"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "unread",
+            "in": "query"
           }
         ],
         "responses": {
           "200": {
-            "description": "Entry list",
+            "description": "notification list",
             "schema": {
-              "$ref": "#/definitions/Feed"
+              "$ref": "#/definitions/NotificationList"
+            }
+          }
+        }
+      }
+    },
+    "/notifications/read": {
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "notifications"
+        ],
+        "parameters": [
+          {
+            "type": "number",
+            "default": 0,
+            "name": "time",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "unread count",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "unread": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/notifications/{id}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "tags": [
+          "notifications"
+        ],
+        "parameters": [
+          {
+            "minimum": 1,
+            "type": "integer",
+            "format": "int64",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "notification",
+            "schema": {
+              "$ref": "#/definitions/Notification"
+            }
+          },
+          "404": {
+            "description": "not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
             }
           }
         }
@@ -5705,12 +7241,64 @@ func init() {
         {
           "maxLength": 20,
           "minLength": 1,
+          "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
           "type": "string",
           "name": "name",
           "in": "path",
           "required": true
         }
       ]
+    },
+    "/relations/invited/{name}": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "relations"
+        ],
+        "parameters": [
+          {
+            "maxLength": 20,
+            "minLength": 1,
+            "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
+            "type": "string",
+            "name": "name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "pattern": "\\s*\\S+\\s+\\S+\\s+\\S+\\s*",
+            "type": "string",
+            "name": "invite",
+            "in": "formData",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "invited"
+          },
+          "403": {
+            "description": "invalid invite or the user is invited already",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
     },
     "/relations/to/{name}": {
       "get": {
@@ -5750,7 +7338,8 @@ func init() {
           {
             "enum": [
               "followed",
-              "ignored"
+              "ignored",
+              "hidden"
             ],
             "type": "string",
             "name": "r",
@@ -5807,6 +7396,7 @@ func init() {
         {
           "maxLength": 20,
           "minLength": 1,
+          "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
           "type": "string",
           "name": "name",
           "in": "path",
@@ -5828,11 +7418,19 @@ func init() {
           {
             "enum": [
               "new",
-              "karma"
+              "rank",
+              "waiting"
             ],
             "type": "string",
             "default": "new",
             "name": "top",
+            "in": "query"
+          },
+          {
+            "maxLength": 50,
+            "minLength": 1,
+            "type": "string",
+            "name": "query",
             "in": "query"
           }
         ],
@@ -5842,6 +7440,9 @@ func init() {
             "schema": {
               "type": "object",
               "properties": {
+                "query": {
+                  "type": "string"
+                },
                 "top": {
                   "type": "string"
                 },
@@ -5886,6 +7487,7 @@ func init() {
         {
           "maxLength": 20,
           "minLength": 1,
+          "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
           "type": "string",
           "name": "name",
           "in": "path",
@@ -5944,6 +7546,7 @@ func init() {
         {
           "maxLength": 20,
           "minLength": 1,
+          "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
           "type": "string",
           "name": "name",
           "in": "path",
@@ -6002,6 +7605,7 @@ func init() {
         {
           "maxLength": 20,
           "minLength": 1,
+          "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
           "type": "string",
           "name": "name",
           "in": "path",
@@ -6060,6 +7664,7 @@ func init() {
         {
           "maxLength": 20,
           "minLength": 1,
+          "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
           "type": "string",
           "name": "name",
           "in": "path",
@@ -6118,6 +7723,7 @@ func init() {
         {
           "maxLength": 20,
           "minLength": 1,
+          "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
           "type": "string",
           "name": "name",
           "in": "path",
@@ -6176,6 +7782,7 @@ func init() {
         {
           "maxLength": 20,
           "minLength": 1,
+          "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
           "type": "string",
           "name": "name",
           "in": "path",
@@ -6251,6 +7858,7 @@ func init() {
         {
           "maxLength": 20,
           "minLength": 1,
+          "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
           "type": "string",
           "name": "name",
           "in": "path",
@@ -6286,6 +7894,27 @@ func init() {
                 }
               }
             },
+            "ban": {
+              "type": "object",
+              "properties": {
+                "comment": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "invite": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "live": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "vote": {
+                  "type": "number",
+                  "format": "double"
+                }
+              }
+            },
             "birthday": {
               "type": "string",
               "format": "full-date"
@@ -6298,8 +7927,14 @@ func init() {
             "account": {
               "apiKey": "blah-blah-blah",
               "email": "mail@example.com",
-              "validThru": "1985-04-12T23:20:50.52Z",
+              "validThru": 1531029717.333,
               "verified": true
+            },
+            "ban": {
+              "comment": 1531029717.333,
+              "invite": 1531029717.333,
+              "live": 1531029717.333,
+              "vote": 1531029717.333
             }
           }
         }
@@ -6332,12 +7967,14 @@ func init() {
           "$ref": "#/definitions/User"
         },
         "content": {
-          "type": "string",
-          "minLength": 1
+          "type": "string"
         },
         "createdAt": {
           "type": "number",
           "format": "double"
+        },
+        "editContent": {
+          "type": "string"
         },
         "entryId": {
           "type": "integer",
@@ -6349,18 +7986,35 @@ func init() {
           "format": "int64",
           "minimum": 1
         },
-        "isMine": {
-          "type": "boolean"
-        },
         "rating": {
           "$ref": "#/definitions/Rating"
+        },
+        "rights": {
+          "type": "object",
+          "properties": {
+            "delete": {
+              "type": "boolean"
+            },
+            "edit": {
+              "type": "boolean"
+            },
+            "vote": {
+              "type": "boolean"
+            }
+          }
         }
       },
       "example": {
-        "content": "some multiline text \\n without html",
+        "content": "some multiline text \u003cbr\u003e with html",
         "createdAt": 1531029717.333,
+        "editContent": "some multiline text \\n with html",
         "entryId": 152,
-        "id": 999
+        "id": 999,
+        "rights": {
+          "delete": true,
+          "edit": true,
+          "vote": false
+        }
       }
     },
     "CommentList": {
@@ -6489,6 +8143,23 @@ func init() {
         "rating": {
           "$ref": "#/definitions/Rating"
         },
+        "rights": {
+          "type": "object",
+          "properties": {
+            "comment": {
+              "type": "boolean"
+            },
+            "delete": {
+              "type": "boolean"
+            },
+            "edit": {
+              "type": "boolean"
+            },
+            "vote": {
+              "type": "boolean"
+            }
+          }
+        },
         "title": {
           "type": "string"
         },
@@ -6507,10 +8178,20 @@ func init() {
         "content": "\u003cp\u003esome text with \u003cb\u003ehtml\u003c/b\u003e tags\u003c/p\u003e",
         "createdAt": 1531029717.333,
         "editContent": "some text with *html* tags",
+        "hasCut": false,
         "id": 152,
+        "inLive": true,
+        "isFavorited": false,
         "isVotable": true,
+        "isWatching": true,
         "privacy": "all",
         "rating": -3,
+        "rights": {
+          "comment": true,
+          "delete": false,
+          "edit": false,
+          "vote": true
+        },
         "title": "example title",
         "wordCount": 5
       }
@@ -6576,6 +8257,9 @@ func init() {
                 "comments": {
                   "type": "integer"
                 },
+                "days": {
+                  "type": "integer"
+                },
                 "entries": {
                   "type": "integer"
                 },
@@ -6610,13 +8294,21 @@ func init() {
                 "not set"
               ]
             },
-            "karma": {
-              "type": "number",
-              "format": "float"
-            },
             "lastSeenAt": {
               "type": "number",
               "format": "double"
+            },
+            "privacy": {
+              "type": "string",
+              "enum": [
+                "all",
+                "followers",
+                "invited"
+              ]
+            },
+            "rank": {
+              "type": "number",
+              "format": "int64"
             },
             "title": {
               "type": "string",
@@ -6636,6 +8328,7 @@ func init() {
             "followings",
             "requested",
             "ignored",
+            "hidden",
             "invited"
           ]
         },
@@ -6712,6 +8405,70 @@ func init() {
         }
       }
     },
+    "Notification": {
+      "type": "object",
+      "properties": {
+        "comment": {
+          "$ref": "#/definitions/Comment"
+        },
+        "createdAt": {
+          "type": "number",
+          "format": "double"
+        },
+        "entry": {
+          "$ref": "#/definitions/Entry"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1
+        },
+        "read": {
+          "type": "boolean"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "comment",
+            "follower",
+            "request",
+            "accept",
+            "invite",
+            "welcome",
+            "invited"
+          ]
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      }
+    },
+    "NotificationList": {
+      "type": "object",
+      "properties": {
+        "hasAfter": {
+          "type": "boolean"
+        },
+        "hasBefore": {
+          "type": "boolean"
+        },
+        "nextAfter": {
+          "type": "string"
+        },
+        "nextBefore": {
+          "type": "string"
+        },
+        "notifications": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Notification"
+          }
+        },
+        "unreadCount": {
+          "type": "integer"
+        }
+      }
+    },
     "Profile": {
       "allOf": [
         {
@@ -6747,13 +8504,6 @@ func init() {
             "isDaylog": {
               "type": "boolean"
             },
-            "privacy": {
-              "type": "string",
-              "enum": [
-                "all",
-                "followers"
-              ]
-            },
             "relations": {
               "type": "object",
               "properties": {
@@ -6763,6 +8513,7 @@ func init() {
                     "followed",
                     "requested",
                     "ignored",
+                    "hidden",
                     "none"
                   ]
                 },
@@ -6772,6 +8523,7 @@ func init() {
                     "followed",
                     "requested",
                     "ignored",
+                    "hidden",
                     "none"
                   ]
                 }
@@ -6794,9 +8546,9 @@ func init() {
             "createdAt": 1531029717.333,
             "gender": "male",
             "isDaylog": false,
-            "karma": 100,
             "lastSeenAt": 1531029717.333,
             "privacy": "all",
+            "rank": 17,
             "relations": {
               "fromMe": "followed",
               "toMe": "none"
@@ -6828,13 +8580,7 @@ func init() {
           "type": "integer"
         },
         "vote": {
-          "type": "string",
-          "enum": [
-            "not",
-            "pos",
-            "neg",
-            "ban"
-          ]
+          "type": "integer"
         }
       }
     },
@@ -6850,6 +8596,7 @@ func init() {
             "followed",
             "requested",
             "ignored",
+            "hidden",
             "none"
           ]
         },
@@ -6886,25 +8633,48 @@ func init() {
       "example": {
         "id": 1,
         "isOnline": false,
-        "name": "binque",
-        "showName": "Бинк"
+        "name": "Mindwell",
+        "showName": "Майндвелл"
       }
     },
     "UserID": {
       "type": "object",
       "properties": {
+        "ban": {
+          "type": "object",
+          "properties": {
+            "comment": {
+              "type": "boolean"
+            },
+            "invite": {
+              "type": "boolean"
+            },
+            "live": {
+              "type": "boolean"
+            },
+            "vote": {
+              "type": "boolean"
+            }
+          }
+        },
+        "followersCount": {
+          "type": "integer",
+          "format": "int64"
+        },
         "id": {
           "type": "integer",
           "format": "int64"
         },
-        "karma": {
-          "type": "number",
-          "format": "float"
+        "isInvited": {
+          "type": "boolean"
         },
         "name": {
           "type": "string",
           "maxLength": 20,
           "minLength": 1
+        },
+        "negKarma": {
+          "type": "boolean"
         }
       }
     },
@@ -6935,6 +8705,14 @@ func init() {
       "name": "before",
       "in": "query"
     },
+    "formEmail": {
+      "maxLength": 500,
+      "pattern": ".+@.+",
+      "type": "string",
+      "name": "email",
+      "in": "formData",
+      "required": true
+    },
     "limit": {
       "maximum": 100,
       "minimum": 1,
@@ -6942,6 +8720,14 @@ func init() {
       "default": 30,
       "name": "limit",
       "in": "query"
+    },
+    "password": {
+      "maxLength": 100,
+      "minLength": 6,
+      "type": "string",
+      "name": "password",
+      "in": "formData",
+      "required": true
     },
     "pathId": {
       "minimum": 1,
@@ -6954,6 +8740,7 @@ func init() {
     "pathName": {
       "maxLength": 20,
       "minLength": 1,
+      "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
       "type": "string",
       "name": "name",
       "in": "path",

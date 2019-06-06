@@ -60,8 +60,17 @@ func configureAPI(api *operations.MindwellImagesAPI) http.Handler {
 	api.APIKeyHeaderAuth = func(apiKey string) (*models.UserID, error) {
 		id, err := keyAuth(apiKey)
 		userID := models.UserID{ // TODO: use new model
-			ID:   id.ID,
-			Name: id.Name,
+			ID:             id.ID,
+			Name:           id.Name,
+			FollowersCount: id.FollowersCount,
+			IsInvited:      id.IsInvited,
+			NegKarma:       id.NegKarma,
+			Ban: &models.UserIDBan{
+				Comment: id.Ban.Comment,
+				Invite:  id.Ban.Invite,
+				Live:    id.Ban.Live,
+				Vote:    id.Ban.Vote,
+			},
 		}
 		return &userID, err
 	}
