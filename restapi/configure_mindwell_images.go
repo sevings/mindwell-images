@@ -5,10 +5,14 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"os"
 	"time"
 
+	"github.com/didip/tollbooth"
+	"github.com/didip/tollbooth/limiter"
 	errors "github.com/go-openapi/errors"
 	runtime "github.com/go-openapi/runtime"
+	"github.com/unrolled/logger"
 	"gopkg.in/gographics/imagick.v2/imagick"
 
 	imagesImpl "github.com/sevings/mindwell-images/internal/app/mindwell-images"
@@ -109,11 +113,21 @@ func configureServer(s *http.Server, scheme, addr string) {
 // The middleware configuration is for the handler executors. These do not apply to the swagger.json document.
 // The middleware executes after routing but before authentication, binding and validation
 func setupMiddlewares(handler http.Handler) http.Handler {
-	return handler
+	lmt := tollbooth.NewLimiter(1, &limiter.ExpirableOptions{DefaultExpirationTTL: time.Hour})
+	lmt.SetIPLookups([]string{"X-Forwarded-For"})
+	lmt.SetMessage(`{"message":"You have reached maximum request limit."}`)
+	lmt.SetMessageContentType("application/json")
+
+	return tollbooth.LimitHandler(lmt, handler)
 }
 
 // The middleware configuration happens before anything, this middleware also applies to serving the swagger.json document.
 // So this is a good place to plug in a panic handling middleware, logging and metrics
 func setupGlobalMiddleware(handler http.Handler) http.Handler {
-	return handler
+	log := logger.New(logger.Options{
+		RemoteAddressHeaders: []string{"X-Forwarded-For"},
+		Out:                  os.Stdout,
+	})
+
+	return log.Handler(handler)
 }
