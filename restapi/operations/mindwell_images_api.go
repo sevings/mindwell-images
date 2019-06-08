@@ -44,6 +44,12 @@ func NewMindwellImagesAPI(spec *loads.Document) *MindwellImagesAPI {
 		UrlformConsumer:       runtime.DiscardConsumer,
 		MultipartformConsumer: runtime.DiscardConsumer,
 		JSONProducer:          runtime.JSONProducer(),
+		ImagesDeleteImagesIDHandler: images.DeleteImagesIDHandlerFunc(func(params images.DeleteImagesIDParams, principal *models.UserID) middleware.Responder {
+			return middleware.NotImplemented("operation ImagesDeleteImagesID has not yet been implemented")
+		}),
+		ImagesGetImagesIDHandler: images.GetImagesIDHandlerFunc(func(params images.GetImagesIDParams, principal *models.UserID) middleware.Responder {
+			return middleware.NotImplemented("operation ImagesGetImagesID has not yet been implemented")
+		}),
 		ImagesPostImagesHandler: images.PostImagesHandlerFunc(func(params images.PostImagesParams, principal *models.UserID) middleware.Responder {
 			return middleware.NotImplemented("operation ImagesPostImages has not yet been implemented")
 		}),
@@ -103,6 +109,10 @@ type MindwellImagesAPI struct {
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
 
+	// ImagesDeleteImagesIDHandler sets the operation handler for the delete images ID operation
+	ImagesDeleteImagesIDHandler images.DeleteImagesIDHandler
+	// ImagesGetImagesIDHandler sets the operation handler for the get images ID operation
+	ImagesGetImagesIDHandler images.GetImagesIDHandler
 	// ImagesPostImagesHandler sets the operation handler for the post images operation
 	ImagesPostImagesHandler images.PostImagesHandler
 	// MePutMeAvatarHandler sets the operation handler for the put me avatar operation
@@ -182,6 +192,14 @@ func (o *MindwellImagesAPI) Validate() error {
 
 	if o.APIKeyHeaderAuth == nil {
 		unregistered = append(unregistered, "XUserKeyAuth")
+	}
+
+	if o.ImagesDeleteImagesIDHandler == nil {
+		unregistered = append(unregistered, "images.DeleteImagesIDHandler")
+	}
+
+	if o.ImagesGetImagesIDHandler == nil {
+		unregistered = append(unregistered, "images.GetImagesIDHandler")
 	}
 
 	if o.ImagesPostImagesHandler == nil {
@@ -311,6 +329,16 @@ func (o *MindwellImagesAPI) initHandlerCache() {
 	if o.handlers == nil {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
+
+	if o.handlers["DELETE"] == nil {
+		o.handlers["DELETE"] = make(map[string]http.Handler)
+	}
+	o.handlers["DELETE"]["/images/{id}"] = images.NewDeleteImagesID(o.context, o.ImagesDeleteImagesIDHandler)
+
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/images/{id}"] = images.NewGetImagesID(o.context, o.ImagesGetImagesIDHandler)
 
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)

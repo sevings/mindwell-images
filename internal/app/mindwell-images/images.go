@@ -43,7 +43,8 @@ func NewImageUploader(db *sql.DB, cfg *goconf.Config) func(images.PostImagesPara
 		}
 
 		return utils.Transact(db, func(tx *utils.AutoTx) middleware.Responder {
-			tx.Query("INSERT INTO images(user_id, path) VALUES($1, $2) RETURNING id", userID.ID, store.FileName())
+			tx.Query("INSERT INTO images(user_id, path, extension) VALUES($1, $2, $3) RETURNING id",
+				userID.ID, store.FileName(), store.FileExtension())
 			tx.Scan(&img.ID)
 
 			saveImageSize(tx, img.ID, img.Thumbnail.Width, img.Thumbnail.Height, "thumbnail")
@@ -56,6 +57,84 @@ func NewImageUploader(db *sql.DB, cfg *goconf.Config) func(images.PostImagesPara
 			}
 
 			return images.NewPostImagesOK().WithPayload(img)
+		})
+	}
+}
+
+func NewImageLoader(db *sql.DB, cfg *goconf.Config) func(images.GetImagesIDParams, *models.UserID) middleware.Responder {
+	baseURL, err := cfg.String("images.base_url")
+	if err != nil {
+		log.Println(err)
+	}
+
+	return func(params images.GetImagesIDParams, userID *models.UserID) middleware.Responder {
+		return utils.Transact(db, func(tx *utils.AutoTx) middleware.Responder {
+			var authorID int64
+			var path, extension string
+
+			tx.Query("SELECT user_id, path, extension FROM images WHERE id = $1", params.ID).Scan(&authorID, &path, &extension)
+			if authorID == 0 {
+				return images.NewGetImagesIDNotFound()
+			}
+
+			if authorID != userID.ID {
+				entryID := tx.QueryInt64("SELECT entry_id FROM entry_images WHERE image_id = $1", params.ID)
+				if entryID == 0 {
+					return images.NewGetImagesIDForbidden()
+				}
+
+				allowed := utils.CanViewEntry(tx, userID.ID, entryID)
+				if !allowed {
+					return images.NewGetImagesIDForbidden()
+				}
+			}
+
+			img := &models.Image{
+				ID: params.ID,
+				Author: &models.User{
+					ID: authorID,
+				},
+				Type: extension,
+			}
+
+			var width, height int64
+			var size string
+			tx.Query(`
+				SELECT width, height, (SELECT type FROM size WHERE size.id = image_sizes.size)
+				FROM image_sizes
+				WHERE image_sizes.image_id = $1
+			`, params.ID)
+
+			for tx.Scan(&width, &height, &size) {
+				switch size {
+				case "thumbnail":
+					img.Thumbnail = &models.ImageSize{
+						Height: height,
+						Width:  width,
+						URL:    baseURL + "albums/thumbnails/" + path,
+					}
+				case "small":
+					img.Small = &models.ImageSize{
+						Height: height,
+						Width:  width,
+						URL:    baseURL + "albums/small/" + path,
+					}
+				case "medium":
+					img.Medium = &models.ImageSize{
+						Height: height,
+						Width:  width,
+						URL:    baseURL + "albums/medium/" + path,
+					}
+				case "large":
+					img.Large = &models.ImageSize{
+						Height: height,
+						Width:  width,
+						URL:    baseURL + "albums/large/" + path,
+					}
+				}
+			}
+
+			return images.NewGetImagesIDOK().WithPayload(img)
 		})
 	}
 }
