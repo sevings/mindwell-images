@@ -20,9 +20,9 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutMeAvatarParams,
 		store.ReadImage(params.File)
 
 		avatar := models.Avatar{
-			X124: store.Fill(124, "avatars/124"),
-			X92:  store.Fill(92, "avatars/92"),
-			X42:  store.Fill(42, "avatars/42"),
+			X124: store.Fill(124, "avatars/124").URL,
+			X92:  store.Fill(92, "avatars/92").URL,
+			X42:  store.Fill(42, "avatars/42").URL,
 		}
 
 		if store.Error() != nil {
@@ -57,8 +57,8 @@ func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutMeCoverParams, *
 
 		cover := &models.Cover{
 			ID:    userID.ID,
-			X1920: store.FillRect(1920, 640, "covers/1920"),
-			X318:  store.FillRect(318, 122, "covers/318"),
+			X1920: store.FillRect(1920, 640, "covers/1920").URL,
+			X318:  store.FillRect(318, 122, "covers/318").URL,
 		}
 
 		if store.Error() != nil {
@@ -91,16 +91,15 @@ func NewImageUploader(db *sql.DB, cfg *goconf.Config) func(images.PostImagesPara
 		store.ReadImage(params.File)
 
 		img := &models.Image{
-			UserID: userID.ID,
-			Small: &models.ImageSize{
-				URL: store.Fill(320, "albums/small"),
+			Author: &models.User{
+				ID:   userID.ID,
+				Name: userID.Name,
 			},
-			Medium: &models.ImageSize{
-				URL: store.Fit(640, "albums/medium"),
-			},
-			Large: &models.ImageSize{
-				URL: store.FitRect(1024, 768, "albums/large"),
-			},
+			Type:      store.FileExtension(),
+			Thumbnail: store.Fill(100, "albums/thumbnails"),
+			Small:     store.FitRect(480, 360, "albums/small"),
+			Medium:    store.FitRect(800, 600, "albums/medium"),
+			Large:     store.FitRect(1280, 960, "albums/large"),
 		}
 
 		if store.Error() != nil {

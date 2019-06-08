@@ -3775,6 +3775,9 @@ func init() {
     "Image": {
       "type": "object",
       "properties": {
+        "author": {
+          "$ref": "#/definitions/User"
+        },
         "id": {
           "type": "integer",
           "format": "int64"
@@ -3785,15 +3788,18 @@ func init() {
         "medium": {
           "$ref": "#/definitions/ImageSize"
         },
-        "mimeType": {
-          "type": "string"
-        },
         "small": {
           "$ref": "#/definitions/ImageSize"
         },
-        "userId": {
-          "type": "integer",
-          "format": "int64"
+        "thumbnail": {
+          "$ref": "#/definitions/ImageSize"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "jpg",
+            "gif"
+          ]
         }
       }
     },
@@ -3945,6 +3951,9 @@ func init() {
                     "hidden",
                     "none"
                   ]
+                },
+                "isOpenForMe": {
+                  "type": "boolean"
                 },
                 "toMe": {
                   "type": "string",
@@ -8346,6 +8355,9 @@ func init() {
     "Image": {
       "type": "object",
       "properties": {
+        "author": {
+          "$ref": "#/definitions/User"
+        },
         "id": {
           "type": "integer",
           "format": "int64"
@@ -8356,15 +8368,18 @@ func init() {
         "medium": {
           "$ref": "#/definitions/ImageSize"
         },
-        "mimeType": {
-          "type": "string"
-        },
         "small": {
           "$ref": "#/definitions/ImageSize"
         },
-        "userId": {
-          "type": "integer",
-          "format": "int64"
+        "thumbnail": {
+          "$ref": "#/definitions/ImageSize"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "jpg",
+            "gif"
+          ]
         }
       }
     },
@@ -8516,6 +8531,9 @@ func init() {
                     "hidden",
                     "none"
                   ]
+                },
+                "isOpenForMe": {
+                  "type": "boolean"
                 },
                 "toMe": {
                   "type": "string",

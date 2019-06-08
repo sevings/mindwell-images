@@ -6,18 +6,20 @@ import (
 	"math"
 	"os"
 
+	"github.com/sevings/mindwell-images/models"
 	"github.com/sevings/mindwell-server/utils"
 	goconf "github.com/zpatrick/go-config"
 	"gopkg.in/gographics/imagick.v2/imagick"
 )
 
 type imageStore struct {
-	folder   string
-	baseURL  string
-	savePath string
-	saveName string
-	mw       *imagick.MagickWand
-	err      error
+	folder    string
+	baseURL   string
+	savePath  string
+	saveName  string
+	extension string
+	mw        *imagick.MagickWand
+	err       error
 }
 
 type storeError string
@@ -65,6 +67,10 @@ func (is *imageStore) FileName() string {
 	return is.savePath + is.saveName
 }
 
+func (is *imageStore) FileExtension() string {
+	return is.extension
+}
+
 func (is *imageStore) ReadImage(r io.ReadCloser) {
 	defer r.Close()
 
@@ -84,19 +90,21 @@ func (is *imageStore) ReadImage(r io.ReadCloser) {
 	is.mw = wand
 
 	if is.mw.GetNumberImages() == 1 {
-		is.saveName += ".jpg"
+		is.extension = "jpg"
 	} else {
-		is.saveName += ".gif"
+		is.extension = "gif"
 	}
+
+	is.saveName += "." + is.extension
 }
 
-func (is *imageStore) Fill(size uint, folder string) string {
+func (is *imageStore) Fill(size uint, folder string) *models.ImageSize {
 	return is.FillRect(size, size, folder)
 }
 
-func (is *imageStore) FillRect(width, height uint, folder string) string {
+func (is *imageStore) FillRect(width, height uint, folder string) *models.ImageSize {
 	if is.err != nil {
-		return ""
+		return nil
 	}
 
 	originWidth := is.mw.GetImageWidth()
@@ -130,27 +138,31 @@ func (is *imageStore) FillRect(width, height uint, folder string) string {
 		if crop {
 			is.err = wand.CropImage(cropWidth, cropHeight, x, y)
 			if is.err != nil {
-				return ""
+				return nil
 			}
 		}
 
 		is.err = wand.ThumbnailImage(width, height)
 		// is.err = wand.AdaptiveResizeImage(width, height)
 		if is.err != nil {
-			return ""
+			return nil
 		}
 	}
 
-	return is.saveImage(wand, folder)
+	return &models.ImageSize{
+		Width:  int64(width),
+		Height: int64(height),
+		URL:    is.saveImage(wand, folder),
+	}
 }
 
-func (is *imageStore) Fit(size uint, folder string) string {
+func (is *imageStore) Fit(size uint, folder string) *models.ImageSize {
 	return is.FitRect(size, size, folder)
 }
 
-func (is *imageStore) FitRect(width, height uint, folder string) string {
+func (is *imageStore) FitRect(width, height uint, folder string) *models.ImageSize {
 	if is.err != nil {
-		return ""
+		return nil
 	}
 
 	wand := is.mw.Clone()
@@ -160,7 +172,11 @@ func (is *imageStore) FitRect(width, height uint, folder string) string {
 	originWidth := is.mw.GetImageWidth()
 
 	if originHeight < height && originWidth < width {
-		return is.saveImage(wand, folder)
+		return &models.ImageSize{
+			Width:  int64(originWidth),
+			Height: int64(originHeight),
+			URL:    is.saveImage(wand, folder),
+		}
 	}
 
 	ratio := float64(width) / float64(height)
@@ -176,11 +192,15 @@ func (is *imageStore) FitRect(width, height uint, folder string) string {
 	for wand.NextImage() {
 		is.err = wand.ResizeImage(width, height, imagick.FILTER_CUBIC, 0.5)
 		if is.err != nil {
-			return ""
+			return nil
 		}
 	}
 
-	return is.saveImage(wand, folder)
+	return &models.ImageSize{
+		Width:  int64(width),
+		Height: int64(height),
+		URL:    is.saveImage(wand, folder),
+	}
 }
 
 func (is *imageStore) FolderRemove(folder, path string) {
@@ -201,7 +221,7 @@ func (is *imageStore) saveImage(wand *imagick.MagickWand, folder string) string 
 		return ""
 	}
 
-	is.err = wand.SetCompressionQuality(85)
+	is.err = wand.SetCompressionQuality(75)
 	if is.err != nil {
 		return ""
 	}
