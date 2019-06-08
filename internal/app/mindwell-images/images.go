@@ -138,3 +138,21 @@ func NewImageLoader(db *sql.DB, cfg *goconf.Config) func(images.GetImagesIDParam
 		})
 	}
 }
+
+func NewImageDeleter(db *sql.DB) func(images.DeleteImagesIDParams, *models.UserID) middleware.Responder {
+	return func(params images.DeleteImagesIDParams, userID *models.UserID) middleware.Responder {
+		return utils.Transact(db, func(tx *utils.AutoTx) middleware.Responder {
+			authorID := tx.QueryInt64("SELECT user_id FROM images WHERE id = $1", params.ID)
+			if authorID == 0 {
+				return images.NewDeleteImagesIDNotFound()
+			}
+
+			if authorID != userID.ID {
+				return images.NewDeleteImagesIDForbidden()
+			}
+
+			tx.Exec("DELETE FROM images WHERE id = $1", params.ID)
+			return images.NewDeleteImagesIDNoContent()
+		})
+	}
+}

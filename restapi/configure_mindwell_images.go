@@ -87,8 +87,10 @@ func configureAPI(api *operations.MindwellImagesAPI) http.Handler {
 
 	api.MePutMeAvatarHandler = me.PutMeAvatarHandlerFunc(imagesImpl.NewAvatarUpdater(db, config))
 	api.MePutMeCoverHandler = me.PutMeCoverHandlerFunc(imagesImpl.NewCoverUpdater(db, config))
+
 	api.ImagesPostImagesHandler = images.PostImagesHandlerFunc(imagesImpl.NewImageUploader(db, config))
 	api.ImagesGetImagesIDHandler = images.GetImagesIDHandlerFunc(imagesImpl.NewImageLoader(db, config))
+	api.ImagesDeleteImagesIDHandler = images.DeleteImagesIDHandlerFunc(imagesImpl.NewImageDeleter(db))
 
 	api.ServerShutdown = func() {
 		imagick.Terminate()
