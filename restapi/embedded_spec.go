@@ -1346,6 +1346,18 @@ func init() {
             "required": true
           },
           {
+            "maxItems": 5,
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int64"
+            },
+            "name": "images",
+            "in": "formData"
+          },
+          {
             "type": "boolean",
             "default": false,
             "name": "anonymous_comments",
@@ -1569,6 +1581,18 @@ func init() {
             "name": "content",
             "in": "formData",
             "required": true
+          },
+          {
+            "maxItems": 5,
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int64"
+            },
+            "name": "images",
+            "in": "formData"
           },
           {
             "enum": [
@@ -2620,6 +2644,18 @@ func init() {
             "required": true
           },
           {
+            "maxItems": 5,
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int64"
+            },
+            "name": "images",
+            "in": "formData"
+          },
+          {
             "enum": [
               "all",
               "followers",
@@ -3614,6 +3650,12 @@ func init() {
           "type": "integer",
           "format": "int64",
           "minimum": 1
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Image"
+          }
         },
         "inLive": {
           "type": "boolean"
@@ -5679,6 +5721,18 @@ func init() {
             "required": true
           },
           {
+            "maxItems": 5,
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int64"
+            },
+            "name": "images",
+            "in": "formData"
+          },
+          {
             "type": "boolean",
             "default": false,
             "name": "anonymous_comments",
@@ -5949,6 +6003,18 @@ func init() {
             "name": "content",
             "in": "formData",
             "required": true
+          },
+          {
+            "maxItems": 5,
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int64"
+            },
+            "name": "images",
+            "in": "formData"
           },
           {
             "enum": [
@@ -7125,6 +7191,18 @@ func init() {
             "required": true
           },
           {
+            "maxItems": 5,
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "minimum": 1,
+              "type": "integer",
+              "format": "int64"
+            },
+            "name": "images",
+            "in": "formData"
+          },
+          {
             "enum": [
               "all",
               "followers",
@@ -8263,6 +8341,12 @@ func init() {
           "type": "integer",
           "format": "int64",
           "minimum": 1
+        },
+        "images": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Image"
+          }
         },
         "inLive": {
           "type": "boolean"
