@@ -1,19 +1,17 @@
 package images
 
 import (
-	"database/sql"
 	"log"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/sevings/mindwell-images/models"
 	"github.com/sevings/mindwell-images/restapi/operations/me"
 	"github.com/sevings/mindwell-server/utils"
-	goconf "github.com/zpatrick/go-config"
 )
 
-func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutMeAvatarParams, *models.UserID) middleware.Responder {
+func NewAvatarUpdater(mi *MindwellImages) func(me.PutMeAvatarParams, *models.UserID) middleware.Responder {
 	return func(params me.PutMeAvatarParams, userID *models.UserID) middleware.Responder {
-		store := newImageStore(cfg)
+		store := newImageStore(mi)
 		defer store.Destroy()
 
 		store.ReadImage(params.File)
@@ -29,7 +27,7 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutMeAvatarParams,
 			return me.NewPutMeAvatarBadRequest()
 		}
 
-		return utils.Transact(db, func(tx *utils.AutoTx) middleware.Responder {
+		return utils.Transact(mi.DB(), func(tx *utils.AutoTx) middleware.Responder {
 			var old string
 			tx.Query("select avatar from users where id = $1", userID.ID).Scan(&old)
 			tx.Exec("update users set avatar = $2 where id = $1", userID.ID, store.FileName())
@@ -49,9 +47,9 @@ func NewAvatarUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutMeAvatarParams,
 	}
 }
 
-func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutMeCoverParams, *models.UserID) middleware.Responder {
+func NewCoverUpdater(mi *MindwellImages) func(me.PutMeCoverParams, *models.UserID) middleware.Responder {
 	return func(params me.PutMeCoverParams, userID *models.UserID) middleware.Responder {
-		store := newImageStore(cfg)
+		store := newImageStore(mi)
 		store.ReadImage(params.File)
 
 		cover := &models.Cover{
@@ -65,7 +63,7 @@ func NewCoverUpdater(db *sql.DB, cfg *goconf.Config) func(me.PutMeCoverParams, *
 			return me.NewPutMeCoverBadRequest()
 		}
 
-		return utils.Transact(db, func(tx *utils.AutoTx) middleware.Responder {
+		return utils.Transact(mi.DB(), func(tx *utils.AutoTx) middleware.Responder {
 			var old string
 			tx.Query("select cover from users where id = $1", userID.ID).Scan(&old)
 			tx.Exec("update users set cover = $2 where id = $1", userID.ID, store.FileName())

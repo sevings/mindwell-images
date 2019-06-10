@@ -2,7 +2,6 @@ package restapi
 
 import (
 	"crypto/tls"
-	"log"
 	"math/rand"
 	"net/http"
 	"os"
@@ -35,7 +34,7 @@ func configureAPI(api *operations.MindwellImagesAPI) http.Handler {
 	rand.Seed(time.Now().UTC().UnixNano())
 
 	config := utils.LoadConfig("configs/images")
-	db := utils.OpenDatabase(config)
+	mi := imagesImpl.NewMindwellImages(config)
 
 	// configure the api here
 	api.ServeError = errors.ServeError
@@ -54,16 +53,13 @@ func configureAPI(api *operations.MindwellImagesAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
-	apiSecret, err := config.String("server.api_secret")
-	if err != nil {
-		log.Println(err)
-	}
+	apiSecret := mi.ConfigString("server.api_secret")
 
 	// Applies when the "X-User-Key" header is set
-	keyAuth := utils.NewKeyAuth(db, []byte(apiSecret))
+	keyAuth := utils.NewKeyAuth(mi.DB(), []byte(apiSecret))
 	api.APIKeyHeaderAuth = func(apiKey string) (*models.UserID, error) {
 		id, err := keyAuth(apiKey)
-		userID := models.UserID{ // TODO: use new model
+		userID := models.UserID{
 			ID:             id.ID,
 			Name:           id.Name,
 			FollowersCount: id.FollowersCount,
@@ -85,12 +81,12 @@ func configureAPI(api *operations.MindwellImagesAPI) http.Handler {
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
 
-	api.MePutMeAvatarHandler = me.PutMeAvatarHandlerFunc(imagesImpl.NewAvatarUpdater(db, config))
-	api.MePutMeCoverHandler = me.PutMeCoverHandlerFunc(imagesImpl.NewCoverUpdater(db, config))
+	api.MePutMeAvatarHandler = me.PutMeAvatarHandlerFunc(imagesImpl.NewAvatarUpdater(mi))
+	api.MePutMeCoverHandler = me.PutMeCoverHandlerFunc(imagesImpl.NewCoverUpdater(mi))
 
-	api.ImagesPostImagesHandler = images.PostImagesHandlerFunc(imagesImpl.NewImageUploader(db, config))
-	api.ImagesGetImagesIDHandler = images.GetImagesIDHandlerFunc(imagesImpl.NewImageLoader(db, config))
-	api.ImagesDeleteImagesIDHandler = images.DeleteImagesIDHandlerFunc(imagesImpl.NewImageDeleter(db))
+	api.ImagesPostImagesHandler = images.PostImagesHandlerFunc(imagesImpl.NewImageUploader(mi))
+	api.ImagesGetImagesIDHandler = images.GetImagesIDHandlerFunc(imagesImpl.NewImageLoader(mi))
+	api.ImagesDeleteImagesIDHandler = images.DeleteImagesIDHandlerFunc(imagesImpl.NewImageDeleter(mi))
 
 	api.ServerShutdown = func() {
 		imagick.Terminate()

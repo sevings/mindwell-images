@@ -1,14 +1,12 @@
 package images
 
 import (
-	"database/sql"
 	"log"
 
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/sevings/mindwell-images/models"
 	"github.com/sevings/mindwell-images/restapi/operations/images"
 	"github.com/sevings/mindwell-server/utils"
-	goconf "github.com/zpatrick/go-config"
 )
 
 func saveImageSize(tx *utils.AutoTx, imageID, width, height int64, size string) {
@@ -20,9 +18,9 @@ func saveImageSize(tx *utils.AutoTx, imageID, width, height int64, size string) 
 	tx.Exec(q, imageID, size, width, height)
 }
 
-func NewImageUploader(db *sql.DB, cfg *goconf.Config) func(images.PostImagesParams, *models.UserID) middleware.Responder {
+func NewImageUploader(mi *MindwellImages) func(images.PostImagesParams, *models.UserID) middleware.Responder {
 	return func(params images.PostImagesParams, userID *models.UserID) middleware.Responder {
-		store := newImageStore(cfg)
+		store := newImageStore(mi)
 		store.ReadImage(params.File)
 
 		img := &models.Image{
@@ -42,7 +40,7 @@ func NewImageUploader(db *sql.DB, cfg *goconf.Config) func(images.PostImagesPara
 			return images.NewPostImagesBadRequest()
 		}
 
-		return utils.Transact(db, func(tx *utils.AutoTx) middleware.Responder {
+		return utils.Transact(mi.DB(), func(tx *utils.AutoTx) middleware.Responder {
 			tx.Query("INSERT INTO images(user_id, path, extension) VALUES($1, $2, $3) RETURNING id",
 				userID.ID, store.FileName(), store.FileExtension())
 			tx.Scan(&img.ID)
@@ -61,14 +59,9 @@ func NewImageUploader(db *sql.DB, cfg *goconf.Config) func(images.PostImagesPara
 	}
 }
 
-func NewImageLoader(db *sql.DB, cfg *goconf.Config) func(images.GetImagesIDParams, *models.UserID) middleware.Responder {
-	baseURL, err := cfg.String("images.base_url")
-	if err != nil {
-		log.Println(err)
-	}
-
+func NewImageLoader(mi *MindwellImages) func(images.GetImagesIDParams, *models.UserID) middleware.Responder {
 	return func(params images.GetImagesIDParams, userID *models.UserID) middleware.Responder {
-		return utils.Transact(db, func(tx *utils.AutoTx) middleware.Responder {
+		return utils.Transact(mi.DB(), func(tx *utils.AutoTx) middleware.Responder {
 			var authorID int64
 			var path, extension string
 
@@ -111,25 +104,25 @@ func NewImageLoader(db *sql.DB, cfg *goconf.Config) func(images.GetImagesIDParam
 					img.Thumbnail = &models.ImageSize{
 						Height: height,
 						Width:  width,
-						URL:    baseURL + "albums/thumbnails/" + path,
+						URL:    mi.BaseURL() + "albums/thumbnails/" + path,
 					}
 				case "small":
 					img.Small = &models.ImageSize{
 						Height: height,
 						Width:  width,
-						URL:    baseURL + "albums/small/" + path,
+						URL:    mi.BaseURL() + "albums/small/" + path,
 					}
 				case "medium":
 					img.Medium = &models.ImageSize{
 						Height: height,
 						Width:  width,
-						URL:    baseURL + "albums/medium/" + path,
+						URL:    mi.BaseURL() + "albums/medium/" + path,
 					}
 				case "large":
 					img.Large = &models.ImageSize{
 						Height: height,
 						Width:  width,
-						URL:    baseURL + "albums/large/" + path,
+						URL:    mi.BaseURL() + "albums/large/" + path,
 					}
 				}
 			}
@@ -139,9 +132,9 @@ func NewImageLoader(db *sql.DB, cfg *goconf.Config) func(images.GetImagesIDParam
 	}
 }
 
-func NewImageDeleter(db *sql.DB) func(images.DeleteImagesIDParams, *models.UserID) middleware.Responder {
+func NewImageDeleter(mi *MindwellImages) func(images.DeleteImagesIDParams, *models.UserID) middleware.Responder {
 	return func(params images.DeleteImagesIDParams, userID *models.UserID) middleware.Responder {
-		return utils.Transact(db, func(tx *utils.AutoTx) middleware.Responder {
+		return utils.Transact(mi.DB(), func(tx *utils.AutoTx) middleware.Responder {
 			authorID := tx.QueryInt64("SELECT user_id FROM images WHERE id = $1", params.ID)
 			if authorID == 0 {
 				return images.NewDeleteImagesIDNotFound()

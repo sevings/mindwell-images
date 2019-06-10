@@ -2,23 +2,20 @@ package images
 
 import (
 	"io"
-	"log"
 	"math"
 	"os"
 
 	"github.com/sevings/mindwell-images/models"
 	"github.com/sevings/mindwell-server/utils"
-	goconf "github.com/zpatrick/go-config"
 	"gopkg.in/gographics/imagick.v2/imagick"
 )
 
 type imageStore struct {
-	folder    string
-	baseURL   string
 	savePath  string
 	saveName  string
 	extension string
 	mw        *imagick.MagickWand
+	mi        *MindwellImages
 	err       error
 }
 
@@ -28,26 +25,15 @@ func (se storeError) Error() string {
 	return string(se)
 }
 
-func newImageStore(cfg *goconf.Config) *imageStore {
-	folder, err := cfg.String("images.folder")
-	if err != nil {
-		log.Println(err)
-	}
-
-	baseURL, err := cfg.String("images.base_url")
-	if err != nil {
-		log.Println(err)
-	}
-
+func newImageStore(mi *MindwellImages) *imageStore {
 	name := utils.GenerateString(10)
 	path := name[:1] + "/" + name[1:2] + "/"
 
 	return &imageStore{
-		folder:   folder,
-		baseURL:  baseURL,
 		savePath: path,
 		saveName: name[2:],
 		mw:       imagick.NewMagickWand(),
+		mi:       mi,
 	}
 }
 
@@ -60,7 +46,7 @@ func (is *imageStore) Error() error {
 }
 
 func (is *imageStore) Folder() string {
-	return is.folder
+	return is.mi.Folder()
 }
 
 func (is *imageStore) FileName() string {
@@ -212,7 +198,7 @@ func (is *imageStore) FolderRemove(folder, path string) {
 		return
 	}
 
-	is.err = os.Remove(is.folder + folder + "/" + path)
+	is.err = os.Remove(is.Folder() + folder + "/" + path)
 }
 
 func (is *imageStore) saveImage(wand *imagick.MagickWand, folder string) string {
@@ -227,16 +213,16 @@ func (is *imageStore) saveImage(wand *imagick.MagickWand, folder string) string 
 	}
 
 	path := folder + "/" + is.savePath
-	is.err = os.MkdirAll(is.folder+path, 0777)
+	is.err = os.MkdirAll(is.Folder()+path, 0777)
 	if is.err != nil {
 		return ""
 	}
 
 	fileName := path + is.saveName
-	is.err = wand.WriteImages(is.folder+fileName, true)
+	is.err = wand.WriteImages(is.Folder()+fileName, true)
 	if is.err != nil {
 		return ""
 	}
 
-	return is.baseURL + fileName
+	return is.mi.BaseURL() + fileName
 }
