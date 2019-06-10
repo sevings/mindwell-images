@@ -3894,6 +3894,9 @@ func init() {
         "medium": {
           "$ref": "#/definitions/ImageSize"
         },
+        "processing": {
+          "type": "boolean"
+        },
         "small": {
           "$ref": "#/definitions/ImageSize"
         },
@@ -8584,6 +8587,9 @@ func init() {
         },
         "medium": {
           "$ref": "#/definitions/ImageSize"
+        },
+        "processing": {
+          "type": "boolean"
         },
         "small": {
           "$ref": "#/definitions/ImageSize"

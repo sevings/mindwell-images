@@ -41,7 +41,7 @@ func NewImageUploader(mi *MindwellImages) func(images.PostImagesParams, *models.
 		}
 
 		return utils.Transact(mi.DB(), func(tx *utils.AutoTx) middleware.Responder {
-			tx.Query("INSERT INTO images(user_id, path, extension) VALUES($1, $2, $3) RETURNING id",
+			tx.Query("INSERT INTO images(user_id, path, extension, processing) VALUES($1, $2, $3, false) RETURNING id",
 				userID.ID, store.FileName(), store.FileExtension())
 			tx.Scan(&img.ID)
 
@@ -64,8 +64,10 @@ func NewImageLoader(mi *MindwellImages) func(images.GetImagesIDParams, *models.U
 		return utils.Transact(mi.DB(), func(tx *utils.AutoTx) middleware.Responder {
 			var authorID int64
 			var path, extension string
+			var processing bool
 
-			tx.Query("SELECT user_id, path, extension FROM images WHERE id = $1", params.ID).Scan(&authorID, &path, &extension)
+			tx.Query("SELECT user_id, path, extension, processing FROM images WHERE id = $1", params.ID).
+				Scan(&authorID, &path, &extension, &processing)
 			if authorID == 0 {
 				return images.NewGetImagesIDNotFound()
 			}
@@ -87,7 +89,12 @@ func NewImageLoader(mi *MindwellImages) func(images.GetImagesIDParams, *models.U
 				Author: &models.User{
 					ID: authorID,
 				},
-				Type: extension,
+				Type:       extension,
+				Processing: processing,
+			}
+
+			if processing {
+				return images.NewGetImagesIDOK().WithPayload(img)
 			}
 
 			var width, height int64

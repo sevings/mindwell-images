@@ -76,9 +76,9 @@ func (is *imageStore) ReadImage(r io.ReadCloser) {
 	is.mw = wand
 
 	if is.mw.GetNumberImages() == 1 {
-		is.extension = "jpg"
+		is.extension = models.ImageTypeJpg
 	} else {
-		is.extension = "gif"
+		is.extension = models.ImageTypeGif
 	}
 
 	is.saveName += "." + is.extension
