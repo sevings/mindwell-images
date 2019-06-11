@@ -10,25 +10,25 @@ import (
 )
 
 func setProcessingImage(mi *MindwellImages, img *models.Image) {
-	img.Thumbnail := &models.ImageSize {
+	img.Thumbnail = &models.ImageSize{
 		Width:  100,
 		Height: 100,
 		URL:    mi.BaseURL() + "albums/thumbnails/processing.jpg",
 	}
 
-	img.Small := &models.ImageSize {
+	img.Small = &models.ImageSize{
 		Width:  480,
 		Height: 360,
 		URL:    mi.BaseURL() + "albums/small/processing.jpg",
 	}
 
-	img.Medium := &models.ImageSize {
+	img.Medium = &models.ImageSize{
 		Width:  800,
 		Height: 600,
 		URL:    mi.BaseURL() + "albums/medium/processing.jpg",
 	}
 
-	img.Large := &models.ImageSize {
+	img.Large = &models.ImageSize{
 		Width:  1280,
 		Height: 960,
 		URL:    mi.BaseURL() + "albums/large/processing.jpg",

@@ -1,24 +1,22 @@
 package images
 
 import (
-	"database/sql"
 	"log"
 	"time"
 
-	"github.com/sevings/mindwell-images/models"
 	"github.com/sevings/mindwell-server/utils"
 )
 
-const {
+const (
 	ActionAvatar = "avatar"
 	ActionCover  = "cover"
 	ActionAlbum  = "album"
 	ActionDelete = "delete"
-}
+)
 
 type ImageProcessor struct {
 	act string
-	ID  int64
+	ID  int64 //image or user id
 	is  *imageStore
 	mi  *MindwellImages
 }
@@ -27,7 +25,7 @@ func (ip *ImageProcessor) Work() {
 	defer ip.is.Destroy()
 
 	start := time.Now()
-	log.Printf("Working: %s %S\n", ip.act, ip.is.FileName())
+	log.Printf("Working: %s %s\n", ip.act, ip.is.FileName())
 
 	switch ip.act {
 	case ActionAvatar:
@@ -42,7 +40,7 @@ func (ip *ImageProcessor) Work() {
 		log.Printf("Unknown ImageProcessor action: %s\n", ip.act)
 	}
 
-	elapsed := time.Since(start).Nanoseconds()/1000000
+	elapsed := time.Since(start).Nanoseconds() / 1000000
 	log.Printf("Done in %d ms\n", elapsed)
 }
 
@@ -56,7 +54,7 @@ func (ip *ImageProcessor) saveAvatar() {
 		return
 	}
 
-	tx := NewAutoTx(ip.mi.DB())
+	tx := utils.NewAutoTx(ip.mi.DB())
 	defer tx.Finish()
 
 	var old string
@@ -64,7 +62,7 @@ func (ip *ImageProcessor) saveAvatar() {
 	tx.Exec("update users set avatar = $2 where id = $1", ip.ID, ip.is.FileName())
 
 	if tx.Error() != nil {
-		return 
+		return
 	}
 
 	ip.is.FolderRemove("avatars/124", old)
@@ -85,12 +83,12 @@ func (ip *ImageProcessor) saveCover() {
 		return
 	}
 
-	tx := NewAutoTx(ip.mi.DB())
+	tx := utils.NewAutoTx(ip.mi.DB())
 	defer tx.Finish()
 
 	var old string
-	tx.Query("select cover from users where id = $1", userID.ID).Scan(&old)
-	tx.Exec("update users set cover = $2 where id = $1", userID.ID, ip.is.FileName())
+	tx.Query("select cover from users where id = $1", ip.ID).Scan(&old)
+	tx.Exec("update users set cover = $2 where id = $1", ip.ID, ip.is.FileName())
 
 	if tx.Error() != nil {
 		return
@@ -105,17 +103,17 @@ func (ip *ImageProcessor) saveCover() {
 }
 
 func (ip *ImageProcessor) saveAlbumPhoto() {
-	thumbnail = ip.is.Fill(100, "albums/thumbnails")
-	small     = ip.is.FitRect(480, 360, "albums/small")
-	medium    = ip.is.FitRect(800, 600, "albums/medium")
-	large     = ip.is.FitRect(1280, 960, "albums/large")
+	thumbnail := ip.is.Fill(100, "albums/thumbnails")
+	small := ip.is.FitRect(480, 360, "albums/small")
+	medium := ip.is.FitRect(800, 600, "albums/medium")
+	large := ip.is.FitRect(1280, 960, "albums/large")
 
 	if ip.is.Error() != nil {
 		log.Println(ip.is.Error())
 		return
 	}
 
-	tx := NewAutoTx(ip.mi.DB())
+	tx := utils.NewAutoTx(ip.mi.DB())
 	defer tx.Finish()
 
 	saveImageSize := func(tx *utils.AutoTx, imageID, width, height int64, size string) {
@@ -123,20 +121,20 @@ func (ip *ImageProcessor) saveAlbumPhoto() {
 			INSERT INTO image_sizes(image_id, size, width, height)
 			VALUES($1, (SELECT id FROM size WHERE type = $2), $3, $4)
 		`
-	
+
 		tx.Exec(q, imageID, size, width, height)
 	}
-	
+
 	saveImageSize(tx, ip.ID, thumbnail.Width, thumbnail.Height, "thumbnail")
 	saveImageSize(tx, ip.ID, small.Width, small.Height, "small")
 	saveImageSize(tx, ip.ID, medium.Width, medium.Height, "medium")
 	saveImageSize(tx, ip.ID, large.Width, large.Height, "large")
 
-	tx.Exec("UPDATE images SET processing = false WHERE id = $1", ip.img.ID)
+	tx.Exec("UPDATE images SET processing = false WHERE id = $1", ip.ID)
 }
 
 func (ip *ImageProcessor) deleteAlbumPhoto() {
-	tx := NewAutoTx(ip.mi.DB())
+	tx := utils.NewAutoTx(ip.mi.DB())
 	defer tx.Finish()
 
 	path := tx.QueryString("DELETE FROM images WHERE id = $1 RETURNING path", ip.ID)

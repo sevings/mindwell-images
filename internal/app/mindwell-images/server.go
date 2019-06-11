@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/sevings/mindwell-images/models"
 	"github.com/sevings/mindwell-server/utils"
 
 	"github.com/zpatrick/go-config"
@@ -35,7 +34,7 @@ func NewMindwellImages(cfg *config.Config) *MindwellImages {
 			act.Work()
 		}
 		mi.stop <- true
-	}
+	}()
 
 	return mi
 }
@@ -68,5 +67,5 @@ func (mi *MindwellImages) QueueAction(is *imageStore, ID int64, action string) {
 
 func (mi *MindwellImages) Shutdown() {
 	close(mi.acts)
-	<- mi.stop
+	<-mi.stop
 }
