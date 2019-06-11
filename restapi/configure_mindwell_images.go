@@ -89,6 +89,7 @@ func configureAPI(api *operations.MindwellImagesAPI) http.Handler {
 	api.ImagesDeleteImagesIDHandler = images.DeleteImagesIDHandlerFunc(imagesImpl.NewImageDeleter(mi))
 
 	api.ServerShutdown = func() {
+		mi.Shutdown()
 		imagick.Terminate()
 	}
 

@@ -9,13 +9,30 @@ import (
 	"github.com/sevings/mindwell-server/utils"
 )
 
-func saveImageSize(tx *utils.AutoTx, imageID, width, height int64, size string) {
-	const q = `
-		INSERT INTO image_sizes(image_id, size, width, height)
-		VALUES($1, (SELECT id FROM size WHERE type = $2), $3, $4)
-	`
+func setProcessingImage(mi *MindwellImages, img *models.Image) {
+	img.Thumbnail := &models.ImageSize {
+		Width:  100,
+		Height: 100,
+		URL:    mi.BaseURL() + "albums/thumbnails/processing.jpg",
+	}
 
-	tx.Exec(q, imageID, size, width, height)
+	img.Small := &models.ImageSize {
+		Width:  480,
+		Height: 360,
+		URL:    mi.BaseURL() + "albums/small/processing.jpg",
+	}
+
+	img.Medium := &models.ImageSize {
+		Width:  800,
+		Height: 600,
+		URL:    mi.BaseURL() + "albums/medium/processing.jpg",
+	}
+
+	img.Large := &models.ImageSize {
+		Width:  1280,
+		Height: 960,
+		URL:    mi.BaseURL() + "albums/large/processing.jpg",
+	}
 }
 
 func NewImageUploader(mi *MindwellImages) func(images.PostImagesParams, *models.UserID) middleware.Responder {
@@ -23,36 +40,31 @@ func NewImageUploader(mi *MindwellImages) func(images.PostImagesParams, *models.
 		store := newImageStore(mi)
 		store.ReadImage(params.File)
 
-		img := &models.Image{
-			Author: &models.User{
-				ID:   userID.ID,
-				Name: userID.Name,
-			},
-			Type:      store.FileExtension(),
-			Thumbnail: store.Fill(100, "albums/thumbnails"),
-			Small:     store.FitRect(480, 360, "albums/small"),
-			Medium:    store.FitRect(800, 600, "albums/medium"),
-			Large:     store.FitRect(1280, 960, "albums/large"),
-		}
-
 		if store.Error() != nil {
 			log.Print(store.Error())
 			return images.NewPostImagesBadRequest()
 		}
 
-		return utils.Transact(mi.DB(), func(tx *utils.AutoTx) middleware.Responder {
-			tx.Query("INSERT INTO images(user_id, path, extension, processing) VALUES($1, $2, $3, false) RETURNING id",
-				userID.ID, store.FileName(), store.FileExtension())
-			tx.Scan(&img.ID)
+		img := &models.Image{
+			Author: &models.User{
+				ID:   userID.ID,
+				Name: userID.Name,
+			},
+			Type:       store.FileExtension(),
+			Processing: true,
+		}
 
-			saveImageSize(tx, img.ID, img.Thumbnail.Width, img.Thumbnail.Height, "thumbnail")
-			saveImageSize(tx, img.ID, img.Small.Width, img.Small.Height, "small")
-			saveImageSize(tx, img.ID, img.Medium.Width, img.Medium.Height, "medium")
-			saveImageSize(tx, img.ID, img.Large.Width, img.Large.Height, "large")
+		return utils.Transact(mi.DB(), func(tx *utils.AutoTx) middleware.Responder {
+			tx.Query("INSERT INTO images(user_id, path, extension, processing) VALUES($1, $2, $3, $4) RETURNING id",
+				userID.ID, store.FileName(), store.FileExtension(), img.Processing)
+			tx.Scan(&img.ID)
 
 			if tx.Error() != nil {
 				return images.NewPostImagesBadRequest()
 			}
+
+			setProcessingImage(mi, img)
+			mi.QueueAction(store, img.ID, ActionAlbum)
 
 			return images.NewPostImagesOK().WithPayload(img)
 		})
@@ -94,6 +106,7 @@ func NewImageLoader(mi *MindwellImages) func(images.GetImagesIDParams, *models.U
 			}
 
 			if processing {
+				setProcessingImage(mi, img)
 				return images.NewGetImagesIDOK().WithPayload(img)
 			}
 
@@ -151,7 +164,9 @@ func NewImageDeleter(mi *MindwellImages) func(images.DeleteImagesIDParams, *mode
 				return images.NewDeleteImagesIDForbidden()
 			}
 
-			tx.Exec("DELETE FROM images WHERE id = $1", params.ID)
+			store := newImageStore(mi)
+			mi.QueueAction(store, params.ID, ActionDelete)
+
 			return images.NewDeleteImagesIDNoContent()
 		})
 	}
