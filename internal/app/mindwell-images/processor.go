@@ -62,7 +62,9 @@ func (ip *ImageProcessor) saveAvatar() {
 
 	var old string
 	tx.Query("select avatar from users where id = $1", ip.ID).Scan(&old)
-	tx.Exec("update users set avatar = $2 where id = $1", ip.ID, ip.is.FileName())
+
+	path := ip.is.FileName() + "." + ip.is.FileExtension()
+	tx.Exec("update users set avatar = $2 where id = $1", ip.ID, path)
 
 	if tx.Error() != nil {
 		return
@@ -93,7 +95,9 @@ func (ip *ImageProcessor) saveCover() {
 
 	var old string
 	tx.Query("select cover from users where id = $1", ip.ID).Scan(&old)
-	tx.Exec("update users set cover = $2 where id = $1", ip.ID, ip.is.FileName())
+
+	path := ip.is.FileName() + "." + ip.is.FileExtension()
+	tx.Exec("update users set cover = $2 where id = $1", ip.ID, path)
 
 	if tx.Error() != nil {
 		return
