@@ -71,10 +71,6 @@ func (is *imageStore) ReadImage(r io.ReadCloser) {
 		return
 	}
 
-	wand := is.mw.CoalesceImages()
-	is.mw.Destroy()
-	is.mw = wand
-
 	if is.mw.GetNumberImages() == 1 {
 		is.extension = models.ImageTypeJpg
 	} else {
@@ -82,6 +78,16 @@ func (is *imageStore) ReadImage(r io.ReadCloser) {
 	}
 
 	is.saveName += "." + is.extension
+}
+
+func (is *imageStore) PrepareImage() {
+	if is.extension != models.ImageTypeGif {
+		return
+	}
+
+	wand := is.mw.CoalesceImages()
+	is.mw.Destroy()
+	is.mw = wand
 }
 
 func (is *imageStore) Fill(size uint, folder string) *models.ImageSize {
@@ -129,7 +135,6 @@ func (is *imageStore) FillRect(width, height uint, folder string) *models.ImageS
 		}
 
 		is.err = wand.ThumbnailImage(width, height)
-		// is.err = wand.AdaptiveResizeImage(width, height)
 		if is.err != nil {
 			return nil
 		}
@@ -202,14 +207,44 @@ func (is *imageStore) FolderRemove(folder, path string) {
 }
 
 func (is *imageStore) saveImage(wand *imagick.MagickWand, folder string) string {
+	wand = wand.OptimizeImageLayers()
+	defer wand.Destroy()
+
 	is.err = wand.OptimizeImageTransparency()
 	if is.err != nil {
 		return ""
 	}
 
-	is.err = wand.SetCompressionQuality(75)
+	is.err = wand.StripImage()
 	if is.err != nil {
 		return ""
+	}
+
+	if is.extension == models.ImageTypeJpg {
+		is.err = wand.SetImageCompression(imagick.COMPRESSION_JPEG)
+		if is.err != nil {
+			return ""
+		}
+
+		is.err = wand.SetImageInterlaceScheme(imagick.INTERLACE_JPEG)
+		if is.err != nil {
+			return ""
+		}
+
+		is.err = wand.SetImageCompressionQuality(80)
+		if is.err != nil {
+			return ""
+		}
+	} else {
+		is.err = wand.SetImageCompression(imagick.COMPRESSION_LZW)
+		if is.err != nil {
+			return ""
+		}
+
+		is.err = wand.SetImageInterlaceScheme(imagick.INTERLACE_GIF)
+		if is.err != nil {
+			return ""
+		}
 	}
 
 	path := folder + "/" + is.savePath

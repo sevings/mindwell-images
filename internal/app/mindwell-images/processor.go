@@ -45,6 +45,8 @@ func (ip *ImageProcessor) Work() {
 }
 
 func (ip *ImageProcessor) saveAvatar() {
+	ip.is.PrepareImage()
+
 	ip.is.Fill(124, "avatars/124")
 	ip.is.Fill(92, "avatars/92")
 	ip.is.Fill(42, "avatars/42")
@@ -75,6 +77,8 @@ func (ip *ImageProcessor) saveAvatar() {
 }
 
 func (ip *ImageProcessor) saveCover() {
+	ip.is.PrepareImage()
+
 	ip.is.FillRect(1920, 640, "covers/1920")
 	ip.is.FillRect(318, 122, "covers/318")
 
@@ -103,6 +107,8 @@ func (ip *ImageProcessor) saveCover() {
 }
 
 func (ip *ImageProcessor) saveAlbumPhoto() {
+	ip.is.PrepareImage()
+
 	thumbnail := ip.is.Fill(100, "albums/thumbnails")
 	small := ip.is.FitRect(480, 360, "albums/small")
 	medium := ip.is.FitRect(800, 600, "albums/medium")
