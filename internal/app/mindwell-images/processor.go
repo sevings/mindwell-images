@@ -4,6 +4,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/sevings/mindwell-images/models"
 	"github.com/sevings/mindwell-server/utils"
 )
 
@@ -143,15 +144,25 @@ func (ip *ImageProcessor) deleteAlbumPhoto() {
 	tx := utils.NewAutoTx(ip.mi.DB())
 	defer tx.Finish()
 
-	path := tx.QueryString("DELETE FROM images WHERE id = $1 RETURNING path", ip.ID)
+	var path, extension string
+	tx.Query("DELETE FROM images WHERE id = $1 RETURNING path, extension", ip.ID).Scan(&path, &extension)
 	if tx.Error() != nil {
 		return
 	}
 
-	ip.is.FolderRemove("albums/thumbnails", path)
-	ip.is.FolderRemove("albums/small", path)
-	ip.is.FolderRemove("albums/medium", path)
-	ip.is.FolderRemove("albums/large", path)
+	filePath := path + "." + extension
+	ip.is.FolderRemove("albums/thumbnails", filePath)
+	ip.is.FolderRemove("albums/small", filePath)
+	ip.is.FolderRemove("albums/medium", filePath)
+	ip.is.FolderRemove("albums/large", filePath)
+
+	if extension == models.ImageTypeGif {
+		previewPath := path + ".jpg"
+		ip.is.FolderRemove("albums/thumbnails", previewPath)
+		ip.is.FolderRemove("albums/small", previewPath)
+		ip.is.FolderRemove("albums/medium", previewPath)
+		ip.is.FolderRemove("albums/large", previewPath)
+	}
 
 	if ip.is.Error() != nil {
 		log.Print(ip.is.Error())

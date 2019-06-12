@@ -76,8 +76,6 @@ func (is *imageStore) ReadImage(r io.ReadCloser) {
 	} else {
 		is.extension = models.ImageTypeGif
 	}
-
-	is.saveName += "." + is.extension
 }
 
 func (is *imageStore) PrepareImage() {
@@ -140,11 +138,7 @@ func (is *imageStore) FillRect(width, height uint, folder string) *models.ImageS
 		}
 	}
 
-	return &models.ImageSize{
-		Width:  int64(width),
-		Height: int64(height),
-		URL:    is.saveImage(wand, folder),
-	}
+	return is.saveImageSize(wand, folder, width, height)
 }
 
 func (is *imageStore) Fit(size uint, folder string) *models.ImageSize {
@@ -163,11 +157,7 @@ func (is *imageStore) FitRect(width, height uint, folder string) *models.ImageSi
 	originWidth := is.mw.GetImageWidth()
 
 	if originHeight < height && originWidth < width {
-		return &models.ImageSize{
-			Width:  int64(originWidth),
-			Height: int64(originHeight),
-			URL:    is.saveImage(wand, folder),
-		}
+		return is.saveImageSize(wand, folder, width, height)
 	}
 
 	ratio := float64(width) / float64(height)
@@ -187,11 +177,7 @@ func (is *imageStore) FitRect(width, height uint, folder string) *models.ImageSi
 		}
 	}
 
-	return &models.ImageSize{
-		Width:  int64(width),
-		Height: int64(height),
-		URL:    is.saveImage(wand, folder),
-	}
+	return is.saveImageSize(wand, folder, width, height)
 }
 
 func (is *imageStore) FolderRemove(folder, path string) {
@@ -206,7 +192,21 @@ func (is *imageStore) FolderRemove(folder, path string) {
 	is.err = os.Remove(is.Folder() + folder + "/" + path)
 }
 
-func (is *imageStore) saveImage(wand *imagick.MagickWand, folder string) string {
+func (is *imageStore) saveImageSize(wand *imagick.MagickWand, folder string, width, height uint) *models.ImageSize {
+	img := &models.ImageSize{
+		Width:  int64(width),
+		Height: int64(height),
+		URL:    is.saveImage(wand, folder, is.extension),
+	}
+
+	if is.extension == models.ImageTypeGif {
+		img.Preview = is.saveImage(wand, folder, models.ImageTypeJpg)
+	}
+
+	return img
+}
+
+func (is *imageStore) saveImage(wand *imagick.MagickWand, folder, extension string) string {
 	wand = wand.OptimizeImageLayers()
 	defer wand.Destroy()
 
@@ -220,7 +220,7 @@ func (is *imageStore) saveImage(wand *imagick.MagickWand, folder string) string 
 		return ""
 	}
 
-	if is.extension == models.ImageTypeJpg {
+	if extension == models.ImageTypeJpg {
 		is.err = wand.SetImageCompression(imagick.COMPRESSION_JPEG)
 		if is.err != nil {
 			return ""
@@ -253,8 +253,13 @@ func (is *imageStore) saveImage(wand *imagick.MagickWand, folder string) string 
 		return ""
 	}
 
-	fileName := path + is.saveName
-	is.err = wand.WriteImages(is.Folder()+fileName, true)
+	fileName := path + is.saveName + "." + extension
+
+	if extension == models.ImageTypeJpg {
+		is.err = wand.WriteImage(is.Folder() + fileName)
+	} else {
+		is.err = wand.WriteImages(is.Folder()+fileName, true)
+	}
 	if is.err != nil {
 		return ""
 	}

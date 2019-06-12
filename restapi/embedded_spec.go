@@ -3935,6 +3935,9 @@ func init() {
         "height": {
           "type": "integer"
         },
+        "preview": {
+          "type": "string"
+        },
         "url": {
           "type": "string"
         },
@@ -8622,6 +8625,9 @@ func init() {
       "properties": {
         "height": {
           "type": "integer"
+        },
+        "preview": {
+          "type": "string"
         },
         "url": {
           "type": "string"

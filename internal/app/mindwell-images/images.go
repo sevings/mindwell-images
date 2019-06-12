@@ -118,31 +118,54 @@ func NewImageLoader(mi *MindwellImages) func(images.GetImagesIDParams, *models.U
 				WHERE image_sizes.image_id = $1
 			`, params.ID)
 
+			filePath := path + "." + extension
+
+			var previewPath string
+			if extension == models.ImageTypeGif {
+				previewPath = path + ".jpg"
+			}
+
+			if extension == models.ImageTypeGif {
+				previewPath += ".jpg"
+			}
+
 			for tx.Scan(&width, &height, &size) {
 				switch size {
 				case "thumbnail":
 					img.Thumbnail = &models.ImageSize{
 						Height: height,
 						Width:  width,
-						URL:    mi.BaseURL() + "albums/thumbnails/" + path,
+						URL:    mi.BaseURL() + "albums/thumbnails/" + filePath,
+					}
+					if extension == models.ImageTypeGif {
+						img.Thumbnail.Preview = mi.BaseURL() + "albums/thumbnails/" + previewPath
 					}
 				case "small":
 					img.Small = &models.ImageSize{
 						Height: height,
 						Width:  width,
-						URL:    mi.BaseURL() + "albums/small/" + path,
+						URL:    mi.BaseURL() + "albums/small/" + filePath,
+					}
+					if extension == models.ImageTypeGif {
+						img.Small.Preview = mi.BaseURL() + "albums/small/" + previewPath
 					}
 				case "medium":
 					img.Medium = &models.ImageSize{
 						Height: height,
 						Width:  width,
-						URL:    mi.BaseURL() + "albums/medium/" + path,
+						URL:    mi.BaseURL() + "albums/medium/" + filePath,
+					}
+					if extension == models.ImageTypeGif {
+						img.Medium.Preview = mi.BaseURL() + "albums/medium/" + previewPath
 					}
 				case "large":
 					img.Large = &models.ImageSize{
 						Height: height,
 						Width:  width,
-						URL:    mi.BaseURL() + "albums/large/" + path,
+						URL:    mi.BaseURL() + "albums/large/" + filePath,
+					}
+					if extension == models.ImageTypeGif {
+						img.Large.Preview = mi.BaseURL() + "albums/large/" + previewPath
 					}
 				}
 			}
