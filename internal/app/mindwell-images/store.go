@@ -207,44 +207,9 @@ func (is *imageStore) saveImageSize(wand *imagick.MagickWand, folder string, wid
 }
 
 func (is *imageStore) saveImage(wand *imagick.MagickWand, folder, extension string) string {
-	wand = wand.OptimizeImageLayers()
-	defer wand.Destroy()
-
-	is.err = wand.OptimizeImageTransparency()
-	if is.err != nil {
-		return ""
-	}
-
 	is.err = wand.StripImage()
 	if is.err != nil {
 		return ""
-	}
-
-	if extension == models.ImageTypeJpg {
-		is.err = wand.SetImageCompression(imagick.COMPRESSION_JPEG)
-		if is.err != nil {
-			return ""
-		}
-
-		is.err = wand.SetImageInterlaceScheme(imagick.INTERLACE_JPEG)
-		if is.err != nil {
-			return ""
-		}
-
-		is.err = wand.SetImageCompressionQuality(80)
-		if is.err != nil {
-			return ""
-		}
-	} else {
-		is.err = wand.SetImageCompression(imagick.COMPRESSION_LZW)
-		if is.err != nil {
-			return ""
-		}
-
-		is.err = wand.SetImageInterlaceScheme(imagick.INTERLACE_GIF)
-		if is.err != nil {
-			return ""
-		}
 	}
 
 	path := folder + "/" + is.savePath
@@ -256,13 +221,55 @@ func (is *imageStore) saveImage(wand *imagick.MagickWand, folder, extension stri
 	fileName := path + is.saveName + "." + extension
 
 	if extension == models.ImageTypeJpg {
-		is.err = wand.WriteImage(is.Folder() + fileName)
+		is.saveJpeg(wand, fileName)
 	} else {
-		is.err = wand.WriteImages(is.Folder()+fileName, true)
+		is.saveGif(wand, fileName)
 	}
+
 	if is.err != nil {
 		return ""
 	}
 
 	return is.mi.BaseURL() + fileName
+}
+
+func (is *imageStore) saveJpeg(wand *imagick.MagickWand, fileName string) {
+	is.err = wand.SetImageCompression(imagick.COMPRESSION_JPEG)
+	if is.err != nil {
+		return
+	}
+
+	is.err = wand.SetImageInterlaceScheme(imagick.INTERLACE_JPEG)
+	if is.err != nil {
+		return
+	}
+
+	is.err = wand.SetImageCompressionQuality(80)
+	if is.err != nil {
+		return
+	}
+
+	is.err = wand.WriteImage(is.Folder() + fileName)
+}
+
+func (is *imageStore) saveGif(wand *imagick.MagickWand, fileName string) {
+	wand = wand.DeconstructImages()
+	defer wand.Destroy()
+
+	is.err = wand.OptimizeImageTransparency()
+	if is.err != nil {
+		return
+	}
+
+	is.err = wand.SetImageCompression(imagick.COMPRESSION_LZW)
+	if is.err != nil {
+		return
+	}
+
+	is.err = wand.SetImageInterlaceScheme(imagick.INTERLACE_GIF)
+	if is.err != nil {
+		return
+	}
+
+	is.err = wand.WriteImages(is.Folder()+fileName, true)
 }
