@@ -113,12 +113,27 @@ func configureServer(s *http.Server, scheme, addr string) {
 // The middleware configuration is for the handler executors. These do not apply to the swagger.json document.
 // The middleware executes after routing but before authentication, binding and validation
 func setupMiddlewares(handler http.Handler) http.Handler {
-	lmt := tollbooth.NewLimiter(1, &limiter.ExpirableOptions{DefaultExpirationTTL: time.Hour})
-	lmt.SetIPLookups([]string{"X-Forwarded-For"})
-	lmt.SetMessage(`{"message":"You have reached maximum request limit."}`)
-	lmt.SetMessageContentType("application/json")
+	getLmt := tollbooth.NewLimiter(5, &limiter.ExpirableOptions{DefaultExpirationTTL: time.Hour})
+	getLmt.SetIPLookups([]string{"X-Forwarded-For"})
+	getLmt.SetMessage(`{"message":"Превышено максимальное число запросов."}`)
+	getLmt.SetMessageContentType("application/json")
+	getLmtHandler := tollbooth.LimitHandler(getLmt, handler)
 
-	return tollbooth.LimitHandler(lmt, handler)
+	postLmt := limiter.New(&limiter.ExpirableOptions{DefaultExpirationTTL: time.Hour}).SetMax(1 / 3600.0).SetBurst(20)
+	postLmt.SetIPLookups([]string{"X-Forwarded-For"})
+	postLmt.SetMessage(`{"message":"Превышено максимальное число загрузок."}`)
+	postLmt.SetMessageContentType("application/json")
+	postLmtHandler := tollbooth.LimitHandler(postLmt, handler)
+
+	lmtFunc := func(resp http.ResponseWriter, req *http.Request) {
+		if req.Method == http.MethodPost || req.Method == http.MethodPut {
+			postLmtHandler.ServeHTTP(resp, req)
+		} else {
+			getLmtHandler.ServeHTTP(resp, req)
+		}
+	}
+
+	return http.HandlerFunc(lmtFunc)
 }
 
 // The middleware configuration happens before anything, this middleware also applies to serving the swagger.json document.
