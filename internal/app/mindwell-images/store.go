@@ -79,13 +79,49 @@ func (is *imageStore) ReadImage(r io.ReadCloser) {
 }
 
 func (is *imageStore) PrepareImage() {
-	if is.extension != models.ImageTypeGif {
-		return
+	if is.extension == models.ImageTypeGif {
+		is.prepareGif()
+	} else {
+		is.prepareJpeg()
 	}
 
+	is.err = is.mw.StripImage()
+}
+
+func (is *imageStore) prepareGif() {
 	wand := is.mw.CoalesceImages()
 	is.mw.Destroy()
 	is.mw = wand
+}
+
+func (is *imageStore) prepareJpeg() {
+	orient := is.mw.GetImageOrientation()
+	if orient == imagick.ORIENTATION_TOP_LEFT {
+		return
+	}
+
+	pw := imagick.NewPixelWand()
+	defer pw.Destroy()
+
+	switch orient {
+	case imagick.ORIENTATION_TOP_RIGHT:
+		is.mw.FlopImage()
+	case imagick.ORIENTATION_BOTTOM_RIGHT:
+		is.mw.RotateImage(pw, 180)
+	case imagick.ORIENTATION_BOTTOM_LEFT:
+		is.mw.FlopImage()
+		is.mw.RotateImage(pw, 180)
+	case imagick.ORIENTATION_LEFT_TOP:
+		is.mw.FlopImage()
+		is.mw.RotateImage(pw, -90)
+	case imagick.ORIENTATION_RIGHT_TOP:
+		is.mw.RotateImage(pw, 90)
+	case imagick.ORIENTATION_RIGHT_BOTTOM:
+		is.mw.FlopImage()
+		is.mw.RotateImage(pw, 90)
+	case imagick.ORIENTATION_LEFT_BOTTOM:
+		is.mw.RotateImage(pw, -90)
+	}
 }
 
 func (is *imageStore) Fill(size uint, folder string) *models.ImageSize {
@@ -207,11 +243,6 @@ func (is *imageStore) saveImageSize(wand *imagick.MagickWand, folder string, wid
 }
 
 func (is *imageStore) saveImage(wand *imagick.MagickWand, folder, extension string) string {
-	is.err = wand.StripImage()
-	if is.err != nil {
-		return ""
-	}
-
 	path := folder + "/" + is.savePath
 	is.err = os.MkdirAll(is.Folder()+path, 0777)
 	if is.err != nil {
