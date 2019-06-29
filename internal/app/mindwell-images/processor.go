@@ -42,6 +42,13 @@ func (ip *ImageProcessor) Work() {
 
 	elapsed := time.Since(start).Nanoseconds() / 1000000
 	log.Printf("Done in %d ms\n", elapsed)
+
+	// let other processes do their work too
+	if elapsed > 1000 {
+		period := elapsed / 4
+		log.Printf("Sleeping for %d ms...\n", period)
+		time.Sleep(time.Duration(period) * time.Millisecond)
+	}
 }
 
 func (ip *ImageProcessor) saveAvatar() {
