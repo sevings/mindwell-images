@@ -4,7 +4,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/sevings/mindwell-images/models"
 	"github.com/sevings/mindwell-server/utils"
 )
 
@@ -160,7 +159,7 @@ func (ip *ImageProcessor) deleteAlbumPhoto() {
 	ip.is.FolderRemove("albums/medium", filePath)
 	ip.is.FolderRemove("albums/large", filePath)
 
-	if extension == models.ImageTypeGif {
+	if extension == imageExtensionGif {
 		previewPath := path + ".jpg"
 		ip.is.FolderRemove("albums/thumbnails", previewPath)
 		ip.is.FolderRemove("albums/small", previewPath)

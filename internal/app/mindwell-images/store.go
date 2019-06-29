@@ -10,6 +10,9 @@ import (
 	"gopkg.in/gographics/imagick.v2/imagick"
 )
 
+const imageExtensionJpg = "jpg"
+const imageExtensionGif = "gif"
+
 type imageStore struct {
 	savePath  string
 	saveName  string
@@ -57,6 +60,10 @@ func (is *imageStore) FileExtension() string {
 	return is.extension
 }
 
+func (is *imageStore) IsAnimated() bool {
+	return is.extension == imageExtensionGif
+}
+
 func (is *imageStore) ReadImage(r io.ReadCloser) {
 	defer r.Close()
 
@@ -72,14 +79,14 @@ func (is *imageStore) ReadImage(r io.ReadCloser) {
 	}
 
 	if is.mw.GetNumberImages() == 1 {
-		is.extension = models.ImageTypeJpg
+		is.extension = imageExtensionJpg
 	} else {
-		is.extension = models.ImageTypeGif
+		is.extension = imageExtensionGif
 	}
 }
 
 func (is *imageStore) PrepareImage() {
-	if is.extension == models.ImageTypeGif {
+	if is.extension == imageExtensionGif {
 		is.prepareGif()
 	} else {
 		is.prepareJpeg()
@@ -235,8 +242,8 @@ func (is *imageStore) saveImageSize(wand *imagick.MagickWand, folder string, wid
 		URL:    is.saveImage(wand, folder, is.extension),
 	}
 
-	if is.extension == models.ImageTypeGif {
-		img.Preview = is.saveImage(wand, folder, models.ImageTypeJpg)
+	if is.extension == imageExtensionGif {
+		img.Preview = is.saveImage(wand, folder, imageExtensionJpg)
 	}
 
 	return img
@@ -251,7 +258,7 @@ func (is *imageStore) saveImage(wand *imagick.MagickWand, folder, extension stri
 
 	fileName := path + is.saveName + "." + extension
 
-	if extension == models.ImageTypeJpg {
+	if extension == imageExtensionJpg {
 		is.saveJpeg(wand, fileName)
 	} else {
 		is.saveGif(wand, fileName)

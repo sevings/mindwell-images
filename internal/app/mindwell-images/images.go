@@ -50,7 +50,7 @@ func NewImageUploader(mi *MindwellImages) func(images.PostImagesParams, *models.
 				ID:   userID.ID,
 				Name: userID.Name,
 			},
-			Type:       store.FileExtension(),
+			IsAnimated: store.IsAnimated(),
 			Processing: true,
 		}
 
@@ -101,7 +101,7 @@ func NewImageLoader(mi *MindwellImages) func(images.GetImagesIDParams, *models.U
 				Author: &models.User{
 					ID: authorID,
 				},
-				Type:       extension,
+				IsAnimated: extension == imageExtensionGif && !processing,
 				Processing: processing,
 			}
 
@@ -121,12 +121,8 @@ func NewImageLoader(mi *MindwellImages) func(images.GetImagesIDParams, *models.U
 			filePath := path + "." + extension
 
 			var previewPath string
-			if extension == models.ImageTypeGif {
+			if img.IsAnimated {
 				previewPath = path + ".jpg"
-			}
-
-			if extension == models.ImageTypeGif {
-				previewPath += ".jpg"
 			}
 
 			for tx.Scan(&width, &height, &size) {
@@ -137,7 +133,7 @@ func NewImageLoader(mi *MindwellImages) func(images.GetImagesIDParams, *models.U
 						Width:  width,
 						URL:    mi.BaseURL() + "albums/thumbnails/" + filePath,
 					}
-					if extension == models.ImageTypeGif {
+					if img.IsAnimated {
 						img.Thumbnail.Preview = mi.BaseURL() + "albums/thumbnails/" + previewPath
 					}
 				case "small":
@@ -146,7 +142,7 @@ func NewImageLoader(mi *MindwellImages) func(images.GetImagesIDParams, *models.U
 						Width:  width,
 						URL:    mi.BaseURL() + "albums/small/" + filePath,
 					}
-					if extension == models.ImageTypeGif {
+					if img.IsAnimated {
 						img.Small.Preview = mi.BaseURL() + "albums/small/" + previewPath
 					}
 				case "medium":
@@ -155,7 +151,7 @@ func NewImageLoader(mi *MindwellImages) func(images.GetImagesIDParams, *models.U
 						Width:  width,
 						URL:    mi.BaseURL() + "albums/medium/" + filePath,
 					}
-					if extension == models.ImageTypeGif {
+					if img.IsAnimated {
 						img.Medium.Preview = mi.BaseURL() + "albums/medium/" + previewPath
 					}
 				case "large":
@@ -164,7 +160,7 @@ func NewImageLoader(mi *MindwellImages) func(images.GetImagesIDParams, *models.U
 						Width:  width,
 						URL:    mi.BaseURL() + "albums/large/" + filePath,
 					}
-					if extension == models.ImageTypeGif {
+					if img.IsAnimated {
 						img.Large.Preview = mi.BaseURL() + "albums/large/" + previewPath
 					}
 				}
