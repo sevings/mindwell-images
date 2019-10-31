@@ -4,9 +4,11 @@ import (
 	"io"
 	"math"
 	"os"
+	"strconv"
+
+	"github.com/sevings/mindwell-server/utils"
 
 	"github.com/sevings/mindwell-images/models"
-	"github.com/sevings/mindwell-server/utils"
 	"gopkg.in/gographics/imagick.v2/imagick"
 )
 
@@ -29,8 +31,8 @@ func (se storeError) Error() string {
 }
 
 func newImageStore(mi *MindwellImages) *imageStore {
-	name := utils.GenerateString(10)
-	path := name[:1] + "/" + name[1:2] + "/"
+	name := utils.GenerateString(8)
+	path := name[0] + "/" + name[1] + "/"
 
 	return &imageStore{
 		savePath: path,
@@ -83,6 +85,10 @@ func (is *imageStore) ReadImage(r io.ReadCloser) {
 	} else {
 		is.extension = imageExtensionGif
 	}
+}
+
+func (is *imageStore) SetID(id int64) {
+	is.saveName = is.saveName + strconv.FormatInt(id, 32)
 }
 
 func (is *imageStore) PrepareImage() {

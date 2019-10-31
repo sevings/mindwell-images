@@ -25,7 +25,9 @@ func (ip *ImageProcessor) Work() {
 	defer ip.is.Destroy()
 
 	start := time.Now()
-	log.Printf("Working: %s %s\n", ip.act, ip.is.FileName())
+
+	ip.is.SetID(ip.ID)
+	log.Printf("Working: %s %d %s\n", ip.act, ip.ID, ip.is.FileName())
 
 	switch ip.act {
 	case ActionAvatar:
