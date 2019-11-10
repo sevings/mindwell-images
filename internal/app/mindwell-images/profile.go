@@ -12,6 +12,7 @@ func NewAvatarUpdater(mi *MindwellImages) func(me.PutMeAvatarParams, *models.Use
 	return func(params me.PutMeAvatarParams, userID *models.UserID) middleware.Responder {
 		store := newImageStore(mi)
 		store.ReadImage(params.File)
+		store.SetID(userID.ID)
 
 		if store.Error() != nil {
 			log.Print(store.Error())
@@ -28,6 +29,7 @@ func NewCoverUpdater(mi *MindwellImages) func(me.PutMeCoverParams, *models.UserI
 	return func(params me.PutMeCoverParams, userID *models.UserID) middleware.Responder {
 		store := newImageStore(mi)
 		store.ReadImage(params.File)
+		store.SetID(userID.ID)
 
 		if store.Error() != nil {
 			log.Print(store.Error())

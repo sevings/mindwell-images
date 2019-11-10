@@ -55,9 +55,12 @@ func NewImageUploader(mi *MindwellImages) func(images.PostImagesParams, *models.
 		}
 
 		return utils.Transact(mi.DB(), func(tx *utils.AutoTx) middleware.Responder {
-			tx.Query("INSERT INTO images(user_id, path, extension, processing) VALUES($1, $2, $3, $4) RETURNING id",
-				userID.ID, store.FileName(), store.FileExtension(), img.Processing)
+			tx.Query("INSERT INTO images(user_id, path, extension, processing) VALUES($1, 'processing', $2, $3) RETURNING id",
+				userID.ID, store.FileExtension(), img.Processing)
 			tx.Scan(&img.ID)
+
+			store.SetID(img.ID)
+			tx.Exec("UPDATE images SET path = $2 WHERE id = $1", img.ID, store.FileName())
 
 			if tx.Error() != nil {
 				return images.NewPostImagesBadRequest()

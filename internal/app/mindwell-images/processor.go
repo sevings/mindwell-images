@@ -26,7 +26,6 @@ func (ip *ImageProcessor) Work() {
 
 	start := time.Now()
 
-	ip.is.SetID(ip.ID)
 	log.Printf("Working: %s %d %s\n", ip.act, ip.ID, ip.is.FileName())
 
 	switch ip.act {

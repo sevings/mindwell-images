@@ -32,7 +32,7 @@ func (se storeError) Error() string {
 
 func newImageStore(mi *MindwellImages) *imageStore {
 	name := utils.GenerateString(8)
-	path := name[0] + "/" + name[1] + "/"
+	path := name[:1] + "/" + name[:2] + "/"
 
 	return &imageStore{
 		savePath: path,
