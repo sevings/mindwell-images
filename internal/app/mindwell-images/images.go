@@ -1,8 +1,6 @@
 package images
 
 import (
-	"log"
-
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/sevings/mindwell-images/models"
 	"github.com/sevings/mindwell-images/restapi/operations/images"
@@ -41,7 +39,7 @@ func NewImageUploader(mi *MindwellImages) func(images.PostImagesParams, *models.
 		store.ReadImage(params.File)
 
 		if store.Error() != nil {
-			log.Print(store.Error())
+			mi.LogApi().Error(store.Error().Error())
 			return images.NewPostImagesBadRequest()
 		}
 

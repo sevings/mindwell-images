@@ -2,6 +2,7 @@ package images
 
 import (
 	"database/sql"
+	"go.uber.org/zap"
 	"log"
 
 	"github.com/sevings/mindwell-server/utils"
@@ -12,6 +13,7 @@ import (
 type MindwellImages struct {
 	cfg     *config.Config
 	db      *sql.DB
+	log     *zap.Logger
 	acts    chan ImageProcessor
 	stop    chan bool
 	folder  string
@@ -19,13 +21,24 @@ type MindwellImages struct {
 }
 
 func NewMindwellImages(cfg *config.Config) *MindwellImages {
+	logger, err := zap.NewProduction(zap.WithCaller(false))
+	if err != nil {
+		log.Println(err)
+	}
+
 	mi := &MindwellImages{
 		cfg:  cfg,
-		db:   utils.OpenDatabase(cfg),
+		log:  logger,
 		acts: make(chan ImageProcessor, 50),
 		stop: make(chan bool),
 	}
 
+	_, err = zap.RedirectStdLogAt(mi.LogSystem(), zap.ErrorLevel)
+	if err != nil {
+		mi.LogSystem().Error(err.Error())
+	}
+
+	mi.db = utils.OpenDatabase(cfg)
 	mi.baseURL = mi.ConfigString("images.base_url")
 	mi.folder = mi.ConfigString("images.folder")
 
@@ -42,7 +55,7 @@ func NewMindwellImages(cfg *config.Config) *MindwellImages {
 func (mi *MindwellImages) ConfigString(key string) string {
 	value, err := mi.cfg.String(key)
 	if err != nil {
-		log.Println(err)
+		mi.LogSystem().Warn(err.Error())
 	}
 
 	return value
@@ -60,8 +73,25 @@ func (mi *MindwellImages) DB() *sql.DB {
 	return mi.db
 }
 
+func (mi *MindwellImages) LogApi() *zap.Logger {
+	return mi.log.With(zap.String("type", "api"))
+}
+
+func (mi *MindwellImages) LogImages() *zap.Logger {
+	return mi.log.With(zap.String("type", "images"))
+}
+
+func (mi *MindwellImages) LogSystem() *zap.Logger {
+	return mi.log.With(zap.String("type", "system"))
+}
+
 func (mi *MindwellImages) QueueAction(is *imageStore, ID int64, action string) {
-	log.Printf("Queued: %s %s\n", action, is.FileName())
+	mi.LogImages().Info("queue",
+		zap.Int64("id", ID),
+		zap.String("action", action),
+		zap.String("path", is.FileName()),
+	)
+
 	mi.acts <- ImageProcessor{is: is, ID: ID, act: action, mi: mi}
 }
 

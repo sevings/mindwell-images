@@ -1,7 +1,7 @@
 package images
 
 import (
-	"log"
+	"go.uber.org/zap"
 	"time"
 
 	"github.com/sevings/mindwell-server/utils"
@@ -26,7 +26,11 @@ func (ip *ImageProcessor) Work() {
 
 	start := time.Now()
 
-	log.Printf("Working: %s %d %s\n", ip.act, ip.ID, ip.is.FileName())
+	ip.mi.LogImages().Info("work",
+		zap.Int64("id", ip.ID),
+		zap.String("action", ip.act),
+		zap.String("path", ip.is.FileName()),
+	)
 
 	switch ip.act {
 	case ActionAvatar:
@@ -38,18 +42,26 @@ func (ip *ImageProcessor) Work() {
 	case ActionDelete:
 		ip.deleteAlbumPhoto()
 	default:
-		log.Printf("Unknown ImageProcessor action: %s\n", ip.act)
+		ip.mi.LogImages().Sugar().Error("Unknown ImageProcessor action:", ip.act)
 	}
 
 	elapsed := time.Since(start).Nanoseconds() / 1000000
-	log.Printf("Done in %d ms\n", elapsed)
+	ip.mi.LogImages().Info("done",
+		zap.Int64("duration", elapsed),
+	)
 
 	// let other processes do their work too
 	if elapsed > 1000 {
 		period := elapsed / 4
-		log.Printf("Sleeping for %d ms...\n", period)
+		ip.mi.LogImages().Info("sleep",
+			zap.Int64("duration", period),
+		)
 		time.Sleep(time.Duration(period) * time.Millisecond)
 	}
+}
+
+func (ip *ImageProcessor) logError() {
+	ip.mi.LogImages().Error(ip.is.Error().Error())
 }
 
 func (ip *ImageProcessor) saveAvatar() {
@@ -60,7 +72,7 @@ func (ip *ImageProcessor) saveAvatar() {
 	ip.is.Fill(42, "avatars/42")
 
 	if ip.is.Error() != nil {
-		log.Println(ip.is.Error())
+		ip.logError()
 		return
 	}
 
@@ -82,7 +94,7 @@ func (ip *ImageProcessor) saveAvatar() {
 	ip.is.FolderRemove("avatars/42", old)
 
 	if ip.is.Error() != nil {
-		log.Print(ip.is.Error())
+		ip.logError()
 	}
 }
 
@@ -93,7 +105,7 @@ func (ip *ImageProcessor) saveCover() {
 	ip.is.FillRect(318, 122, "covers/318")
 
 	if ip.is.Error() != nil {
-		log.Println(ip.is.Error())
+		ip.logError()
 		return
 	}
 
@@ -114,7 +126,7 @@ func (ip *ImageProcessor) saveCover() {
 	ip.is.FolderRemove("covers/318", old)
 
 	if ip.is.Error() != nil {
-		log.Print(ip.is.Error())
+		ip.logError()
 	}
 }
 
@@ -127,7 +139,7 @@ func (ip *ImageProcessor) saveAlbumPhoto() {
 	large := ip.is.Fit(1440, "albums/large")
 
 	if ip.is.Error() != nil {
-		log.Println(ip.is.Error())
+		ip.logError()
 		return
 	}
 
@@ -176,6 +188,6 @@ func (ip *ImageProcessor) deleteAlbumPhoto() {
 	}
 
 	if ip.is.Error() != nil {
-		log.Print(ip.is.Error())
+		ip.logError()
 	}
 }
