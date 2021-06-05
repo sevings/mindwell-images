@@ -18,16 +18,13 @@ var (
 
 func init() {
 	SwaggerJSON = json.RawMessage([]byte(`{
-  "consumes": [
-    "application/json"
-  ],
   "produces": [
     "application/json"
   ],
   "swagger": "2.0",
   "info": {
     "title": "Mindwell",
-    "version": "0.1.0"
+    "version": "1.0"
   },
   "basePath": "/api/v1",
   "paths": {
@@ -36,6 +33,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "account:write"
+            ]
           }
         ],
         "consumes": [
@@ -116,6 +121,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "account:read"
+            ]
           }
         ],
         "tags": [
@@ -215,6 +228,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "account:write"
+            ]
           }
         ],
         "consumes": [
@@ -350,7 +371,7 @@ func init() {
           {
             "maxLength": 20,
             "minLength": 1,
-            "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]*$",
             "type": "string",
             "name": "name",
             "in": "formData",
@@ -409,6 +430,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "settings:read"
+            ]
           }
         ],
         "tags": [
@@ -438,6 +467,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "settings:write"
+            ]
           }
         ],
         "consumes": [
@@ -474,11 +511,114 @@ func init() {
         }
       }
     },
+    "/account/settings/telegram": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "settings:read"
+            ]
+          }
+        ],
+        "tags": [
+          "account"
+        ],
+        "responses": {
+          "200": {
+            "description": "telegram notification settings",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "comments": {
+                  "type": "boolean"
+                },
+                "followers": {
+                  "type": "boolean"
+                },
+                "invites": {
+                  "type": "boolean"
+                },
+                "messages": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "settings:write"
+            ]
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "account"
+        ],
+        "parameters": [
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "comments",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "followers",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "invites",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "messages",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "telegram notification settings has been updated"
+          }
+        }
+      }
+    },
     "/account/subscribe/telegram": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "settings:write"
+            ]
           }
         ],
         "tags": [
@@ -502,6 +642,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "settings:write"
+            ]
           }
         ],
         "tags": [
@@ -519,6 +667,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "notifications:read"
+            ]
           }
         ],
         "tags": [
@@ -544,6 +700,9 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
           }
         ],
         "tags": [
@@ -605,6 +764,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "adm:read"
+            ]
           }
         ],
         "tags": [
@@ -657,6 +824,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "adm:read"
+            ]
           }
         ],
         "tags": [
@@ -695,6 +870,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "adm:write"
+            ]
           }
         ],
         "tags": [
@@ -732,6 +915,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "adm:read"
+            ]
           }
         ],
         "tags": [
@@ -764,6 +955,12 @@ func init() {
               }
             }
           },
+          "403": {
+            "description": "you're not allowed to participate",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "410": {
             "description": "registration finished",
             "schema": {
@@ -776,6 +973,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "adm:write"
+            ]
           }
         ],
         "consumes": [
@@ -832,6 +1037,12 @@ func init() {
           "200": {
             "description": "OK"
           },
+          "403": {
+            "description": "you're not allowed to participate",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "410": {
             "description": "registration finished",
             "schema": {
@@ -846,6 +1057,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "adm:read"
+            ]
           }
         ],
         "tags": [
@@ -884,6 +1103,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "adm:write"
+            ]
           }
         ],
         "tags": [
@@ -921,6 +1148,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "adm:read"
+            ]
           }
         ],
         "tags": [
@@ -953,11 +1188,260 @@ func init() {
         }
       }
     },
+    "/chats": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "messages:read"
+            ]
+          }
+        ],
+        "tags": [
+          "chats"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/after"
+          },
+          {
+            "$ref": "#/parameters/before"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat list",
+            "schema": {
+              "$ref": "#/definitions/ChatList"
+            }
+          }
+        }
+      }
+    },
+    "/chats/{name}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "messages:read"
+            ]
+          }
+        ],
+        "tags": [
+          "chats"
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat info",
+            "schema": {
+              "$ref": "#/definitions/Chat"
+            }
+          },
+          "404": {
+            "description": "Chat not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/parameters/pathName"
+        }
+      ]
+    },
+    "/chats/{name}/messages": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "messages:read"
+            ]
+          }
+        ],
+        "tags": [
+          "chats"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/after"
+          },
+          {
+            "$ref": "#/parameters/before"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "message list",
+            "schema": {
+              "$ref": "#/definitions/MessageList"
+            }
+          },
+          "404": {
+            "description": "Chat not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "messages:write"
+            ]
+          }
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "tags": [
+          "chats"
+        ],
+        "parameters": [
+          {
+            "maxLength": 1000,
+            "minLength": 1,
+            "pattern": "\\s*\\S+.*",
+            "type": "string",
+            "name": "content",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "type": "number",
+            "format": "int64",
+            "description": "unique message id",
+            "name": "uid",
+            "in": "formData",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Message data",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Chat not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/parameters/pathName"
+        }
+      ]
+    },
+    "/chats/{name}/read": {
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "messages:read"
+            ]
+          }
+        ],
+        "tags": [
+          "chats"
+        ],
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "message",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "unread count",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "unread": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Chat not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/parameters/pathName"
+        }
+      ]
+    },
     "/comments/{id}": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "comments:read"
+            ]
           }
         ],
         "tags": [
@@ -988,6 +1472,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "comments:write"
+            ]
           }
         ],
         "consumes": [
@@ -1033,6 +1525,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "comments:write"
+            ]
           }
         ],
         "tags": [
@@ -1062,11 +1562,72 @@ func init() {
         }
       ]
     },
+    "/comments/{id}/complain": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "comments"
+        ],
+        "parameters": [
+          {
+            "maxLength": 1000,
+            "type": "string",
+            "default": "",
+            "name": "content",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Comment not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/parameters/pathId"
+        }
+      ]
+    },
     "/comments/{id}/vote": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "comments:read"
+            ]
           }
         ],
         "tags": [
@@ -1097,6 +1658,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "votes:write"
+            ]
           }
         ],
         "tags": [
@@ -1135,6 +1704,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "votes:write"
+            ]
           }
         ],
         "tags": [
@@ -1172,6 +1749,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -1190,6 +1775,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:write"
+            ]
           }
         ],
         "consumes": [
@@ -1208,14 +1801,14 @@ func init() {
             "in": "formData"
           },
           {
-            "pattern": "#[0-9a-fA-F]{6}",
+            "pattern": "^#[0-9a-fA-F]{6}$",
             "type": "string",
             "default": "#ffffff",
             "name": "backgroundColor",
             "in": "formData"
           },
           {
-            "pattern": "#[0-9a-fA-F]{6}",
+            "pattern": "^#[0-9a-fA-F]{6}$",
             "type": "string",
             "default": "#000000",
             "name": "textColor",
@@ -1259,6 +1852,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -1287,6 +1888,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -1304,6 +1913,9 @@ func init() {
           },
           {
             "$ref": "#/parameters/tag"
+          },
+          {
+            "$ref": "#/parameters/query"
           }
         ],
         "responses": {
@@ -1319,6 +1931,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:write"
+            ]
           }
         ],
         "consumes": [
@@ -1358,6 +1978,18 @@ func init() {
             "in": "formData"
           },
           {
+            "maxItems": 5,
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "maxLength": 50,
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": "tags",
+            "in": "formData"
+          },
+          {
             "type": "boolean",
             "default": false,
             "name": "anonymous_comments",
@@ -1379,6 +2011,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -1390,6 +2030,9 @@ func init() {
           },
           {
             "$ref": "#/parameters/tag"
+          },
+          {
+            "$ref": "#/parameters/query"
           },
           {
             "enum": [
@@ -1417,6 +2060,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -1434,6 +2085,9 @@ func init() {
           },
           {
             "$ref": "#/parameters/tag"
+          },
+          {
+            "$ref": "#/parameters/query"
           }
         ],
         "responses": {
@@ -1451,6 +2105,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -1470,9 +2132,13 @@ func init() {
             "$ref": "#/parameters/tag"
           },
           {
+            "$ref": "#/parameters/query"
+          },
+          {
             "enum": [
               "entries",
-              "comments"
+              "comments",
+              "waiting"
             ],
             "type": "string",
             "default": "entries",
@@ -1490,11 +2156,86 @@ func init() {
         }
       }
     },
+    "/entries/random": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
+          }
+        ],
+        "tags": [
+          "entries"
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry data",
+            "schema": {
+              "$ref": "#/definitions/Entry"
+            }
+          },
+          "404": {
+            "description": "No entries found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/entries/tags": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
+          }
+        ],
+        "tags": [
+          "entries"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "popular tags",
+            "schema": {
+              "$ref": "#/definitions/TagList"
+            }
+          }
+        }
+      }
+    },
     "/entries/watching": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -1526,6 +2267,20 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "NoApiKey": []
+          },
+          {
+            "Oauth2App": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -1556,6 +2311,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:write"
+            ]
           }
         ],
         "consumes": [
@@ -1592,6 +2355,18 @@ func init() {
               "format": "int64"
             },
             "name": "images",
+            "in": "formData"
+          },
+          {
+            "maxItems": 5,
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "maxLength": 50,
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": "tags",
             "in": "formData"
           },
           {
@@ -1661,6 +2436,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:write"
+            ]
           }
         ],
         "tags": [
@@ -1695,6 +2478,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "comments:read"
+            ]
           }
         ],
         "tags": [
@@ -1730,6 +2521,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "comments:write"
+            ]
           }
         ],
         "consumes": [
@@ -1777,11 +2576,72 @@ func init() {
         }
       ]
     },
+    "/entries/{id}/complain": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "entries"
+        ],
+        "parameters": [
+          {
+            "maxLength": 1000,
+            "type": "string",
+            "default": "",
+            "name": "content",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Entry not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/parameters/pathId"
+        }
+      ]
+    },
     "/entries/{id}/favorite": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -1806,6 +2666,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "favorites:write"
+            ]
           }
         ],
         "tags": [
@@ -1830,6 +2698,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "favorites:write"
+            ]
           }
         ],
         "tags": [
@@ -1861,6 +2737,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -1891,6 +2775,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "votes:write"
+            ]
           }
         ],
         "tags": [
@@ -1929,6 +2821,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "votes:write"
+            ]
           }
         ],
         "tags": [
@@ -1966,6 +2866,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -1990,6 +2898,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "watchings:write"
+            ]
           }
         ],
         "tags": [
@@ -2014,6 +2930,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "watchings:write"
+            ]
           }
         ],
         "tags": [
@@ -2045,6 +2969,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "images:read"
+            ]
           }
         ],
         "consumes": [
@@ -2082,6 +3014,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "images:read"
+            ]
           }
         ],
         "tags": [
@@ -2112,6 +3052,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "images:write"
+            ]
           }
         ],
         "tags": [
@@ -2146,6 +3094,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -2164,6 +3120,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:write"
+            ]
           }
         ],
         "consumes": [
@@ -2204,7 +3168,8 @@ func init() {
             "enum": [
               "all",
               "invited",
-              "followers"
+              "followers",
+              "registered"
             ],
             "type": "string",
             "name": "privacy",
@@ -2261,6 +3226,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:write"
+            ]
           }
         ],
         "consumes": [
@@ -2290,11 +3263,55 @@ func init() {
         }
       }
     },
+    "/me/calendar": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
+          }
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/start"
+          },
+          {
+            "$ref": "#/parameters/end"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Calendar"
+            }
+          }
+        }
+      }
+    },
     "/me/cover": {
       "put": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:write"
+            ]
           }
         ],
         "consumes": [
@@ -2329,6 +3346,56 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
+          }
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/after"
+          },
+          {
+            "$ref": "#/parameters/before"
+          },
+          {
+            "$ref": "#/parameters/query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          }
+        }
+      }
+    },
+    "/me/followers": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -2347,34 +3414,6 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Entry list",
-            "schema": {
-              "$ref": "#/definitions/Feed"
-            }
-          }
-        }
-      }
-    },
-    "/me/followers": {
-      "get": {
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "tags": [
-          "me"
-        ],
-        "parameters": [
-          {
-            "$ref": "#/parameters/limit"
-          },
-          {
-            "$ref": "#/parameters/skip"
-          }
-        ],
-        "responses": {
-          "200": {
             "description": "User list",
             "schema": {
               "$ref": "#/definitions/FriendList"
@@ -2388,6 +3427,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -2398,7 +3445,10 @@ func init() {
             "$ref": "#/parameters/limit"
           },
           {
-            "$ref": "#/parameters/skip"
+            "$ref": "#/parameters/after"
+          },
+          {
+            "$ref": "#/parameters/before"
           }
         ],
         "responses": {
@@ -2416,6 +3466,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -2426,7 +3484,10 @@ func init() {
             "$ref": "#/parameters/limit"
           },
           {
-            "$ref": "#/parameters/skip"
+            "$ref": "#/parameters/after"
+          },
+          {
+            "$ref": "#/parameters/before"
           }
         ],
         "responses": {
@@ -2444,6 +3505,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -2454,7 +3523,10 @@ func init() {
             "$ref": "#/parameters/limit"
           },
           {
-            "$ref": "#/parameters/skip"
+            "$ref": "#/parameters/after"
+          },
+          {
+            "$ref": "#/parameters/before"
           }
         ],
         "responses": {
@@ -2472,6 +3544,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "images:read"
+            ]
           }
         ],
         "tags": [
@@ -2509,6 +3589,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -2519,7 +3607,10 @@ func init() {
             "$ref": "#/parameters/limit"
           },
           {
-            "$ref": "#/parameters/skip"
+            "$ref": "#/parameters/after"
+          },
+          {
+            "$ref": "#/parameters/before"
           }
         ],
         "responses": {
@@ -2537,14 +3628,31 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": []
           }
         ],
         "tags": [
           "me"
         ],
         "responses": {
-          "204": {
-            "description": "OK"
+          "200": {
+            "description": "unread counts",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "chats": {
+                  "type": "integer"
+                },
+                "notifications": {
+                  "type": "integer"
+                }
+              }
+            }
           }
         }
       }
@@ -2554,6 +3662,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -2564,7 +3680,10 @@ func init() {
             "$ref": "#/parameters/limit"
           },
           {
-            "$ref": "#/parameters/skip"
+            "$ref": "#/parameters/after"
+          },
+          {
+            "$ref": "#/parameters/before"
           }
         ],
         "responses": {
@@ -2577,11 +3696,52 @@ func init() {
         }
       }
     },
+    "/me/tags": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
+          }
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "my tags",
+            "schema": {
+              "$ref": "#/definitions/TagList"
+            }
+          }
+        }
+      }
+    },
     "/me/tlog": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -2599,6 +3759,12 @@ func init() {
           },
           {
             "$ref": "#/parameters/tag"
+          },
+          {
+            "$ref": "#/parameters/sort"
+          },
+          {
+            "$ref": "#/parameters/query"
           }
         ],
         "responses": {
@@ -2614,6 +3780,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:write"
+            ]
           }
         ],
         "consumes": [
@@ -2650,6 +3824,18 @@ func init() {
               "format": "int64"
             },
             "name": "images",
+            "in": "formData"
+          },
+          {
+            "maxItems": 5,
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "maxLength": 50,
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": "tags",
             "in": "formData"
           },
           {
@@ -2703,11 +3889,151 @@ func init() {
         }
       }
     },
+    "/messages/{id}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "messages:read"
+            ]
+          }
+        ],
+        "tags": [
+          "chats"
+        ],
+        "responses": {
+          "200": {
+            "description": "Message data",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Message not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "messages:write"
+            ]
+          }
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "tags": [
+          "chats"
+        ],
+        "parameters": [
+          {
+            "maxLength": 1000,
+            "minLength": 1,
+            "pattern": "\\s*\\S+.*",
+            "type": "string",
+            "name": "content",
+            "in": "formData",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Message data",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Message not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "messages:write"
+            ]
+          }
+        ],
+        "tags": [
+          "chats"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Message not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/parameters/pathId"
+        }
+      ]
+    },
     "/notifications": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "notifications:read"
+            ]
           }
         ],
         "tags": [
@@ -2745,6 +4071,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "notifications:read"
+            ]
           }
         ],
         "tags": [
@@ -2778,6 +4112,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "notifications:read"
+            ]
           }
         ],
         "tags": [
@@ -2804,11 +4146,337 @@ func init() {
         }
       }
     },
+    "/oauth2/allow": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "oauth2"
+        ],
+        "summary": "only for internal usage",
+        "parameters": [
+          {
+            "enum": [
+              "code"
+            ],
+            "type": "string",
+            "name": "response_type",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "client_id",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 500,
+            "type": "string",
+            "name": "redirect_uri",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 50,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi",
+            "name": "scope",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 500,
+            "type": "string",
+            "name": "state",
+            "in": "formData"
+          },
+          {
+            "maxLength": 128,
+            "minLength": 43,
+            "type": "string",
+            "name": "code_challenge",
+            "in": "formData"
+          },
+          {
+            "enum": [
+              "plain",
+              "S256"
+            ],
+            "type": "string",
+            "name": "code_challenge_method",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "auth code",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "some error happened",
+            "schema": {
+              "$ref": "#/definitions/OAuth2Error"
+            }
+          },
+          "401": {
+            "description": "invalid client",
+            "schema": {
+              "$ref": "#/definitions/OAuth2Error"
+            }
+          }
+        }
+      }
+    },
+    "/oauth2/apps/{id}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          }
+        ],
+        "tags": [
+          "oauth2"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/pathId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "app info",
+            "schema": {
+              "$ref": "#/definitions/App"
+            }
+          },
+          "404": {
+            "description": "not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/oauth2/deny": {
+      "get": {
+        "tags": [
+          "oauth2"
+        ],
+        "summary": "only for internal usage",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "client_id",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maxLength": 500,
+            "type": "string",
+            "name": "redirect_uri",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "some error happened",
+            "schema": {
+              "$ref": "#/definitions/OAuth2Error"
+            }
+          }
+        }
+      }
+    },
+    "/oauth2/token": {
+      "post": {
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "oauth2"
+        ],
+        "parameters": [
+          {
+            "enum": [
+              "authorization_code",
+              "client_credentials",
+              "password",
+              "refresh_token"
+            ],
+            "type": "string",
+            "name": "grant_type",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "client_id",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 64,
+            "type": "string",
+            "default": "",
+            "name": "client_secret",
+            "in": "formData"
+          },
+          {
+            "maxLength": 32,
+            "type": "string",
+            "name": "code",
+            "in": "formData"
+          },
+          {
+            "maxLength": 500,
+            "type": "string",
+            "name": "redirect_uri",
+            "in": "formData"
+          },
+          {
+            "maxLength": 128,
+            "type": "string",
+            "name": "code_verifier",
+            "in": "formData"
+          },
+          {
+            "maxLength": 60,
+            "minLength": 50,
+            "type": "string",
+            "name": "refresh_token",
+            "in": "formData"
+          },
+          {
+            "maxLength": 500,
+            "type": "string",
+            "name": "username",
+            "in": "formData"
+          },
+          {
+            "maxLength": 100,
+            "minLength": 6,
+            "type": "string",
+            "name": "password",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "authorized",
+            "schema": {
+              "$ref": "#/definitions/OAuth2Token"
+            }
+          },
+          "400": {
+            "description": "some error happened",
+            "schema": {
+              "$ref": "#/definitions/OAuth2Error"
+            }
+          },
+          "401": {
+            "description": "invalid client",
+            "schema": {
+              "$ref": "#/definitions/OAuth2Error"
+            }
+          }
+        }
+      }
+    },
+    "/oauth2/upgrade": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "oauth2"
+        ],
+        "summary": "only for internal usage",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "client_id",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 64,
+            "type": "string",
+            "name": "client_secret",
+            "in": "formData",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "authorized",
+            "schema": {
+              "$ref": "#/definitions/OAuth2Token"
+            }
+          },
+          "400": {
+            "description": "some error happened",
+            "schema": {
+              "$ref": "#/definitions/OAuth2Error"
+            }
+          },
+          "401": {
+            "description": "invalid client",
+            "schema": {
+              "$ref": "#/definitions/OAuth2Error"
+            }
+          }
+        }
+      }
+    },
     "/relations/from/{name}": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -2833,6 +4501,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "relations:write"
+            ]
           }
         ],
         "tags": [
@@ -2864,6 +4540,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "relations:write"
+            ]
           }
         ],
         "tags": [
@@ -2902,6 +4586,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "relations:write"
+            ]
           }
         ],
         "consumes": [
@@ -2916,7 +4608,7 @@ func init() {
             "$ref": "#/parameters/pathName"
           },
           {
-            "pattern": "\\s*\\S+\\s+\\S+\\s+\\S+\\s*",
+            "pattern": "^\\s*\\S+\\s+\\S+\\s+\\S+\\s*$",
             "type": "string",
             "name": "invite",
             "in": "formData",
@@ -2947,6 +4639,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -2971,6 +4671,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "relations:write"
+            ]
           }
         ],
         "tags": [
@@ -3014,6 +4722,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "relations:write"
+            ]
           }
         ],
         "tags": [
@@ -3045,6 +4761,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -3099,6 +4823,20 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "NoApiKey": []
+          },
+          {
+            "OAuth2App": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -3125,11 +4863,72 @@ func init() {
         }
       ]
     },
+    "/users/{name}/calendar": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "NoApiKey": []
+          },
+          {
+            "OAuth2App": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/start"
+          },
+          {
+            "$ref": "#/parameters/end"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Calendar"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "$ref": "#/parameters/pathName"
+        }
+      ]
+    },
     "/users/{name}/favorites": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -3144,6 +4943,9 @@ func init() {
           },
           {
             "$ref": "#/parameters/before"
+          },
+          {
+            "$ref": "#/parameters/query"
           }
         ],
         "responses": {
@@ -3172,6 +4974,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -3182,7 +4992,10 @@ func init() {
             "$ref": "#/parameters/limit"
           },
           {
-            "$ref": "#/parameters/skip"
+            "$ref": "#/parameters/after"
+          },
+          {
+            "$ref": "#/parameters/before"
           }
         ],
         "responses": {
@@ -3217,6 +5030,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -3227,7 +5048,10 @@ func init() {
             "$ref": "#/parameters/limit"
           },
           {
-            "$ref": "#/parameters/skip"
+            "$ref": "#/parameters/after"
+          },
+          {
+            "$ref": "#/parameters/before"
           }
         ],
         "responses": {
@@ -3262,6 +5086,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "images:read"
+            ]
           }
         ],
         "tags": [
@@ -3304,6 +5136,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -3314,7 +5154,10 @@ func init() {
             "$ref": "#/parameters/limit"
           },
           {
-            "$ref": "#/parameters/skip"
+            "$ref": "#/parameters/after"
+          },
+          {
+            "$ref": "#/parameters/before"
           }
         ],
         "responses": {
@@ -3344,11 +5187,70 @@ func init() {
         }
       ]
     },
+    "/users/{name}/tags": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "NoApiKey": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/pathName"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user tags",
+            "schema": {
+              "$ref": "#/definitions/TagList"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/users/{name}/tlog": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "NoApiKey": []
+          },
+          {
+            "OAuth2App": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -3369,6 +5271,9 @@ func init() {
           },
           {
             "$ref": "#/parameters/sort"
+          },
+          {
+            "$ref": "#/parameters/query"
           }
         ],
         "responses": {
@@ -3394,6 +5299,26 @@ func init() {
     }
   },
   "definitions": {
+    "App": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "info": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "platform": {
+          "type": "string"
+        },
+        "showName": {
+          "type": "string"
+        }
+      }
+    },
     "AuthProfile": {
       "allOf": [
         {
@@ -3480,10 +5405,94 @@ func init() {
         }
       }
     },
+    "Calendar": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "type": "number",
+          "format": "int64"
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "createdAt": {
+                "type": "number",
+                "format": "double"
+              },
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "title": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "start": {
+          "type": "number",
+          "format": "int64"
+        }
+      }
+    },
+    "Chat": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "lastMessage": {
+          "$ref": "#/definitions/Message"
+        },
+        "partner": {
+          "$ref": "#/definitions/User"
+        },
+        "rights": {
+          "type": "object",
+          "properties": {
+            "send": {
+              "type": "boolean"
+            }
+          }
+        },
+        "unreadCount": {
+          "type": "integer"
+        }
+      }
+    },
+    "ChatList": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Chat"
+          }
+        },
+        "hasAfter": {
+          "type": "boolean"
+        },
+        "hasBefore": {
+          "type": "boolean"
+        },
+        "nextAfter": {
+          "type": "string"
+        },
+        "nextBefore": {
+          "type": "string"
+        },
+        "unreadCount": {
+          "type": "integer"
+        }
+      }
+    },
     "Color": {
       "description": "color in rgb",
       "type": "string",
-      "pattern": "#[0-9a-fA-F]{6}",
+      "pattern": "^#[0-9a-fA-F]{6}$",
       "example": "#373737"
     },
     "Comment": {
@@ -3518,6 +5527,9 @@ func init() {
         "rights": {
           "type": "object",
           "properties": {
+            "complain": {
+              "type": "boolean"
+            },
             "delete": {
               "type": "boolean"
             },
@@ -3681,6 +5693,9 @@ func init() {
             "comment": {
               "type": "boolean"
             },
+            "complain": {
+              "type": "boolean"
+            },
             "delete": {
               "type": "boolean"
             },
@@ -3690,6 +5705,12 @@ func init() {
             "vote": {
               "type": "boolean"
             }
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         },
         "title": {
@@ -3835,7 +5856,8 @@ func init() {
               "enum": [
                 "all",
                 "followers",
-                "invited"
+                "invited",
+                "registered"
               ]
             },
             "rank": {
@@ -3853,6 +5875,18 @@ func init() {
     "FriendList": {
       "type": "object",
       "properties": {
+        "hasAfter": {
+          "type": "boolean"
+        },
+        "hasBefore": {
+          "type": "boolean"
+        },
+        "nextAfter": {
+          "type": "string"
+        },
+        "nextBefore": {
+          "type": "string"
+        },
         "relation": {
           "type": "string",
           "enum": [
@@ -3945,6 +5979,72 @@ func init() {
         }
       }
     },
+    "Message": {
+      "type": "object",
+      "properties": {
+        "author": {
+          "$ref": "#/definitions/User"
+        },
+        "chatId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "content": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "number",
+          "format": "double"
+        },
+        "editContent": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "read": {
+          "type": "boolean"
+        },
+        "rights": {
+          "type": "object",
+          "properties": {
+            "delete": {
+              "type": "boolean"
+            },
+            "edit": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "MessageList": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Message"
+          }
+        },
+        "hasAfter": {
+          "type": "boolean"
+        },
+        "hasBefore": {
+          "type": "boolean"
+        },
+        "nextAfter": {
+          "type": "string"
+        },
+        "nextBefore": {
+          "type": "string"
+        },
+        "unreadCount": {
+          "type": "integer"
+        }
+      }
+    },
     "Notification": {
       "type": "object",
       "properties": {
@@ -3963,6 +6063,17 @@ func init() {
           "format": "int64",
           "minimum": 1
         },
+        "info": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "string"
+            },
+            "link": {
+              "type": "string"
+            }
+          }
+        },
         "read": {
           "type": "boolean"
         },
@@ -3975,7 +6086,10 @@ func init() {
             "accept",
             "invite",
             "welcome",
-            "invited"
+            "invited",
+            "adm_sent",
+            "adm_received",
+            "info"
           ]
         },
         "user": {
@@ -4006,6 +6120,56 @@ func init() {
         },
         "unreadCount": {
           "type": "integer"
+        }
+      }
+    },
+    "OAuth2Error": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string",
+          "enum": [
+            "access_denied",
+            "invalid_client",
+            "invalid_grant",
+            "invalid_redirect",
+            "invalid_request",
+            "invalid_scope",
+            "invalid_token",
+            "server_error",
+            "temporarily_unavailable",
+            "unauthorized_client",
+            "unrecognized_client",
+            "unsupported_grant_type",
+            "unsupported_response_type"
+          ]
+        }
+      }
+    },
+    "OAuth2Token": {
+      "type": "object",
+      "properties": {
+        "access_token": {
+          "type": "string"
+        },
+        "expires_in": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "refresh_token": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "token_type": {
+          "type": "string",
+          "enum": [
+            "bearer"
+          ]
         }
       }
     },
@@ -4148,6 +6312,25 @@ func init() {
         }
       }
     },
+    "TagList": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer"
+              },
+              "tag": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
     "User": {
       "type": "object",
       "properties": {
@@ -4218,6 +6401,9 @@ func init() {
         },
         "negKarma": {
           "type": "boolean"
+        },
+        "verified": {
+          "type": "boolean"
         }
       }
     },
@@ -4246,6 +6432,13 @@ func init() {
       "type": "string",
       "default": "",
       "name": "before",
+      "in": "query"
+    },
+    "end": {
+      "type": "integer",
+      "format": "int64",
+      "default": 0,
+      "name": "end",
       "in": "query"
     },
     "formEmail": {
@@ -4283,16 +6476,17 @@ func init() {
     "pathName": {
       "maxLength": 20,
       "minLength": 1,
-      "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
+      "pattern": "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$",
       "type": "string",
       "name": "name",
       "in": "path",
       "required": true
     },
-    "skip": {
-      "type": "integer",
-      "default": 0,
-      "name": "skip",
+    "query": {
+      "maxLength": 100,
+      "type": "string",
+      "default": "",
+      "name": "query",
       "in": "query"
     },
     "sort": {
@@ -4306,9 +6500,17 @@ func init() {
       "name": "sort",
       "in": "query"
     },
+    "start": {
+      "type": "integer",
+      "format": "int64",
+      "default": 0,
+      "name": "start",
+      "in": "query"
+    },
     "tag": {
       "maxLength": 50,
       "type": "string",
+      "default": "",
       "name": "tag",
       "in": "query"
     }
@@ -4318,20 +6520,63 @@ func init() {
       "type": "apiKey",
       "name": "X-User-Key",
       "in": "header"
+    },
+    "NoApiKey": {
+      "type": "apiKey",
+      "name": "X-User-Key",
+      "in": "header"
+    },
+    "OAuth2App": {
+      "type": "oauth2",
+      "flow": "application",
+      "authorizationUrl": "",
+      "tokenUrl": "/oauth2/token"
+    },
+    "OAuth2Code": {
+      "type": "oauth2",
+      "flow": "accessCode",
+      "authorizationUrl": "/oauth",
+      "tokenUrl": "/oauth2/token",
+      "scopes": {
+        "account:read": "read available invites, etc.",
+        "account:write": "change email, password, etc.",
+        "adm:read": "read adm info and statuses",
+        "adm:write": "change adm info and update statuses",
+        "comments:read": "read comments and comment votes",
+        "comments:write": "create, edit and remove comments",
+        "entries:read": "read entries, entry votes, favorites, watchings, tags",
+        "entries:write": "create, edit and remove tlog entries",
+        "favorites:write": "add entries to favorites and remove",
+        "images:read": "get uploaded images",
+        "images:write": "upload new images",
+        "messages:read": "read chats and messages and set them read",
+        "messages:write": "create, edit and remove messages",
+        "notifications:read": "read notifications and set them read",
+        "relations:write": "follow, block, hide tlogs, accept followers, invite people",
+        "settings:read": "read account settings",
+        "settings:write": "change account settings",
+        "users:read": "read profile info, relations",
+        "users:write": "change profile info, avatar, etc.",
+        "votes:write": "vote and unvote entries and comments",
+        "watchings:write": "subscribe to entry comments and unsubscribe"
+      }
+    },
+    "OAuth2Password": {
+      "type": "oauth2",
+      "flow": "password",
+      "authorizationUrl": "",
+      "tokenUrl": "/oauth2/token"
     }
   }
 }`))
 	FlatSwaggerJSON = json.RawMessage([]byte(`{
-  "consumes": [
-    "application/json"
-  ],
   "produces": [
     "application/json"
   ],
   "swagger": "2.0",
   "info": {
     "title": "Mindwell",
-    "version": "0.1.0"
+    "version": "1.0"
   },
   "basePath": "/api/v1",
   "paths": {
@@ -4340,6 +6585,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "account:write"
+            ]
           }
         ],
         "consumes": [
@@ -4430,6 +6683,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "account:read"
+            ]
           }
         ],
         "tags": [
@@ -4506,7 +6767,7 @@ func init() {
           {
             "maxLength": 20,
             "minLength": 1,
-            "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
+            "pattern": "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$",
             "type": "string",
             "name": "name",
             "in": "path",
@@ -4540,6 +6801,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "account:write"
+            ]
           }
         ],
         "consumes": [
@@ -4700,7 +6969,7 @@ func init() {
           {
             "maxLength": 20,
             "minLength": 1,
-            "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9\\-_]*$",
             "type": "string",
             "name": "name",
             "in": "formData",
@@ -4759,6 +7028,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "settings:read"
+            ]
           }
         ],
         "tags": [
@@ -4788,6 +7065,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "settings:write"
+            ]
           }
         ],
         "consumes": [
@@ -4824,11 +7109,114 @@ func init() {
         }
       }
     },
+    "/account/settings/telegram": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "settings:read"
+            ]
+          }
+        ],
+        "tags": [
+          "account"
+        ],
+        "responses": {
+          "200": {
+            "description": "telegram notification settings",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "comments": {
+                  "type": "boolean"
+                },
+                "followers": {
+                  "type": "boolean"
+                },
+                "invites": {
+                  "type": "boolean"
+                },
+                "messages": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "settings:write"
+            ]
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "account"
+        ],
+        "parameters": [
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "comments",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "followers",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "invites",
+            "in": "formData"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "name": "messages",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "telegram notification settings has been updated"
+          }
+        }
+      }
+    },
     "/account/subscribe/telegram": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "settings:write"
+            ]
           }
         ],
         "tags": [
@@ -4852,6 +7240,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "settings:write"
+            ]
           }
         ],
         "tags": [
@@ -4869,6 +7265,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "notifications:read"
+            ]
           }
         ],
         "tags": [
@@ -4894,6 +7298,9 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
           }
         ],
         "tags": [
@@ -4955,6 +7362,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "adm:read"
+            ]
           }
         ],
         "tags": [
@@ -5007,6 +7422,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "adm:read"
+            ]
           }
         ],
         "tags": [
@@ -5045,6 +7468,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "adm:write"
+            ]
           }
         ],
         "tags": [
@@ -5082,6 +7513,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "adm:read"
+            ]
           }
         ],
         "tags": [
@@ -5114,6 +7553,12 @@ func init() {
               }
             }
           },
+          "403": {
+            "description": "you're not allowed to participate",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "410": {
             "description": "registration finished",
             "schema": {
@@ -5126,6 +7571,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "adm:write"
+            ]
           }
         ],
         "consumes": [
@@ -5182,6 +7635,12 @@ func init() {
           "200": {
             "description": "OK"
           },
+          "403": {
+            "description": "you're not allowed to participate",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "410": {
             "description": "registration finished",
             "schema": {
@@ -5196,6 +7655,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "adm:read"
+            ]
           }
         ],
         "tags": [
@@ -5234,6 +7701,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "adm:write"
+            ]
           }
         ],
         "tags": [
@@ -5271,6 +7746,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "adm:read"
+            ]
           }
         ],
         "tags": [
@@ -5303,11 +7786,300 @@ func init() {
         }
       }
     },
+    "/chats": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "messages:read"
+            ]
+          }
+        ],
+        "tags": [
+          "chats"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat list",
+            "schema": {
+              "$ref": "#/definitions/ChatList"
+            }
+          }
+        }
+      }
+    },
+    "/chats/{name}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "messages:read"
+            ]
+          }
+        ],
+        "tags": [
+          "chats"
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat info",
+            "schema": {
+              "$ref": "#/definitions/Chat"
+            }
+          },
+          "404": {
+            "description": "Chat not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "maxLength": 20,
+          "minLength": 1,
+          "pattern": "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$",
+          "type": "string",
+          "name": "name",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/chats/{name}/messages": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "messages:read"
+            ]
+          }
+        ],
+        "tags": [
+          "chats"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "message list",
+            "schema": {
+              "$ref": "#/definitions/MessageList"
+            }
+          },
+          "404": {
+            "description": "Chat not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "messages:write"
+            ]
+          }
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "tags": [
+          "chats"
+        ],
+        "parameters": [
+          {
+            "maxLength": 1000,
+            "minLength": 1,
+            "pattern": "\\s*\\S+.*",
+            "type": "string",
+            "name": "content",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "type": "number",
+            "format": "int64",
+            "description": "unique message id",
+            "name": "uid",
+            "in": "formData",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Message data",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Chat not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "maxLength": 20,
+          "minLength": 1,
+          "pattern": "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$",
+          "type": "string",
+          "name": "name",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/chats/{name}/read": {
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "messages:read"
+            ]
+          }
+        ],
+        "tags": [
+          "chats"
+        ],
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "name": "message",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "unread count",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "unread": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Chat not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "maxLength": 20,
+          "minLength": 1,
+          "pattern": "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$",
+          "type": "string",
+          "name": "name",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/comments/{id}": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "comments:read"
+            ]
           }
         ],
         "tags": [
@@ -5338,6 +8110,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "comments:write"
+            ]
           }
         ],
         "consumes": [
@@ -5383,6 +8163,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "comments:write"
+            ]
           }
         ],
         "tags": [
@@ -5417,11 +8205,77 @@ func init() {
         }
       ]
     },
+    "/comments/{id}/complain": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "comments"
+        ],
+        "parameters": [
+          {
+            "maxLength": 1000,
+            "type": "string",
+            "default": "",
+            "name": "content",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Comment not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "minimum": 1,
+          "type": "integer",
+          "format": "int64",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/comments/{id}/vote": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "comments:read"
+            ]
           }
         ],
         "tags": [
@@ -5452,6 +8306,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "votes:write"
+            ]
           }
         ],
         "tags": [
@@ -5490,6 +8352,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "votes:write"
+            ]
           }
         ],
         "tags": [
@@ -5532,6 +8402,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -5550,6 +8428,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:write"
+            ]
           }
         ],
         "consumes": [
@@ -5568,14 +8454,14 @@ func init() {
             "in": "formData"
           },
           {
-            "pattern": "#[0-9a-fA-F]{6}",
+            "pattern": "^#[0-9a-fA-F]{6}$",
             "type": "string",
             "default": "#ffffff",
             "name": "backgroundColor",
             "in": "formData"
           },
           {
-            "pattern": "#[0-9a-fA-F]{6}",
+            "pattern": "^#[0-9a-fA-F]{6}$",
             "type": "string",
             "default": "#000000",
             "name": "textColor",
@@ -5619,6 +8505,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -5647,6 +8541,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -5676,7 +8578,15 @@ func init() {
           {
             "maxLength": 50,
             "type": "string",
+            "default": "",
             "name": "tag",
+            "in": "query"
+          },
+          {
+            "maxLength": 100,
+            "type": "string",
+            "default": "",
+            "name": "query",
             "in": "query"
           }
         ],
@@ -5693,6 +8603,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:write"
+            ]
           }
         ],
         "consumes": [
@@ -5732,6 +8650,18 @@ func init() {
             "in": "formData"
           },
           {
+            "maxItems": 5,
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "maxLength": 50,
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": "tags",
+            "in": "formData"
+          },
+          {
             "type": "boolean",
             "default": false,
             "name": "anonymous_comments",
@@ -5753,6 +8683,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -5770,7 +8708,15 @@ func init() {
           {
             "maxLength": 50,
             "type": "string",
+            "default": "",
             "name": "tag",
+            "in": "query"
+          },
+          {
+            "maxLength": 100,
+            "type": "string",
+            "default": "",
+            "name": "query",
             "in": "query"
           },
           {
@@ -5799,6 +8745,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -5828,7 +8782,15 @@ func init() {
           {
             "maxLength": 50,
             "type": "string",
+            "default": "",
             "name": "tag",
+            "in": "query"
+          },
+          {
+            "maxLength": 100,
+            "type": "string",
+            "default": "",
+            "name": "query",
             "in": "query"
           }
         ],
@@ -5847,6 +8809,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -5876,13 +8846,22 @@ func init() {
           {
             "maxLength": 50,
             "type": "string",
+            "default": "",
             "name": "tag",
+            "in": "query"
+          },
+          {
+            "maxLength": 100,
+            "type": "string",
+            "default": "",
+            "name": "query",
             "in": "query"
           },
           {
             "enum": [
               "entries",
-              "comments"
+              "comments",
+              "waiting"
             ],
             "type": "string",
             "default": "entries",
@@ -5900,11 +8879,91 @@ func init() {
         }
       }
     },
+    "/entries/random": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
+          }
+        ],
+        "tags": [
+          "entries"
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry data",
+            "schema": {
+              "$ref": "#/definitions/Entry"
+            }
+          },
+          "404": {
+            "description": "No entries found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/entries/tags": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
+          }
+        ],
+        "tags": [
+          "entries"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "popular tags",
+            "schema": {
+              "$ref": "#/definitions/TagList"
+            }
+          }
+        }
+      }
+    },
     "/entries/watching": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -5947,6 +9006,20 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "NoApiKey": []
+          },
+          {
+            "Oauth2App": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -5977,6 +9050,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:write"
+            ]
           }
         ],
         "consumes": [
@@ -6013,6 +9094,18 @@ func init() {
               "format": "int64"
             },
             "name": "images",
+            "in": "formData"
+          },
+          {
+            "maxItems": 5,
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "maxLength": 50,
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": "tags",
             "in": "formData"
           },
           {
@@ -6082,6 +9175,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:write"
+            ]
           }
         ],
         "tags": [
@@ -6121,6 +9222,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "comments:read"
+            ]
           }
         ],
         "tags": [
@@ -6167,6 +9276,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "comments:write"
+            ]
           }
         ],
         "consumes": [
@@ -6219,11 +9336,77 @@ func init() {
         }
       ]
     },
+    "/entries/{id}/complain": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "entries"
+        ],
+        "parameters": [
+          {
+            "maxLength": 1000,
+            "type": "string",
+            "default": "",
+            "name": "content",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Entry not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "minimum": 1,
+          "type": "integer",
+          "format": "int64",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/entries/{id}/favorite": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -6248,6 +9431,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "favorites:write"
+            ]
           }
         ],
         "tags": [
@@ -6272,6 +9463,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "favorites:write"
+            ]
           }
         ],
         "tags": [
@@ -6308,6 +9507,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -6338,6 +9545,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "votes:write"
+            ]
           }
         ],
         "tags": [
@@ -6376,6 +9591,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "votes:write"
+            ]
           }
         ],
         "tags": [
@@ -6418,6 +9641,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -6442,6 +9673,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "watchings:write"
+            ]
           }
         ],
         "tags": [
@@ -6466,6 +9705,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "watchings:write"
+            ]
           }
         ],
         "tags": [
@@ -6502,6 +9749,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "images:read"
+            ]
           }
         ],
         "consumes": [
@@ -6539,6 +9794,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "images:read"
+            ]
           }
         ],
         "tags": [
@@ -6569,6 +9832,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "images:write"
+            ]
           }
         ],
         "tags": [
@@ -6608,6 +9879,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -6626,6 +9905,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:write"
+            ]
           }
         ],
         "consumes": [
@@ -6666,7 +9953,8 @@ func init() {
             "enum": [
               "all",
               "invited",
-              "followers"
+              "followers",
+              "registered"
             ],
             "type": "string",
             "name": "privacy",
@@ -6723,6 +10011,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:write"
+            ]
           }
         ],
         "consumes": [
@@ -6752,11 +10048,63 @@ func init() {
         }
       }
     },
+    "/me/calendar": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
+          }
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "default": 0,
+            "name": "start",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "default": 0,
+            "name": "end",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Calendar"
+            }
+          }
+        }
+      }
+    },
     "/me/cover": {
       "put": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:write"
+            ]
           }
         ],
         "consumes": [
@@ -6791,6 +10139,71 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
+          }
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
+            "in": "query"
+          },
+          {
+            "maxLength": 100,
+            "type": "string",
+            "default": "",
+            "name": "query",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          }
+        }
+      }
+    },
+    "/me/followers": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -6820,42 +10233,6 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Entry list",
-            "schema": {
-              "$ref": "#/definitions/Feed"
-            }
-          }
-        }
-      }
-    },
-    "/me/followers": {
-      "get": {
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "tags": [
-          "me"
-        ],
-        "parameters": [
-          {
-            "maximum": 100,
-            "minimum": 1,
-            "type": "integer",
-            "default": 30,
-            "name": "limit",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "default": 0,
-            "name": "skip",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
             "description": "User list",
             "schema": {
               "$ref": "#/definitions/FriendList"
@@ -6869,6 +10246,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -6884,9 +10269,15 @@ func init() {
             "in": "query"
           },
           {
-            "type": "integer",
-            "default": 0,
-            "name": "skip",
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
             "in": "query"
           }
         ],
@@ -6905,6 +10296,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -6920,9 +10319,15 @@ func init() {
             "in": "query"
           },
           {
-            "type": "integer",
-            "default": 0,
-            "name": "skip",
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
             "in": "query"
           }
         ],
@@ -6941,6 +10346,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -6956,9 +10369,15 @@ func init() {
             "in": "query"
           },
           {
-            "type": "integer",
-            "default": 0,
-            "name": "skip",
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
             "in": "query"
           }
         ],
@@ -6977,6 +10396,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "images:read"
+            ]
           }
         ],
         "tags": [
@@ -7025,6 +10452,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -7040,9 +10475,15 @@ func init() {
             "in": "query"
           },
           {
-            "type": "integer",
-            "default": 0,
-            "name": "skip",
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
             "in": "query"
           }
         ],
@@ -7061,14 +10502,31 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": []
           }
         ],
         "tags": [
           "me"
         ],
         "responses": {
-          "204": {
-            "description": "OK"
+          "200": {
+            "description": "unread counts",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "chats": {
+                  "type": "integer"
+                },
+                "notifications": {
+                  "type": "integer"
+                }
+              }
+            }
           }
         }
       }
@@ -7078,6 +10536,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -7093,9 +10559,15 @@ func init() {
             "in": "query"
           },
           {
-            "type": "integer",
-            "default": 0,
-            "name": "skip",
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
             "in": "query"
           }
         ],
@@ -7109,11 +10581,57 @@ func init() {
         }
       }
     },
+    "/me/tags": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
+          }
+        ],
+        "tags": [
+          "me"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "my tags",
+            "schema": {
+              "$ref": "#/definitions/TagList"
+            }
+          }
+        }
+      }
+    },
     "/me/tlog": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -7143,7 +10661,26 @@ func init() {
           {
             "maxLength": 50,
             "type": "string",
+            "default": "",
             "name": "tag",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "new",
+              "old",
+              "best"
+            ],
+            "type": "string",
+            "default": "new",
+            "name": "sort",
+            "in": "query"
+          },
+          {
+            "maxLength": 100,
+            "type": "string",
+            "default": "",
+            "name": "query",
             "in": "query"
           }
         ],
@@ -7160,6 +10697,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:write"
+            ]
           }
         ],
         "consumes": [
@@ -7196,6 +10741,18 @@ func init() {
               "format": "int64"
             },
             "name": "images",
+            "in": "formData"
+          },
+          {
+            "maxItems": 5,
+            "uniqueItems": true,
+            "type": "array",
+            "items": {
+              "maxLength": 50,
+              "minLength": 1,
+              "type": "string"
+            },
+            "name": "tags",
             "in": "formData"
           },
           {
@@ -7249,11 +10806,156 @@ func init() {
         }
       }
     },
+    "/messages/{id}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "messages:read"
+            ]
+          }
+        ],
+        "tags": [
+          "chats"
+        ],
+        "responses": {
+          "200": {
+            "description": "Message data",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Message not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "messages:write"
+            ]
+          }
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "tags": [
+          "chats"
+        ],
+        "parameters": [
+          {
+            "maxLength": 1000,
+            "minLength": 1,
+            "pattern": "\\s*\\S+.*",
+            "type": "string",
+            "name": "content",
+            "in": "formData",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Message data",
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Message not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "delete": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "messages:write"
+            ]
+          }
+        ],
+        "tags": [
+          "chats"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "access denied",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Message not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "minimum": 1,
+          "type": "integer",
+          "format": "int64",
+          "name": "id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
     "/notifications": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "notifications:read"
+            ]
           }
         ],
         "tags": [
@@ -7302,6 +11004,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "notifications:read"
+            ]
           }
         ],
         "tags": [
@@ -7335,6 +11045,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "notifications:read"
+            ]
           }
         ],
         "tags": [
@@ -7366,11 +11084,342 @@ func init() {
         }
       }
     },
+    "/oauth2/allow": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "oauth2"
+        ],
+        "summary": "only for internal usage",
+        "parameters": [
+          {
+            "enum": [
+              "code"
+            ],
+            "type": "string",
+            "name": "response_type",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "client_id",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 500,
+            "type": "string",
+            "name": "redirect_uri",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 50,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi",
+            "name": "scope",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 500,
+            "type": "string",
+            "name": "state",
+            "in": "formData"
+          },
+          {
+            "maxLength": 128,
+            "minLength": 43,
+            "type": "string",
+            "name": "code_challenge",
+            "in": "formData"
+          },
+          {
+            "enum": [
+              "plain",
+              "S256"
+            ],
+            "type": "string",
+            "name": "code_challenge_method",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "auth code",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "some error happened",
+            "schema": {
+              "$ref": "#/definitions/OAuth2Error"
+            }
+          },
+          "401": {
+            "description": "invalid client",
+            "schema": {
+              "$ref": "#/definitions/OAuth2Error"
+            }
+          }
+        }
+      }
+    },
+    "/oauth2/apps/{id}": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          }
+        ],
+        "tags": [
+          "oauth2"
+        ],
+        "parameters": [
+          {
+            "minimum": 1,
+            "type": "integer",
+            "format": "int64",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "app info",
+            "schema": {
+              "$ref": "#/definitions/App"
+            }
+          },
+          "404": {
+            "description": "not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/oauth2/deny": {
+      "get": {
+        "tags": [
+          "oauth2"
+        ],
+        "summary": "only for internal usage",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "client_id",
+            "in": "query",
+            "required": true
+          },
+          {
+            "maxLength": 500,
+            "type": "string",
+            "name": "redirect_uri",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "some error happened",
+            "schema": {
+              "$ref": "#/definitions/OAuth2Error"
+            }
+          }
+        }
+      }
+    },
+    "/oauth2/token": {
+      "post": {
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "oauth2"
+        ],
+        "parameters": [
+          {
+            "enum": [
+              "authorization_code",
+              "client_credentials",
+              "password",
+              "refresh_token"
+            ],
+            "type": "string",
+            "name": "grant_type",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "client_id",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 64,
+            "type": "string",
+            "default": "",
+            "name": "client_secret",
+            "in": "formData"
+          },
+          {
+            "maxLength": 32,
+            "type": "string",
+            "name": "code",
+            "in": "formData"
+          },
+          {
+            "maxLength": 500,
+            "type": "string",
+            "name": "redirect_uri",
+            "in": "formData"
+          },
+          {
+            "maxLength": 128,
+            "type": "string",
+            "name": "code_verifier",
+            "in": "formData"
+          },
+          {
+            "maxLength": 60,
+            "minLength": 50,
+            "type": "string",
+            "name": "refresh_token",
+            "in": "formData"
+          },
+          {
+            "maxLength": 500,
+            "type": "string",
+            "name": "username",
+            "in": "formData"
+          },
+          {
+            "maxLength": 100,
+            "minLength": 6,
+            "type": "string",
+            "name": "password",
+            "in": "formData"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "authorized",
+            "schema": {
+              "$ref": "#/definitions/OAuth2Token"
+            }
+          },
+          "400": {
+            "description": "some error happened",
+            "schema": {
+              "$ref": "#/definitions/OAuth2Error"
+            }
+          },
+          "401": {
+            "description": "invalid client",
+            "schema": {
+              "$ref": "#/definitions/OAuth2Error"
+            }
+          }
+        }
+      }
+    },
+    "/oauth2/upgrade": {
+      "post": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          }
+        ],
+        "consumes": [
+          "multipart/form-data",
+          "application/x-www-form-urlencoded"
+        ],
+        "tags": [
+          "oauth2"
+        ],
+        "summary": "only for internal usage",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "client_id",
+            "in": "formData",
+            "required": true
+          },
+          {
+            "maxLength": 64,
+            "type": "string",
+            "name": "client_secret",
+            "in": "formData",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "authorized",
+            "schema": {
+              "$ref": "#/definitions/OAuth2Token"
+            }
+          },
+          "400": {
+            "description": "some error happened",
+            "schema": {
+              "$ref": "#/definitions/OAuth2Error"
+            }
+          },
+          "401": {
+            "description": "invalid client",
+            "schema": {
+              "$ref": "#/definitions/OAuth2Error"
+            }
+          }
+        }
+      }
+    },
     "/relations/from/{name}": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -7395,6 +11444,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "relations:write"
+            ]
           }
         ],
         "tags": [
@@ -7426,6 +11483,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "relations:write"
+            ]
           }
         ],
         "tags": [
@@ -7457,7 +11522,7 @@ func init() {
         {
           "maxLength": 20,
           "minLength": 1,
-          "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
+          "pattern": "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$",
           "type": "string",
           "name": "name",
           "in": "path",
@@ -7470,6 +11535,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "relations:write"
+            ]
           }
         ],
         "consumes": [
@@ -7483,14 +11556,14 @@ func init() {
           {
             "maxLength": 20,
             "minLength": 1,
-            "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
+            "pattern": "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$",
             "type": "string",
             "name": "name",
             "in": "path",
             "required": true
           },
           {
-            "pattern": "\\s*\\S+\\s+\\S+\\s+\\S+\\s*",
+            "pattern": "^\\s*\\S+\\s+\\S+\\s+\\S+\\s*$",
             "type": "string",
             "name": "invite",
             "in": "formData",
@@ -7521,6 +11594,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -7545,6 +11626,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "relations:write"
+            ]
           }
         ],
         "tags": [
@@ -7588,6 +11677,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "relations:write"
+            ]
           }
         ],
         "tags": [
@@ -7612,7 +11709,7 @@ func init() {
         {
           "maxLength": 20,
           "minLength": 1,
-          "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
+          "pattern": "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$",
           "type": "string",
           "name": "name",
           "in": "path",
@@ -7625,6 +11722,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -7679,6 +11784,20 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "NoApiKey": []
+          },
+          {
+            "OAuth2App": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -7703,7 +11822,74 @@ func init() {
         {
           "maxLength": 20,
           "minLength": 1,
-          "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
+          "pattern": "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$",
+          "type": "string",
+          "name": "name",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/users/{name}/calendar": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "NoApiKey": []
+          },
+          {
+            "OAuth2App": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "default": 0,
+            "name": "start",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "default": 0,
+            "name": "end",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Calendar"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "maxLength": 20,
+          "minLength": 1,
+          "pattern": "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$",
           "type": "string",
           "name": "name",
           "in": "path",
@@ -7716,6 +11902,88 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
+            "in": "query"
+          },
+          {
+            "maxLength": 100,
+            "type": "string",
+            "default": "",
+            "name": "query",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Entry list",
+            "schema": {
+              "$ref": "#/definitions/Feed"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "parameters": [
+        {
+          "maxLength": 20,
+          "minLength": 1,
+          "pattern": "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$",
+          "type": "string",
+          "name": "name",
+          "in": "path",
+          "required": true
+        }
+      ]
+    },
+    "/users/{name}/followers": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -7745,59 +12013,6 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "Entry list",
-            "schema": {
-              "$ref": "#/definitions/Feed"
-            }
-          },
-          "404": {
-            "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      },
-      "parameters": [
-        {
-          "maxLength": 20,
-          "minLength": 1,
-          "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
-          "type": "string",
-          "name": "name",
-          "in": "path",
-          "required": true
-        }
-      ]
-    },
-    "/users/{name}/followers": {
-      "get": {
-        "security": [
-          {
-            "ApiKeyHeader": []
-          }
-        ],
-        "tags": [
-          "users"
-        ],
-        "parameters": [
-          {
-            "maximum": 100,
-            "minimum": 1,
-            "type": "integer",
-            "default": 30,
-            "name": "limit",
-            "in": "query"
-          },
-          {
-            "type": "integer",
-            "default": 0,
-            "name": "skip",
-            "in": "query"
-          }
-        ],
-        "responses": {
-          "200": {
             "description": "User list",
             "schema": {
               "$ref": "#/definitions/FriendList"
@@ -7821,7 +12036,7 @@ func init() {
         {
           "maxLength": 20,
           "minLength": 1,
-          "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
+          "pattern": "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$",
           "type": "string",
           "name": "name",
           "in": "path",
@@ -7834,6 +12049,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -7849,9 +12072,15 @@ func init() {
             "in": "query"
           },
           {
-            "type": "integer",
-            "default": 0,
-            "name": "skip",
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
             "in": "query"
           }
         ],
@@ -7880,7 +12109,7 @@ func init() {
         {
           "maxLength": 20,
           "minLength": 1,
-          "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
+          "pattern": "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$",
           "type": "string",
           "name": "name",
           "in": "path",
@@ -7893,6 +12122,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "images:read"
+            ]
           }
         ],
         "tags": [
@@ -7939,7 +12176,7 @@ func init() {
         {
           "maxLength": 20,
           "minLength": 1,
-          "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
+          "pattern": "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$",
           "type": "string",
           "name": "name",
           "in": "path",
@@ -7952,6 +12189,14 @@ func init() {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "users:read"
+            ]
           }
         ],
         "tags": [
@@ -7967,9 +12212,15 @@ func init() {
             "in": "query"
           },
           {
-            "type": "integer",
-            "default": 0,
-            "name": "skip",
+            "type": "string",
+            "default": "",
+            "name": "after",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "default": "",
+            "name": "before",
             "in": "query"
           }
         ],
@@ -7998,7 +12249,7 @@ func init() {
         {
           "maxLength": 20,
           "minLength": 1,
-          "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
+          "pattern": "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$",
           "type": "string",
           "name": "name",
           "in": "path",
@@ -8006,11 +12257,81 @@ func init() {
         }
       ]
     },
+    "/users/{name}/tags": {
+      "get": {
+        "security": [
+          {
+            "ApiKeyHeader": []
+          },
+          {
+            "NoApiKey": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
+          }
+        ],
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "maxLength": 20,
+            "minLength": 1,
+            "pattern": "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$",
+            "type": "string",
+            "name": "name",
+            "in": "path",
+            "required": true
+          },
+          {
+            "maximum": 100,
+            "minimum": 1,
+            "type": "integer",
+            "default": 30,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user tags",
+            "schema": {
+              "$ref": "#/definitions/TagList"
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/users/{name}/tlog": {
       "get": {
         "security": [
           {
             "ApiKeyHeader": []
+          },
+          {
+            "NoApiKey": []
+          },
+          {
+            "OAuth2App": []
+          },
+          {
+            "OAuth2Password": []
+          },
+          {
+            "OAuth2Code": [
+              "entries:read"
+            ]
           }
         ],
         "tags": [
@@ -8040,6 +12361,7 @@ func init() {
           {
             "maxLength": 50,
             "type": "string",
+            "default": "",
             "name": "tag",
             "in": "query"
           },
@@ -8052,6 +12374,13 @@ func init() {
             "type": "string",
             "default": "new",
             "name": "sort",
+            "in": "query"
+          },
+          {
+            "maxLength": 100,
+            "type": "string",
+            "default": "",
+            "name": "query",
             "in": "query"
           }
         ],
@@ -8074,7 +12403,7 @@ func init() {
         {
           "maxLength": 20,
           "minLength": 1,
-          "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
+          "pattern": "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$",
           "type": "string",
           "name": "name",
           "in": "path",
@@ -8084,6 +12413,26 @@ func init() {
     }
   },
   "definitions": {
+    "App": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "info": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "platform": {
+          "type": "string"
+        },
+        "showName": {
+          "type": "string"
+        }
+      }
+    },
     "AuthProfile": {
       "allOf": [
         {
@@ -8170,10 +12519,94 @@ func init() {
         }
       }
     },
+    "Calendar": {
+      "type": "object",
+      "properties": {
+        "end": {
+          "type": "number",
+          "format": "int64"
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "createdAt": {
+                "type": "number",
+                "format": "double"
+              },
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "title": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "start": {
+          "type": "number",
+          "format": "int64"
+        }
+      }
+    },
+    "Chat": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "lastMessage": {
+          "$ref": "#/definitions/Message"
+        },
+        "partner": {
+          "$ref": "#/definitions/User"
+        },
+        "rights": {
+          "type": "object",
+          "properties": {
+            "send": {
+              "type": "boolean"
+            }
+          }
+        },
+        "unreadCount": {
+          "type": "integer"
+        }
+      }
+    },
+    "ChatList": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Chat"
+          }
+        },
+        "hasAfter": {
+          "type": "boolean"
+        },
+        "hasBefore": {
+          "type": "boolean"
+        },
+        "nextAfter": {
+          "type": "string"
+        },
+        "nextBefore": {
+          "type": "string"
+        },
+        "unreadCount": {
+          "type": "integer"
+        }
+      }
+    },
     "Color": {
       "description": "color in rgb",
       "type": "string",
-      "pattern": "#[0-9a-fA-F]{6}",
+      "pattern": "^#[0-9a-fA-F]{6}$",
       "example": "#373737"
     },
     "Comment": {
@@ -8208,6 +12641,9 @@ func init() {
         "rights": {
           "type": "object",
           "properties": {
+            "complain": {
+              "type": "boolean"
+            },
             "delete": {
               "type": "boolean"
             },
@@ -8371,6 +12807,9 @@ func init() {
             "comment": {
               "type": "boolean"
             },
+            "complain": {
+              "type": "boolean"
+            },
             "delete": {
               "type": "boolean"
             },
@@ -8380,6 +12819,12 @@ func init() {
             "vote": {
               "type": "boolean"
             }
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         },
         "title": {
@@ -8525,7 +12970,8 @@ func init() {
               "enum": [
                 "all",
                 "followers",
-                "invited"
+                "invited",
+                "registered"
               ]
             },
             "rank": {
@@ -8543,6 +12989,18 @@ func init() {
     "FriendList": {
       "type": "object",
       "properties": {
+        "hasAfter": {
+          "type": "boolean"
+        },
+        "hasBefore": {
+          "type": "boolean"
+        },
+        "nextAfter": {
+          "type": "string"
+        },
+        "nextBefore": {
+          "type": "string"
+        },
         "relation": {
           "type": "string",
           "enum": [
@@ -8635,6 +13093,72 @@ func init() {
         }
       }
     },
+    "Message": {
+      "type": "object",
+      "properties": {
+        "author": {
+          "$ref": "#/definitions/User"
+        },
+        "chatId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "content": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "number",
+          "format": "double"
+        },
+        "editContent": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "read": {
+          "type": "boolean"
+        },
+        "rights": {
+          "type": "object",
+          "properties": {
+            "delete": {
+              "type": "boolean"
+            },
+            "edit": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "MessageList": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Message"
+          }
+        },
+        "hasAfter": {
+          "type": "boolean"
+        },
+        "hasBefore": {
+          "type": "boolean"
+        },
+        "nextAfter": {
+          "type": "string"
+        },
+        "nextBefore": {
+          "type": "string"
+        },
+        "unreadCount": {
+          "type": "integer"
+        }
+      }
+    },
     "Notification": {
       "type": "object",
       "properties": {
@@ -8653,6 +13177,17 @@ func init() {
           "format": "int64",
           "minimum": 1
         },
+        "info": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "string"
+            },
+            "link": {
+              "type": "string"
+            }
+          }
+        },
         "read": {
           "type": "boolean"
         },
@@ -8665,7 +13200,10 @@ func init() {
             "accept",
             "invite",
             "welcome",
-            "invited"
+            "invited",
+            "adm_sent",
+            "adm_received",
+            "info"
           ]
         },
         "user": {
@@ -8696,6 +13234,56 @@ func init() {
         },
         "unreadCount": {
           "type": "integer"
+        }
+      }
+    },
+    "OAuth2Error": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string",
+          "enum": [
+            "access_denied",
+            "invalid_client",
+            "invalid_grant",
+            "invalid_redirect",
+            "invalid_request",
+            "invalid_scope",
+            "invalid_token",
+            "server_error",
+            "temporarily_unavailable",
+            "unauthorized_client",
+            "unrecognized_client",
+            "unsupported_grant_type",
+            "unsupported_response_type"
+          ]
+        }
+      }
+    },
+    "OAuth2Token": {
+      "type": "object",
+      "properties": {
+        "access_token": {
+          "type": "string"
+        },
+        "expires_in": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "refresh_token": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "token_type": {
+          "type": "string",
+          "enum": [
+            "bearer"
+          ]
         }
       }
     },
@@ -8838,6 +13426,25 @@ func init() {
         }
       }
     },
+    "TagList": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer"
+              },
+              "tag": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
     "User": {
       "type": "object",
       "properties": {
@@ -8908,6 +13515,26 @@ func init() {
         },
         "negKarma": {
           "type": "boolean"
+        },
+        "verified": {
+          "type": "boolean"
+        }
+      }
+    },
+    "UserIDBan": {
+      "type": "object",
+      "properties": {
+        "comment": {
+          "type": "boolean"
+        },
+        "invite": {
+          "type": "boolean"
+        },
+        "live": {
+          "type": "boolean"
+        },
+        "vote": {
+          "type": "boolean"
         }
       }
     },
@@ -8936,6 +13563,13 @@ func init() {
       "type": "string",
       "default": "",
       "name": "before",
+      "in": "query"
+    },
+    "end": {
+      "type": "integer",
+      "format": "int64",
+      "default": 0,
+      "name": "end",
       "in": "query"
     },
     "formEmail": {
@@ -8973,16 +13607,17 @@ func init() {
     "pathName": {
       "maxLength": 20,
       "minLength": 1,
-      "pattern": "[a-zA-Z][a-zA-Z0-9\\-_]*",
+      "pattern": "^[0-9\\-_]*[a-zA-Z][a-zA-Z0-9\\-_]*$",
       "type": "string",
       "name": "name",
       "in": "path",
       "required": true
     },
-    "skip": {
-      "type": "integer",
-      "default": 0,
-      "name": "skip",
+    "query": {
+      "maxLength": 100,
+      "type": "string",
+      "default": "",
+      "name": "query",
       "in": "query"
     },
     "sort": {
@@ -8996,9 +13631,17 @@ func init() {
       "name": "sort",
       "in": "query"
     },
+    "start": {
+      "type": "integer",
+      "format": "int64",
+      "default": 0,
+      "name": "start",
+      "in": "query"
+    },
     "tag": {
       "maxLength": 50,
       "type": "string",
+      "default": "",
       "name": "tag",
       "in": "query"
     }
@@ -9008,6 +13651,52 @@ func init() {
       "type": "apiKey",
       "name": "X-User-Key",
       "in": "header"
+    },
+    "NoApiKey": {
+      "type": "apiKey",
+      "name": "X-User-Key",
+      "in": "header"
+    },
+    "OAuth2App": {
+      "type": "oauth2",
+      "flow": "application",
+      "authorizationUrl": "",
+      "tokenUrl": "/oauth2/token"
+    },
+    "OAuth2Code": {
+      "type": "oauth2",
+      "flow": "accessCode",
+      "authorizationUrl": "/oauth",
+      "tokenUrl": "/oauth2/token",
+      "scopes": {
+        "account:read": "read available invites, etc.",
+        "account:write": "change email, password, etc.",
+        "adm:read": "read adm info and statuses",
+        "adm:write": "change adm info and update statuses",
+        "comments:read": "read comments and comment votes",
+        "comments:write": "create, edit and remove comments",
+        "entries:read": "read entries, entry votes, favorites, watchings, tags",
+        "entries:write": "create, edit and remove tlog entries",
+        "favorites:write": "add entries to favorites and remove",
+        "images:read": "get uploaded images",
+        "images:write": "upload new images",
+        "messages:read": "read chats and messages and set them read",
+        "messages:write": "create, edit and remove messages",
+        "notifications:read": "read notifications and set them read",
+        "relations:write": "follow, block, hide tlogs, accept followers, invite people",
+        "settings:read": "read account settings",
+        "settings:write": "change account settings",
+        "users:read": "read profile info, relations",
+        "users:write": "change profile info, avatar, etc.",
+        "votes:write": "vote and unvote entries and comments",
+        "watchings:write": "subscribe to entry comments and unsubscribe"
+      }
+    },
+    "OAuth2Password": {
+      "type": "oauth2",
+      "flow": "password",
+      "authorizationUrl": "",
+      "tokenUrl": "/oauth2/token"
     }
   }
 }`))

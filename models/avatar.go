@@ -6,12 +6,14 @@ package models
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	strfmt "github.com/go-openapi/strfmt"
+	"context"
 
+	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 )
 
 // Avatar avatar
+//
 // swagger:model Avatar
 type Avatar struct {
 
@@ -27,6 +29,11 @@ type Avatar struct {
 
 // Validate validates this avatar
 func (m *Avatar) Validate(formats strfmt.Registry) error {
+	return nil
+}
+
+// ContextValidate validates this avatar based on context it is used
+func (m *Avatar) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 

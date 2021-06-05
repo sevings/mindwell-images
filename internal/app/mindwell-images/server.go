@@ -61,6 +61,14 @@ func (mi *MindwellImages) ConfigString(key string) string {
 	return value
 }
 
+func (mi *MindwellImages) ConfigBytes(key string) []byte {
+	return []byte(mi.ConfigString(key))
+}
+
+func (mi *MindwellImages) TokenHash() utils.TokenHash {
+	return utils.NewTokenHash(mi)
+}
+
 func (mi *MindwellImages) Folder() string {
 	return mi.folder
 }

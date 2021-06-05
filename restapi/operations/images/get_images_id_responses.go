@@ -10,7 +10,7 @@ import (
 
 	"github.com/go-openapi/runtime"
 
-	models "github.com/sevings/mindwell-images/models"
+	"github.com/sevings/mindwell-images/models"
 )
 
 // GetImagesIDOKCode is the HTTP code returned for type GetImagesIDOK

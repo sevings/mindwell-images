@@ -8,9 +8,9 @@ package images
 import (
 	"net/http"
 
-	middleware "github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/runtime/middleware"
 
-	models "github.com/sevings/mindwell-images/models"
+	"github.com/sevings/mindwell-images/models"
 )
 
 // PostImagesHandlerFunc turns a function with the right signature into a post images handler
@@ -31,7 +31,7 @@ func NewPostImages(ctx *middleware.Context, handler PostImagesHandler) *PostImag
 	return &PostImages{Context: ctx, Handler: handler}
 }
 
-/*PostImages swagger:route POST /images images postImages
+/* PostImages swagger:route POST /images images postImages
 
 PostImages post images API
 
@@ -47,7 +47,6 @@ func (o *PostImages) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		r = rCtx
 	}
 	var Params = NewPostImagesParams()
-
 	uprinc, aCtx, err := o.Context.Authorize(r, route)
 	if err != nil {
 		o.Context.Respond(rw, r, route.Produces, route, err)
@@ -67,7 +66,6 @@ func (o *PostImages) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	res := o.Handler.Handle(Params, principal) // actually handle the request
-
 	o.Context.Respond(rw, r, route.Produces, route, res)
 
 }

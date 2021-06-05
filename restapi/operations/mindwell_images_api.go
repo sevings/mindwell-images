@@ -10,61 +10,76 @@ import (
 	"net/http"
 	"strings"
 
-	errors "github.com/go-openapi/errors"
-	loads "github.com/go-openapi/loads"
-	runtime "github.com/go-openapi/runtime"
-	middleware "github.com/go-openapi/runtime/middleware"
-	security "github.com/go-openapi/runtime/security"
-	spec "github.com/go-openapi/spec"
-	strfmt "github.com/go-openapi/strfmt"
+	"github.com/go-openapi/errors"
+	"github.com/go-openapi/loads"
+	"github.com/go-openapi/runtime"
+	"github.com/go-openapi/runtime/middleware"
+	"github.com/go-openapi/runtime/security"
+	"github.com/go-openapi/spec"
+	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 
+	"github.com/sevings/mindwell-images/models"
 	"github.com/sevings/mindwell-images/restapi/operations/images"
 	"github.com/sevings/mindwell-images/restapi/operations/me"
-
-	models "github.com/sevings/mindwell-images/models"
 )
 
 // NewMindwellImagesAPI creates a new MindwellImages instance
 func NewMindwellImagesAPI(spec *loads.Document) *MindwellImagesAPI {
 	return &MindwellImagesAPI{
-		handlers:              make(map[string]map[string]http.Handler),
-		formats:               strfmt.Default,
-		defaultConsumes:       "application/json",
-		defaultProduces:       "application/json",
-		customConsumers:       make(map[string]runtime.Consumer),
-		customProducers:       make(map[string]runtime.Producer),
-		ServerShutdown:        func() {},
-		spec:                  spec,
-		ServeError:            errors.ServeError,
-		BasicAuthenticator:    security.BasicAuth,
-		APIKeyAuthenticator:   security.APIKeyAuth,
-		BearerAuthenticator:   security.BearerAuth,
-		JSONConsumer:          runtime.JSONConsumer(),
-		UrlformConsumer:       runtime.DiscardConsumer,
+		handlers:            make(map[string]map[string]http.Handler),
+		formats:             strfmt.Default,
+		defaultConsumes:     "application/json",
+		defaultProduces:     "application/json",
+		customConsumers:     make(map[string]runtime.Consumer),
+		customProducers:     make(map[string]runtime.Producer),
+		PreServerShutdown:   func() {},
+		ServerShutdown:      func() {},
+		spec:                spec,
+		useSwaggerUI:        false,
+		ServeError:          errors.ServeError,
+		BasicAuthenticator:  security.BasicAuth,
+		APIKeyAuthenticator: security.APIKeyAuth,
+		BearerAuthenticator: security.BearerAuth,
+
 		MultipartformConsumer: runtime.DiscardConsumer,
-		JSONProducer:          runtime.JSONProducer(),
+		UrlformConsumer:       runtime.DiscardConsumer,
+
+		JSONProducer: runtime.JSONProducer(),
+
 		ImagesDeleteImagesIDHandler: images.DeleteImagesIDHandlerFunc(func(params images.DeleteImagesIDParams, principal *models.UserID) middleware.Responder {
-			return middleware.NotImplemented("operation ImagesDeleteImagesID has not yet been implemented")
+			return middleware.NotImplemented("operation images.DeleteImagesID has not yet been implemented")
 		}),
 		ImagesGetImagesIDHandler: images.GetImagesIDHandlerFunc(func(params images.GetImagesIDParams, principal *models.UserID) middleware.Responder {
-			return middleware.NotImplemented("operation ImagesGetImagesID has not yet been implemented")
+			return middleware.NotImplemented("operation images.GetImagesID has not yet been implemented")
 		}),
 		ImagesPostImagesHandler: images.PostImagesHandlerFunc(func(params images.PostImagesParams, principal *models.UserID) middleware.Responder {
-			return middleware.NotImplemented("operation ImagesPostImages has not yet been implemented")
+			return middleware.NotImplemented("operation images.PostImages has not yet been implemented")
 		}),
 		MePutMeAvatarHandler: me.PutMeAvatarHandlerFunc(func(params me.PutMeAvatarParams, principal *models.UserID) middleware.Responder {
-			return middleware.NotImplemented("operation MePutMeAvatar has not yet been implemented")
+			return middleware.NotImplemented("operation me.PutMeAvatar has not yet been implemented")
 		}),
 		MePutMeCoverHandler: me.PutMeCoverHandlerFunc(func(params me.PutMeCoverParams, principal *models.UserID) middleware.Responder {
-			return middleware.NotImplemented("operation MePutMeCover has not yet been implemented")
+			return middleware.NotImplemented("operation me.PutMeCover has not yet been implemented")
 		}),
 
 		// Applies when the "X-User-Key" header is set
 		APIKeyHeaderAuth: func(token string) (*models.UserID, error) {
 			return nil, errors.NotImplemented("api key auth (ApiKeyHeader) X-User-Key from header param [X-User-Key] has not yet been implemented")
 		},
-
+		// Applies when the "X-User-Key" header is set
+		NoAPIKeyAuth: func(token string) (*models.UserID, error) {
+			return nil, errors.NotImplemented("api key auth (NoApiKey) X-User-Key from header param [X-User-Key] has not yet been implemented")
+		},
+		OAuth2AppAuth: func(token string, scopes []string) (*models.UserID, error) {
+			return nil, errors.NotImplemented("oauth2 bearer auth (OAuth2App) has not yet been implemented")
+		},
+		OAuth2CodeAuth: func(token string, scopes []string) (*models.UserID, error) {
+			return nil, errors.NotImplemented("oauth2 bearer auth (OAuth2Code) has not yet been implemented")
+		},
+		OAuth2PasswordAuth: func(token string, scopes []string) (*models.UserID, error) {
+			return nil, errors.NotImplemented("oauth2 bearer auth (OAuth2Password) has not yet been implemented")
+		},
 		// default authorizer is authorized meaning no requests are blocked
 		APIAuthorizer: security.Authorized(),
 	}
@@ -81,30 +96,50 @@ type MindwellImagesAPI struct {
 	defaultConsumes string
 	defaultProduces string
 	Middleware      func(middleware.Builder) http.Handler
+	useSwaggerUI    bool
 
 	// BasicAuthenticator generates a runtime.Authenticator from the supplied basic auth function.
 	// It has a default implementation in the security package, however you can replace it for your particular usage.
 	BasicAuthenticator func(security.UserPassAuthentication) runtime.Authenticator
+
 	// APIKeyAuthenticator generates a runtime.Authenticator from the supplied token auth function.
 	// It has a default implementation in the security package, however you can replace it for your particular usage.
 	APIKeyAuthenticator func(string, string, security.TokenAuthentication) runtime.Authenticator
+
 	// BearerAuthenticator generates a runtime.Authenticator from the supplied bearer token auth function.
 	// It has a default implementation in the security package, however you can replace it for your particular usage.
 	BearerAuthenticator func(string, security.ScopedTokenAuthentication) runtime.Authenticator
 
-	// JSONConsumer registers a consumer for a "application/json" mime type
-	JSONConsumer runtime.Consumer
-	// UrlformConsumer registers a consumer for a "application/x-www-form-urlencoded" mime type
-	UrlformConsumer runtime.Consumer
-	// MultipartformConsumer registers a consumer for a "multipart/form-data" mime type
+	// MultipartformConsumer registers a consumer for the following mime types:
+	//   - multipart/form-data
 	MultipartformConsumer runtime.Consumer
+	// UrlformConsumer registers a consumer for the following mime types:
+	//   - application/x-www-form-urlencoded
+	UrlformConsumer runtime.Consumer
 
-	// JSONProducer registers a producer for a "application/json" mime type
+	// JSONProducer registers a producer for the following mime types:
+	//   - application/json
 	JSONProducer runtime.Producer
 
 	// APIKeyHeaderAuth registers a function that takes a token and returns a principal
 	// it performs authentication based on an api key X-User-Key provided in the header
 	APIKeyHeaderAuth func(string) (*models.UserID, error)
+
+	// NoAPIKeyAuth registers a function that takes a token and returns a principal
+	// it performs authentication based on an api key X-User-Key provided in the header
+	NoAPIKeyAuth func(string) (*models.UserID, error)
+
+	// OAuth2AppAuth registers a function that takes an access token and a collection of required scopes and returns a principal
+	// it performs authentication based on an oauth2 bearer token provided in the request
+	OAuth2AppAuth func(string, []string) (*models.UserID, error)
+
+	// OAuth2CodeAuth registers a function that takes an access token and a collection of required scopes and returns a principal
+	// it performs authentication based on an oauth2 bearer token provided in the request
+	OAuth2CodeAuth func(string, []string) (*models.UserID, error)
+
+	// OAuth2PasswordAuth registers a function that takes an access token and a collection of required scopes and returns a principal
+	// it performs authentication based on an oauth2 bearer token provided in the request
+	OAuth2PasswordAuth func(string, []string) (*models.UserID, error)
 
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
@@ -124,6 +159,10 @@ type MindwellImagesAPI struct {
 	// but you can set your own with this
 	ServeError func(http.ResponseWriter, *http.Request, error)
 
+	// PreServerShutdown is called before the HTTP(S) server is shutdown
+	// This allows for custom functions to get executed before the HTTP(S) server stops accepting traffic
+	PreServerShutdown func()
+
 	// ServerShutdown is called when the HTTP(S) server is shut down and done
 	// handling all active connections and does not accept connections any more
 	ServerShutdown func()
@@ -133,6 +172,16 @@ type MindwellImagesAPI struct {
 
 	// User defined logger function.
 	Logger func(string, ...interface{})
+}
+
+// UseRedoc for documentation at /docs
+func (o *MindwellImagesAPI) UseRedoc() {
+	o.useSwaggerUI = false
+}
+
+// UseSwaggerUI for documentation at /docs
+func (o *MindwellImagesAPI) UseSwaggerUI() {
+	o.useSwaggerUI = true
 }
 
 // SetDefaultProduces sets the default produces media type
@@ -174,16 +223,11 @@ func (o *MindwellImagesAPI) RegisterFormat(name string, format strfmt.Format, va
 func (o *MindwellImagesAPI) Validate() error {
 	var unregistered []string
 
-	if o.JSONConsumer == nil {
-		unregistered = append(unregistered, "JSONConsumer")
-	}
-
-	if o.UrlformConsumer == nil {
-		unregistered = append(unregistered, "UrlformConsumer")
-	}
-
 	if o.MultipartformConsumer == nil {
 		unregistered = append(unregistered, "MultipartformConsumer")
+	}
+	if o.UrlformConsumer == nil {
+		unregistered = append(unregistered, "UrlformConsumer")
 	}
 
 	if o.JSONProducer == nil {
@@ -193,23 +237,31 @@ func (o *MindwellImagesAPI) Validate() error {
 	if o.APIKeyHeaderAuth == nil {
 		unregistered = append(unregistered, "XUserKeyAuth")
 	}
+	if o.NoAPIKeyAuth == nil {
+		unregistered = append(unregistered, "XUserKeyAuth")
+	}
+	if o.OAuth2AppAuth == nil {
+		unregistered = append(unregistered, "OAuth2AppAuth")
+	}
+	if o.OAuth2CodeAuth == nil {
+		unregistered = append(unregistered, "OAuth2CodeAuth")
+	}
+	if o.OAuth2PasswordAuth == nil {
+		unregistered = append(unregistered, "OAuth2PasswordAuth")
+	}
 
 	if o.ImagesDeleteImagesIDHandler == nil {
 		unregistered = append(unregistered, "images.DeleteImagesIDHandler")
 	}
-
 	if o.ImagesGetImagesIDHandler == nil {
 		unregistered = append(unregistered, "images.GetImagesIDHandler")
 	}
-
 	if o.ImagesPostImagesHandler == nil {
 		unregistered = append(unregistered, "images.PostImagesHandler")
 	}
-
 	if o.MePutMeAvatarHandler == nil {
 		unregistered = append(unregistered, "me.PutMeAvatarHandler")
 	}
-
 	if o.MePutMeCoverHandler == nil {
 		unregistered = append(unregistered, "me.PutMeCoverHandler")
 	}
@@ -228,46 +280,56 @@ func (o *MindwellImagesAPI) ServeErrorFor(operationID string) func(http.Response
 
 // AuthenticatorsFor gets the authenticators for the specified security schemes
 func (o *MindwellImagesAPI) AuthenticatorsFor(schemes map[string]spec.SecurityScheme) map[string]runtime.Authenticator {
-
 	result := make(map[string]runtime.Authenticator)
-	for name, scheme := range schemes {
+	for name := range schemes {
 		switch name {
-
 		case "ApiKeyHeader":
-
+			scheme := schemes[name]
 			result[name] = o.APIKeyAuthenticator(scheme.Name, scheme.In, func(token string) (interface{}, error) {
 				return o.APIKeyHeaderAuth(token)
+			})
+
+		case "NoApiKey":
+			scheme := schemes[name]
+			result[name] = o.APIKeyAuthenticator(scheme.Name, scheme.In, func(token string) (interface{}, error) {
+				return o.NoAPIKeyAuth(token)
+			})
+
+		case "OAuth2App":
+			result[name] = o.BearerAuthenticator(name, func(token string, scopes []string) (interface{}, error) {
+				return o.OAuth2AppAuth(token, scopes)
+			})
+
+		case "OAuth2Code":
+			result[name] = o.BearerAuthenticator(name, func(token string, scopes []string) (interface{}, error) {
+				return o.OAuth2CodeAuth(token, scopes)
+			})
+
+		case "OAuth2Password":
+			result[name] = o.BearerAuthenticator(name, func(token string, scopes []string) (interface{}, error) {
+				return o.OAuth2PasswordAuth(token, scopes)
 			})
 
 		}
 	}
 	return result
-
 }
 
 // Authorizer returns the registered authorizer
 func (o *MindwellImagesAPI) Authorizer() runtime.Authorizer {
-
 	return o.APIAuthorizer
-
 }
 
-// ConsumersFor gets the consumers for the specified media types
+// ConsumersFor gets the consumers for the specified media types.
+// MIME type parameters are ignored here.
 func (o *MindwellImagesAPI) ConsumersFor(mediaTypes []string) map[string]runtime.Consumer {
-
-	result := make(map[string]runtime.Consumer)
+	result := make(map[string]runtime.Consumer, len(mediaTypes))
 	for _, mt := range mediaTypes {
 		switch mt {
-
-		case "application/json":
-			result["application/json"] = o.JSONConsumer
-
-		case "application/x-www-form-urlencoded":
-			result["application/x-www-form-urlencoded"] = o.UrlformConsumer
-
 		case "multipart/form-data":
 			result["multipart/form-data"] = o.MultipartformConsumer
-
+		case "application/x-www-form-urlencoded":
+			result["application/x-www-form-urlencoded"] = o.UrlformConsumer
 		}
 
 		if c, ok := o.customConsumers[mt]; ok {
@@ -275,19 +337,16 @@ func (o *MindwellImagesAPI) ConsumersFor(mediaTypes []string) map[string]runtime
 		}
 	}
 	return result
-
 }
 
-// ProducersFor gets the producers for the specified media types
+// ProducersFor gets the producers for the specified media types.
+// MIME type parameters are ignored here.
 func (o *MindwellImagesAPI) ProducersFor(mediaTypes []string) map[string]runtime.Producer {
-
-	result := make(map[string]runtime.Producer)
+	result := make(map[string]runtime.Producer, len(mediaTypes))
 	for _, mt := range mediaTypes {
 		switch mt {
-
 		case "application/json":
 			result["application/json"] = o.JSONProducer
-
 		}
 
 		if p, ok := o.customProducers[mt]; ok {
@@ -295,7 +354,6 @@ func (o *MindwellImagesAPI) ProducersFor(mediaTypes []string) map[string]runtime
 		}
 	}
 	return result
-
 }
 
 // HandlerFor gets a http.Handler for the provided operation method and path
@@ -325,7 +383,6 @@ func (o *MindwellImagesAPI) Context() *middleware.Context {
 
 func (o *MindwellImagesAPI) initHandlerCache() {
 	o.Context() // don't care about the result, just that the initialization happened
-
 	if o.handlers == nil {
 		o.handlers = make(map[string]map[string]http.Handler)
 	}
@@ -334,27 +391,22 @@ func (o *MindwellImagesAPI) initHandlerCache() {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
 	o.handlers["DELETE"]["/images/{id}"] = images.NewDeleteImagesID(o.context, o.ImagesDeleteImagesIDHandler)
-
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/images/{id}"] = images.NewGetImagesID(o.context, o.ImagesGetImagesIDHandler)
-
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/images"] = images.NewPostImages(o.context, o.ImagesPostImagesHandler)
-
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
 	o.handlers["PUT"]["/me/avatar"] = me.NewPutMeAvatar(o.context, o.MePutMeAvatarHandler)
-
 	if o.handlers["PUT"] == nil {
 		o.handlers["PUT"] = make(map[string]http.Handler)
 	}
 	o.handlers["PUT"]["/me/cover"] = me.NewPutMeCover(o.context, o.MePutMeCoverHandler)
-
 }
 
 // Serve creates a http handler to serve the API over HTTP
@@ -364,6 +416,9 @@ func (o *MindwellImagesAPI) Serve(builder middleware.Builder) http.Handler {
 
 	if o.Middleware != nil {
 		return o.Middleware(builder)
+	}
+	if o.useSwaggerUI {
+		return o.context.APIHandlerSwaggerUI(builder)
 	}
 	return o.context.APIHandler(builder)
 }
@@ -383,4 +438,16 @@ func (o *MindwellImagesAPI) RegisterConsumer(mediaType string, consumer runtime.
 // RegisterProducer allows you to add (or override) a producer for a media type.
 func (o *MindwellImagesAPI) RegisterProducer(mediaType string, producer runtime.Producer) {
 	o.customProducers[mediaType] = producer
+}
+
+// AddMiddlewareFor adds a http middleware to existing handler
+func (o *MindwellImagesAPI) AddMiddlewareFor(method, path string, builder middleware.Builder) {
+	um := strings.ToUpper(method)
+	if path == "/" {
+		path = ""
+	}
+	o.Init()
+	if h, ok := o.handlers[um][path]; ok {
+		o.handlers[method][path] = builder(h)
+	}
 }

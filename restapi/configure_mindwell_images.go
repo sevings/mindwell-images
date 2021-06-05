@@ -18,6 +18,7 @@ import (
 	"github.com/sevings/mindwell-images/restapi/operations"
 	"github.com/sevings/mindwell-images/restapi/operations/images"
 	"github.com/sevings/mindwell-images/restapi/operations/me"
+	serverModels "github.com/sevings/mindwell-server/models"
 	"github.com/sevings/mindwell-server/utils"
 )
 
@@ -38,16 +39,12 @@ func configureAPI(api *operations.MindwellImagesAPI) http.Handler {
 	// configure the api here
 	api.ServeError = errors.ServeError
 	api.Logger = mi.LogSystem().Sugar().Infof
-	api.JSONConsumer = runtime.JSONConsumer()
 	api.UrlformConsumer = runtime.DiscardConsumer
 	api.MultipartformConsumer = runtime.DiscardConsumer
 	api.JSONProducer = runtime.JSONProducer()
-	apiSecret := mi.ConfigString("server.api_secret")
+	apiSecret := mi.ConfigBytes("server.api_secret")
 
-	// Applies when the "X-User-Key" header is set
-	keyAuth := utils.NewKeyAuth(mi.DB(), []byte(apiSecret))
-	api.APIKeyHeaderAuth = func(apiKey string) (*models.UserID, error) {
-		id, err := keyAuth(apiKey)
+	convertAuth := func(id *serverModels.UserID, err error) (*models.UserID, error) {
 		if err != nil {
 			return nil, err
 		}
@@ -68,11 +65,22 @@ func configureAPI(api *operations.MindwellImagesAPI) http.Handler {
 		return &userID, err
 	}
 
-	// Set your custom authorizer if needed. Default one is security.Authorized()
-	// Expected interface runtime.Authorizer
-	//
-	// Example:
-	// api.APIAuthorizer = security.Authorized()
+	api.APIKeyHeaderAuth = func(apiKey string) (*models.UserID, error) {
+		auth := utils.NewKeyAuth(mi.DB(), apiSecret)
+		return convertAuth(auth(apiKey))
+	}
+	api.NoAPIKeyAuth = func(apiKey string) (*models.UserID, error) {
+		auth := utils.NoApiKeyAuth
+		return convertAuth(auth(apiKey))
+	}
+	api.OAuth2PasswordAuth = func(token string, scopes []string) (*models.UserID, error) {
+		auth := utils.NewOAuth2User(mi.TokenHash(), mi.DB(), utils.PasswordFlow)
+		return convertAuth(auth(token, scopes))
+	}
+	api.OAuth2CodeAuth = func(token string, scopes []string) (*models.UserID, error) {
+		auth := utils.NewOAuth2User(mi.TokenHash(), mi.DB(), utils.CodeFlow)
+		return convertAuth(auth(token, scopes))
+	}
 
 	api.MePutMeAvatarHandler = me.PutMeAvatarHandlerFunc(imagesImpl.NewAvatarUpdater(mi))
 	api.MePutMeCoverHandler = me.PutMeCoverHandlerFunc(imagesImpl.NewCoverUpdater(mi))
