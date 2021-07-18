@@ -2107,6 +2107,12 @@ func init() {
             "ApiKeyHeader": []
           },
           {
+            "NoApiKey": []
+          },
+          {
+            "Oauth2App": []
+          },
+          {
             "OAuth2Password": []
           },
           {
@@ -2975,7 +2981,7 @@ func init() {
           },
           {
             "OAuth2Code": [
-              "images:read"
+              "images:write"
             ]
           }
         ],
@@ -3287,6 +3293,9 @@ func init() {
           },
           {
             "$ref": "#/parameters/end"
+          },
+          {
+            "$ref": "#/parameters/bigLimit"
           }
         ],
         "responses": {
@@ -4893,6 +4902,9 @@ func init() {
           },
           {
             "$ref": "#/parameters/end"
+          },
+          {
+            "$ref": "#/parameters/bigLimit"
           }
         ],
         "responses": {
@@ -5430,6 +5442,9 @@ func init() {
               }
             }
           }
+        },
+        "limit": {
+          "type": "integer"
         },
         "start": {
           "type": "number",
@@ -6432,6 +6447,14 @@ func init() {
       "type": "string",
       "default": "",
       "name": "before",
+      "in": "query"
+    },
+    "bigLimit": {
+      "maximum": 1000,
+      "minimum": 1,
+      "type": "integer",
+      "default": 1000,
+      "name": "limit",
       "in": "query"
     },
     "end": {
@@ -8811,6 +8834,12 @@ func init() {
             "ApiKeyHeader": []
           },
           {
+            "NoApiKey": []
+          },
+          {
+            "Oauth2App": []
+          },
+          {
             "OAuth2Password": []
           },
           {
@@ -9755,7 +9784,7 @@ func init() {
           },
           {
             "OAuth2Code": [
-              "images:read"
+              "images:write"
             ]
           }
         ],
@@ -10079,6 +10108,14 @@ func init() {
             "format": "int64",
             "default": 0,
             "name": "end",
+            "in": "query"
+          },
+          {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer",
+            "default": 1000,
+            "name": "limit",
             "in": "query"
           }
         ],
@@ -11868,6 +11905,14 @@ func init() {
             "default": 0,
             "name": "end",
             "in": "query"
+          },
+          {
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer",
+            "default": 1000,
+            "name": "limit",
+            "in": "query"
           }
         ],
         "responses": {
@@ -12544,6 +12589,9 @@ func init() {
               }
             }
           }
+        },
+        "limit": {
+          "type": "integer"
         },
         "start": {
           "type": "number",
@@ -13563,6 +13611,14 @@ func init() {
       "type": "string",
       "default": "",
       "name": "before",
+      "in": "query"
+    },
+    "bigLimit": {
+      "maximum": 1000,
+      "minimum": 1,
+      "type": "integer",
+      "default": 1000,
+      "name": "limit",
       "in": "query"
     },
     "end": {
