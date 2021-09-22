@@ -4,6 +4,7 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/sevings/mindwell-images/models"
 	"github.com/sevings/mindwell-images/restapi/operations/images"
+	serverModels "github.com/sevings/mindwell-server/models"
 	"github.com/sevings/mindwell-server/utils"
 )
 
@@ -91,7 +92,16 @@ func NewImageLoader(mi *MindwellImages) func(images.GetImagesIDParams, *models.U
 					return images.NewGetImagesIDForbidden()
 				}
 
-				allowed := utils.CanViewEntry(tx, userID.ID, entryID)
+				serverUserID := &serverModels.UserID{
+					FollowersCount: userID.FollowersCount,
+					ID:             userID.ID,
+					IsInvited:      userID.IsInvited,
+					Name:           userID.Name,
+					NegKarma:       userID.NegKarma,
+					Verified:       userID.Verified,
+				}
+
+				allowed := utils.CanViewEntry(tx, serverUserID, entryID)
 				if !allowed {
 					return images.NewGetImagesIDForbidden()
 				}
