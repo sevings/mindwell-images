@@ -42,7 +42,6 @@ func configureAPI(api *operations.MindwellImagesAPI) http.Handler {
 	api.UrlformConsumer = runtime.DiscardConsumer
 	api.MultipartformConsumer = runtime.DiscardConsumer
 	api.JSONProducer = runtime.JSONProducer()
-	apiSecret := mi.ConfigBytes("server.api_secret")
 
 	convertAuth := func(id *serverModels.UserID, err error) (*models.UserID, error) {
 		if err != nil {
@@ -65,10 +64,6 @@ func configureAPI(api *operations.MindwellImagesAPI) http.Handler {
 		return &userID, err
 	}
 
-	api.APIKeyHeaderAuth = func(apiKey string) (*models.UserID, error) {
-		auth := utils.NewKeyAuth(mi.DB(), apiSecret)
-		return convertAuth(auth(apiKey))
-	}
 	api.NoAPIKeyAuth = func(apiKey string) (*models.UserID, error) {
 		auth := utils.NoApiKeyAuth
 		return convertAuth(auth(apiKey))

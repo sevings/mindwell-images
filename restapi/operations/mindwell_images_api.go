@@ -64,10 +64,6 @@ func NewMindwellImagesAPI(spec *loads.Document) *MindwellImagesAPI {
 		}),
 
 		// Applies when the "X-User-Key" header is set
-		APIKeyHeaderAuth: func(token string) (*models.UserID, error) {
-			return nil, errors.NotImplemented("api key auth (ApiKeyHeader) X-User-Key from header param [X-User-Key] has not yet been implemented")
-		},
-		// Applies when the "X-User-Key" header is set
 		NoAPIKeyAuth: func(token string) (*models.UserID, error) {
 			return nil, errors.NotImplemented("api key auth (NoApiKey) X-User-Key from header param [X-User-Key] has not yet been implemented")
 		},
@@ -120,10 +116,6 @@ type MindwellImagesAPI struct {
 	// JSONProducer registers a producer for the following mime types:
 	//   - application/json
 	JSONProducer runtime.Producer
-
-	// APIKeyHeaderAuth registers a function that takes a token and returns a principal
-	// it performs authentication based on an api key X-User-Key provided in the header
-	APIKeyHeaderAuth func(string) (*models.UserID, error)
 
 	// NoAPIKeyAuth registers a function that takes a token and returns a principal
 	// it performs authentication based on an api key X-User-Key provided in the header
@@ -234,9 +226,6 @@ func (o *MindwellImagesAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
-	if o.APIKeyHeaderAuth == nil {
-		unregistered = append(unregistered, "XUserKeyAuth")
-	}
 	if o.NoAPIKeyAuth == nil {
 		unregistered = append(unregistered, "XUserKeyAuth")
 	}
@@ -283,12 +272,6 @@ func (o *MindwellImagesAPI) AuthenticatorsFor(schemes map[string]spec.SecuritySc
 	result := make(map[string]runtime.Authenticator)
 	for name := range schemes {
 		switch name {
-		case "ApiKeyHeader":
-			scheme := schemes[name]
-			result[name] = o.APIKeyAuthenticator(scheme.Name, scheme.In, func(token string) (interface{}, error) {
-				return o.APIKeyHeaderAuth(token)
-			})
-
 		case "NoApiKey":
 			scheme := schemes[name]
 			result[name] = o.APIKeyAuthenticator(scheme.Name, scheme.In, func(token string) (interface{}, error) {
