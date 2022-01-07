@@ -63,10 +63,6 @@ func NewMindwellImagesAPI(spec *loads.Document) *MindwellImagesAPI {
 			return middleware.NotImplemented("operation me.PutMeCover has not yet been implemented")
 		}),
 
-		// Applies when the "X-User-Key" header is set
-		NoAPIKeyAuth: func(token string) (*models.UserID, error) {
-			return nil, errors.NotImplemented("api key auth (NoApiKey) X-User-Key from header param [X-User-Key] has not yet been implemented")
-		},
 		OAuth2AppAuth: func(token string, scopes []string) (*models.UserID, error) {
 			return nil, errors.NotImplemented("oauth2 bearer auth (OAuth2App) has not yet been implemented")
 		},
@@ -116,10 +112,6 @@ type MindwellImagesAPI struct {
 	// JSONProducer registers a producer for the following mime types:
 	//   - application/json
 	JSONProducer runtime.Producer
-
-	// NoAPIKeyAuth registers a function that takes a token and returns a principal
-	// it performs authentication based on an api key X-User-Key provided in the header
-	NoAPIKeyAuth func(string) (*models.UserID, error)
 
 	// OAuth2AppAuth registers a function that takes an access token and a collection of required scopes and returns a principal
 	// it performs authentication based on an oauth2 bearer token provided in the request
@@ -226,9 +218,6 @@ func (o *MindwellImagesAPI) Validate() error {
 		unregistered = append(unregistered, "JSONProducer")
 	}
 
-	if o.NoAPIKeyAuth == nil {
-		unregistered = append(unregistered, "XUserKeyAuth")
-	}
 	if o.OAuth2AppAuth == nil {
 		unregistered = append(unregistered, "OAuth2AppAuth")
 	}
@@ -272,12 +261,6 @@ func (o *MindwellImagesAPI) AuthenticatorsFor(schemes map[string]spec.SecuritySc
 	result := make(map[string]runtime.Authenticator)
 	for name := range schemes {
 		switch name {
-		case "NoApiKey":
-			scheme := schemes[name]
-			result[name] = o.APIKeyAuthenticator(scheme.Name, scheme.In, func(token string) (interface{}, error) {
-				return o.NoAPIKeyAuth(token)
-			})
-
 		case "OAuth2App":
 			result[name] = o.BearerAuthenticator(name, func(token string, scopes []string) (interface{}, error) {
 				return o.OAuth2AppAuth(token, scopes)

@@ -64,9 +64,9 @@ func configureAPI(api *operations.MindwellImagesAPI) http.Handler {
 		return &userID, err
 	}
 
-	api.NoAPIKeyAuth = func(apiKey string) (*models.UserID, error) {
-		auth := utils.NoApiKeyAuth
-		return convertAuth(auth(apiKey))
+	api.OAuth2AppAuth = func(token string, scopes []string) (*models.UserID, error) {
+		auth := utils.NewOAuth2App(mi.TokenHash(), mi.DB())
+		return convertAuth(auth(token, scopes))
 	}
 	api.OAuth2PasswordAuth = func(token string, scopes []string) (*models.UserID, error) {
 		auth := utils.NewOAuth2User(mi.TokenHash(), mi.DB(), utils.PasswordFlow)
