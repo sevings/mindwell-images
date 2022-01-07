@@ -1,2 +1,7 @@
 configs/images.toml
 /images/
+/models/
+/restapi/operations/
+/restapi/doc.go
+/restapi/embedded_spec.go
+/restapi/server.go
